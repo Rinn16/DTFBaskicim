@@ -1,0 +1,315 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==================== ENUMS ====================
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+}
+
+enum AuthProvider {
+  EMAIL
+  PHONE
+  GOOGLE
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAYMENT_RECEIVED
+  PROCESSING
+  PRINTING
+  SHIPPED
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// ==================== USER & AUTH ====================
+
+model User {
+  id            String       @id @default(cuid())
+  email         String?      @unique
+  phone         String?      @unique
+  passwordHash  String?
+  name          String
+  surname       String
+  companyName   String?
+  taxNumber     String?
+  authProvider  AuthProvider
+  role          UserRole     @default(CUSTOMER)
+  emailVerified Boolean      @default(false)
+  phoneVerified Boolean      @default(false)
+  image         String?
+
+  addresses      Address[]
+  orders         Order[]
+  cartItems      CartItem[]
+  savedDesigns   SavedDesign[]
+  specialPricing CustomerPricing?
+  accounts       Account[]
+  sessions       Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([phone])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  attempts  Int      @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([phone, code])
+}
+
+// ==================== ADDRESS ====================
+
+model Address {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  fullName  String
+  phone     String
+  city      String
+  district  String
+  address   String  @db.Text
+  zipCode   String?
+  isDefault Boolean @default(false)
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ==================== PRICING ====================
+
+model PricingTier {
+  id            String   @id @default(cuid())
+  minMeters     Decimal  @db.Decimal(10, 2)
+  maxMeters     Decimal? @db.Decimal(10, 2)
+  pricePerMeter Decimal  @db.Decimal(10, 2)
+  isActive      Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+model CustomerPricing {
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pricePerMeter Decimal @db.Decimal(10, 2)
+  notes         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DiscountCode {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  discountPercent Decimal? @db.Decimal(5, 2)
+  discountAmount  Decimal? @db.Decimal(10, 2)
+  minOrderMeters  Decimal? @db.Decimal(10, 2)
+  maxUses         Int?
+  usedCount       Int      @default(0)
+  validFrom       DateTime
+  validUntil      DateTime
+  isActive        Boolean  @default(true)
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([code])
+}
+
+// ==================== ORDERS ====================
+
+model Order {
+  id          String  @id @default(cuid())
+  orderNumber String  @unique
+  userId      String?
+  user        User?   @relation(fields: [userId], references: [id])
+
+  addressId String?
+  address   Address? @relation(fields: [addressId], references: [id])
+
+  // Misafir checkout alanlari
+  guestEmail String?
+  guestName  String?
+  guestPhone String?
+
+  totalMeters    Decimal @db.Decimal(10, 4)
+  pricePerMeter  Decimal @db.Decimal(10, 2)
+  subtotal       Decimal @db.Decimal(10, 2)
+  discountAmount Decimal @db.Decimal(10, 2) @default(0)
+  taxAmount      Decimal @db.Decimal(10, 2)
+  totalAmount    Decimal @db.Decimal(10, 2)
+
+  discountCodeId String?
+  discountCode   DiscountCode? @relation(fields: [discountCodeId], references: [id])
+
+  status OrderStatus @default(PENDING_PAYMENT)
+
+  paymentMethod PaymentMethod
+  paymentStatus PaymentStatus @default(PENDING)
+  paymentId     String?
+
+  gangSheetLayout Json
+  gangSheetWidth  Int
+  gangSheetHeight Int
+
+  exportPng  String?
+  exportTiff String?
+  exportPdf  String?
+
+  customerNote String? @db.Text
+  adminNote    String? @db.Text
+
+  items         OrderItem[]
+  statusHistory OrderStatusHistory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([orderNumber])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  imageKey    String
+  imageName   String
+  imageWidth  Int
+  imageHeight Int
+
+  quantity   Int  @default(1)
+  placements Json
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model OrderStatusHistory {
+  id         String       @id @default(cuid())
+  orderId    String
+  order      Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus OrderStatus?
+  toStatus   OrderStatus
+  changedBy  String?
+  note       String?
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+// ==================== SAVED DESIGNS & CART ====================
+
+model SavedDesign {
+  id          String  @id @default(cuid())
+  userId      String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  layout      Json
+  totalMeters Decimal @db.Decimal(10, 4)
+  items       Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model CartItem {
+  id          String  @id @default(cuid())
+  userId      String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  layout      Json
+  totalMeters Decimal @db.Decimal(10, 4)
+  items       Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
