@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -17,6 +17,18 @@ interface OrderInfo {
 }
 
 export default function OdemeBasariliPage() {
+  return (
+    <Suspense fallback={
+      <div className="container max-w-lg mx-auto px-4 py-16 text-center">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+      </div>
+    }>
+      <OdemeBasariliContent />
+    </Suspense>
+  );
+}
+
+function OdemeBasariliContent() {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
   const orderNumber = searchParams.get("oid");

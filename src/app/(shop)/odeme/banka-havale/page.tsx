@@ -1,17 +1,28 @@
 "use client";
 
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Building2, Copy, Check, Package, Search, AlertTriangle } from "lucide-react";
-import { useState } from "react";
+import { Building2, Copy, Check, Package, Search, AlertTriangle, Loader2 } from "lucide-react";
 import { BANK_INFO } from "@/lib/constants";
 import { toast } from "sonner";
 
 export default function BankaHavalePage() {
+  return (
+    <Suspense fallback={
+      <div className="container max-w-lg mx-auto px-4 py-16 text-center">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+      </div>
+    }>
+      <BankaHavaleContent />
+    </Suspense>
+  );
+}
+
+function BankaHavaleContent() {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
   const orderNumber = searchParams.get("oid") || "";
