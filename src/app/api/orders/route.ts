@@ -1,14 +1,18 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { createOrder } from "@/services/order.service";
 import { checkoutSchema } from "@/validations/checkout";
+import { addToCartSchema } from "@/validations/cart";
 import { db } from "@/lib/db";
+
+const guestCartItemsSchema = z.array(addToCartSchema).min(1, "Sepetiniz boş");
 
 export async function GET() {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Yetkisiz erisim" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
     const orders = await db.order.findMany({
@@ -35,7 +39,7 @@ export async function GET() {
     return NextResponse.json({ orders: formatted });
   } catch (error) {
     console.error("Orders fetch error:", error);
-    return NextResponse.json({ error: "Siparisler yuklenemedi" }, { status: 500 });
+    return NextResponse.json({ error: "Siparişler yüklenemedi" }, { status: 500 });
   }
 }
 
@@ -46,17 +50,17 @@ export async function POST(request: Request) {
 
     const parsed = checkoutSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: "Gecersiz veri", details: parsed.error.flatten() }, { status: 400 });
+      return NextResponse.json({ error: "Geçersiz veri", details: parsed.error.flatten() }, { status: 400 });
     }
 
-    const { paymentMethod, addressId, guestAddress, guestInfo, discountCode, customerNote } = parsed.data;
+    const { paymentMethod, addressId, guestAddress, guestInfo, discountCode, customerNote, billingSameAddress, billingInfo } = parsed.data;
 
-    // Sepet ogeleri — uye ise DB'den, misafir ise body'den
+    // Sepet ögeleri — üye ise DB'den, misafir ise body'den
     let cartItems;
     if (session?.user?.id) {
       const dbItems = await db.cartItem.findMany({ where: { userId: session.user.id } });
       if (dbItems.length === 0) {
-        return NextResponse.json({ error: "Sepetiniz bos" }, { status: 400 });
+        return NextResponse.json({ error: "Sepetiniz boş" }, { status: 400 });
       }
       cartItems = dbItems.map((item) => ({
         id: item.id,
@@ -66,13 +70,14 @@ export async function POST(request: Request) {
       }));
     } else {
       // Misafir: cartItems body'de gelmeli
-      if (!body.cartItems || body.cartItems.length === 0) {
-        return NextResponse.json({ error: "Sepetiniz bos" }, { status: 400 });
-      }
       if (!guestInfo) {
         return NextResponse.json({ error: "Misafir bilgileri zorunlu" }, { status: 400 });
       }
-      cartItems = body.cartItems;
+      const cartParsed = guestCartItemsSchema.safeParse(body.cartItems);
+      if (!cartParsed.success) {
+        return NextResponse.json({ error: "Geçersiz sepet verisi", details: cartParsed.error.flatten() }, { status: 400 });
+      }
+      cartItems = cartParsed.data;
     }
 
     const { order, priceBreakdown } = await createOrder({
@@ -86,6 +91,8 @@ export async function POST(request: Request) {
       cartItems,
       discountCode,
       customerNote,
+      billingSameAddress,
+      billingInfo,
     });
 
     return NextResponse.json({
@@ -100,6 +107,7 @@ export async function POST(request: Request) {
     }, { status: 201 });
   } catch (error) {
     console.error("Order create error:", error);
-    return NextResponse.json({ error: "Siparis olusturulamadi" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Sipariş oluşturulamadı";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

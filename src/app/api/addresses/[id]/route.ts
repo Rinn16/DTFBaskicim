@@ -10,19 +10,19 @@ export async function PUT(
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Yetkisiz erisim" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
     const { id } = await params;
     const existing = await db.address.findUnique({ where: { id } });
     if (!existing || existing.userId !== session.user.id) {
-      return NextResponse.json({ error: "Adres bulunamadi" }, { status: 404 });
+      return NextResponse.json({ error: "Adres bulunamadı" }, { status: 404 });
     }
 
     const body = await request.json();
     const parsed = addressSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: "Gecersiz adres bilgisi", details: parsed.error.flatten() }, { status: 400 });
+      return NextResponse.json({ error: "Geçersiz adres bilgisi", details: parsed.error.flatten() }, { status: 400 });
     }
 
     const address = await db.address.update({
@@ -32,7 +32,7 @@ export async function PUT(
     return NextResponse.json({ address });
   } catch (error) {
     console.error("Address update error:", error);
-    return NextResponse.json({ error: "Adres guncellenemedi" }, { status: 500 });
+    return NextResponse.json({ error: "Adres güncellenemedi" }, { status: 500 });
   }
 }
 
@@ -43,13 +43,13 @@ export async function DELETE(
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Yetkisiz erisim" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
     const { id } = await params;
     const existing = await db.address.findUnique({ where: { id } });
     if (!existing || existing.userId !== session.user.id) {
-      return NextResponse.json({ error: "Adres bulunamadi" }, { status: 404 });
+      return NextResponse.json({ error: "Adres bulunamadı" }, { status: 404 });
     }
 
     await db.address.delete({ where: { id } });

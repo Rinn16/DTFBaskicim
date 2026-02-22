@@ -13,14 +13,14 @@ export async function POST(request: Request) {
       return new Response("FAIL", { status: 400 });
     }
 
-    // HMAC dogrulama
+    // HMAC doğrulama
     const isValid = verifyPaytrCallback({ merchantOid, status, totalAmount, hash });
     if (!isValid) {
       console.error("PayTR callback: invalid hash for", merchantOid);
       return new Response("FAIL", { status: 400 });
     }
 
-    // Idempotency: zaten islenmis mi?
+    // Idempotency: zaten işlenmiş mi?
     const order = await db.order.findUnique({ where: { orderNumber: merchantOid } });
     if (!order) {
       console.error("PayTR callback: order not found", merchantOid);
@@ -28,8 +28,17 @@ export async function POST(request: Request) {
     }
 
     if (order.paymentStatus !== "PENDING") {
-      // Zaten islenmis, tekrar isleme
+      // Zaten işlenmiş, tekrar işleme
       return new Response("OK");
+    }
+
+    // Verify payment amount matches order total (totalAmount from PayTR is in kurus)
+    const totalStr = String(order.totalAmount);
+    const [intPart, decPart = ""] = totalStr.split(".");
+    const expectedKurus = parseInt(intPart + (decPart + "00").slice(0, 2), 10);
+    if (parseInt(totalAmount, 10) !== expectedKurus) {
+      console.error(`PayTR callback: amount mismatch for ${merchantOid}. Expected ${expectedKurus}, got ${totalAmount}`);
+      return new Response("FAIL", { status: 400 });
     }
 
     if (status === "success") {
@@ -38,18 +47,33 @@ export async function POST(request: Request) {
           where: { orderNumber: merchantOid },
           data: {
             paymentStatus: "COMPLETED",
-            status: "PAYMENT_RECEIVED",
+            status: "PROCESSING",
           },
         }),
         db.orderStatusHistory.create({
           data: {
             orderId: order.id,
             fromStatus: "PENDING_PAYMENT",
-            toStatus: "PAYMENT_RECEIVED",
-            note: "PayTR odeme basarili",
+            toStatus: "PROCESSING",
+            note: "PayTR ödeme başarılı",
           },
         }),
+        // Ödeme başarılı — sepeti temizle
+        ...(order.userId
+          ? [db.cartItem.deleteMany({ where: { userId: order.userId } })]
+          : []),
       ]);
+
+      // Enqueue gang sheet export job
+      try {
+        const { exportQueue } = await import("@/lib/queue");
+        await exportQueue.add(`export-${merchantOid}`, {
+          orderId: order.id,
+          orderNumber: merchantOid,
+        });
+      } catch (queueErr) {
+        console.error("Failed to enqueue export job:", queueErr);
+      }
     } else {
       await db.$transaction([
         db.order.update({
@@ -64,7 +88,7 @@ export async function POST(request: Request) {
             orderId: order.id,
             fromStatus: "PENDING_PAYMENT",
             toStatus: "CANCELLED",
-            note: "Odeme basarisiz",
+            note: "Ödeme başarısız",
           },
         }),
       ]);
@@ -73,6 +97,6 @@ export async function POST(request: Request) {
     return new Response("OK");
   } catch (error) {
     console.error("PayTR callback error:", error);
-    return new Response("OK"); // PayTR'ye her zaman OK don ki tekrar denemesin
+    return new Response("OK"); // PayTR'ye her zaman OK dön ki tekrar denemesin
   }
 }

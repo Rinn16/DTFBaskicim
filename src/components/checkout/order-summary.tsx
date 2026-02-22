@@ -18,7 +18,7 @@ export function OrderSummary({ items, priceBreakdown, discountCode }: OrderSumma
 
   return (
     <Card className="p-5">
-      <h2 className="font-semibold text-base mb-4">Siparis Ozeti</h2>
+      <h2 className="font-semibold text-base mb-4">Sipariş Özeti</h2>
 
       {/* Items */}
       <div className="space-y-3 mb-4">
@@ -30,7 +30,7 @@ export function OrderSummary({ items, priceBreakdown, discountCode }: OrderSumma
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium">Gang Sheet #{idx + 1}</p>
               <p className="text-xs text-muted-foreground">
-                {item.totalMeters.toFixed(2)}m - {item.items.length} gorsel
+                {item.totalMeters.toFixed(2)}m - {item.items.length} görsel
               </p>
             </div>
           </div>
@@ -59,7 +59,7 @@ export function OrderSummary({ items, priceBreakdown, discountCode }: OrderSumma
         </div>
         {priceBreakdown && priceBreakdown.discountAmount > 0 && (
           <div className="flex justify-between text-green-600">
-            <span>Indirim {discountCode && `(${discountCode})`}</span>
+            <span>İndirim {discountCode && `(${discountCode})`}</span>
             <span className="font-medium tabular-nums">
               -{priceBreakdown.discountAmount.toFixed(2)} TL
             </span>
@@ -71,6 +71,14 @@ export function OrderSummary({ items, priceBreakdown, discountCode }: OrderSumma
             {priceBreakdown ? `${priceBreakdown.taxAmount.toFixed(2)} TL` : "0.00 TL"}
           </span>
         </div>
+        {priceBreakdown && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Kargo</span>
+            <span className={`font-medium tabular-nums ${priceBreakdown.shippingCost === 0 ? "text-green-600" : ""}`}>
+              {priceBreakdown.shippingCost === 0 ? "Ücretsiz" : `${priceBreakdown.shippingCost.toFixed(2)} TL`}
+            </span>
+          </div>
+        )}
       </div>
 
       <Separator className="my-4" />

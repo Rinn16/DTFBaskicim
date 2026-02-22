@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Yetkisiz erisim" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
     const addresses = await db.address.findMany({
       where: { userId: session.user.id },
@@ -16,7 +16,7 @@ export async function GET() {
     return NextResponse.json({ addresses });
   } catch (error) {
     console.error("Address fetch error:", error);
-    return NextResponse.json({ error: "Adresler yuklenemedi" }, { status: 500 });
+    return NextResponse.json({ error: "Adresler yüklenemedi" }, { status: 500 });
   }
 }
 
@@ -24,16 +24,16 @@ export async function POST(request: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Yetkisiz erisim" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
     const body = await request.json();
     const parsed = addressSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: "Gecersiz adres bilgisi", details: parsed.error.flatten() }, { status: 400 });
+      return NextResponse.json({ error: "Geçersiz adres bilgisi", details: parsed.error.flatten() }, { status: 400 });
     }
 
-    // Ilk adresse default yap
+    // İlk adresse default yap
     const existingCount = await db.address.count({ where: { userId: session.user.id } });
 
     const address = await db.address.create({

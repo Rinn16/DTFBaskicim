@@ -7,13 +7,13 @@ export async function GET() {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Yetkisiz erisim" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
     const items = await getCartItems(session.user.id);
     return NextResponse.json({ items });
   } catch (error) {
     console.error("Cart fetch error:", error);
-    return NextResponse.json({ error: "Sepet yuklenemedi" }, { status: 500 });
+    return NextResponse.json({ error: "Sepet yüklenemedi" }, { status: 500 });
   }
 }
 
@@ -21,13 +21,13 @@ export async function POST(request: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Yetkisiz erisim" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
     const body = await request.json();
     const parsed = addToCartSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: "Gecersiz veri", details: parsed.error.flatten() }, { status: 400 });
+      return NextResponse.json({ error: "Geçersiz veri", details: parsed.error.flatten() }, { status: 400 });
     }
 
     const item = await addCartItem(session.user.id, parsed.data);

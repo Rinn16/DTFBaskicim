@@ -35,10 +35,10 @@ export function DiscountInput({ onApply, onClear }: DiscountInputProps) {
         onApply(code.trim().toUpperCase(), data.discountPercent || 0, data.discountAmount || 0);
       } else {
         const data = await res.json();
-        setError(data.error || "Gecersiz indirim kodu");
+        setError(data.error || "Geçersiz indirim kodu");
       }
     } catch {
-      setError("Indirim kodu kontrol edilemedi");
+      setError("İndirim kodu kontrol edilemedi");
     } finally {
       setIsLoading(false);
     }
@@ -54,18 +54,18 @@ export function DiscountInput({ onApply, onClear }: DiscountInputProps) {
   if (appliedCode) {
     return (
       <div className="flex items-center gap-2">
-        <Badge variant="outline" className="flex items-center gap-1.5 h-8 px-3 text-xs">
+        <span className="inline-flex items-center gap-1.5 h-8 px-3 text-xs rounded-md border border-primary/30 bg-primary/10 text-primary">
           <Tag className="h-3.5 w-3.5" />
           {appliedCode}
-        </Badge>
+        </span>
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 text-xs text-destructive hover:text-destructive"
+          className="h-8 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10"
           onClick={handleClear}
         >
           <X className="h-3.5 w-3.5 mr-1" />
-          Kaldir
+          Kaldır
         </Button>
       </div>
     );
@@ -75,8 +75,8 @@ export function DiscountInput({ onApply, onClear }: DiscountInputProps) {
     <div>
       <div className="flex gap-2">
         <Input
-          placeholder="Indirim kodu"
-          className="h-9 text-sm"
+          placeholder="İndirim kodu"
+          className="h-9 text-sm bg-muted border-border text-foreground placeholder:text-muted-foreground"
           value={code}
           onChange={(e) => setCode(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleApply()}
@@ -85,7 +85,7 @@ export function DiscountInput({ onApply, onClear }: DiscountInputProps) {
         <Button
           variant="outline"
           size="sm"
-          className="h-9 px-4 text-sm"
+          className="h-9 px-4 text-sm text-foreground/80 border-border hover:bg-muted"
           onClick={handleApply}
           disabled={isLoading || !code.trim()}
         >
@@ -93,7 +93,7 @@ export function DiscountInput({ onApply, onClear }: DiscountInputProps) {
         </Button>
       </div>
       {error && (
-        <p className="text-xs text-destructive mt-1.5">{error}</p>
+        <p className="text-xs text-red-400 mt-1.5">{error}</p>
       )}
     </div>
   );

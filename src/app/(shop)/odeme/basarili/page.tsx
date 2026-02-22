@@ -76,9 +76,9 @@ function OdemeBasariliContent() {
         <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
           <CheckCircle2 className="h-8 w-8 text-green-600" />
         </div>
-        <h1 className="text-2xl font-bold mb-2">Sipaarisiniz Alindi!</h1>
+        <h1 className="text-2xl font-bold mb-2">Siparişiniz Alındı!</h1>
         <p className="text-muted-foreground">
-          Odemeniz basariyla tamamlandi. Sipaarisiniz en kisa surede hazilanacak.
+          Ödemeniz başarıyla tamamlandı. Siparişiniz en kısa sürede hazırlanacak.
         </p>
       </div>
 
@@ -86,7 +86,7 @@ function OdemeBasariliContent() {
         <Card className="p-5 mb-6">
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Siparis No</span>
+              <span className="text-sm text-muted-foreground">Sipariş No</span>
               <span className="font-mono font-semibold text-sm">{order.orderNumber}</span>
             </div>
             <div className="flex justify-between items-center">
@@ -95,7 +95,7 @@ function OdemeBasariliContent() {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Durum</span>
-              <Badge variant="secondary">Odeme Alindi</Badge>
+              <Badge variant="secondary">Ödeme Alındı</Badge>
             </div>
           </div>
         </Card>
@@ -106,19 +106,19 @@ function OdemeBasariliContent() {
           <Button asChild className="w-full">
             <Link href="/hesabim/siparislerim">
               <Package className="h-4 w-4 mr-2" />
-              Siparislerime Git
+              Siparişlerime Git
             </Link>
           </Button>
         ) : (
           <Button asChild className="w-full">
             <Link href="/siparis-takip">
               <Search className="h-4 w-4 mr-2" />
-              Siparis Takip
+              Sipariş Takip
             </Link>
           </Button>
         )}
         <Button variant="outline" asChild className="w-full">
-          <Link href="/tasarim">Yeni Tasarim Olustur</Link>
+          <Link href="/tasarim">Yeni Tasarım Oluştur</Link>
         </Button>
       </div>
     </div>

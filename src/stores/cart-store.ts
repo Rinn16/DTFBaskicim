@@ -16,11 +16,16 @@ interface CartState {
   guestItems: CartItemData[];
   memberItems: CartItemData[];
   isLoading: boolean;
+  _hasHydrated: boolean;
 
   // Misafir islemleri (localStorage)
   addGuestItem: (layout: GangSheetLayout, items: GangSheetItem[], totalMeters: number) => void;
   removeGuestItem: (id: string) => void;
   clearGuestCart: () => void;
+
+  // Güncelleme
+  updateGuestItem: (id: string, layout: GangSheetLayout, items: GangSheetItem[], totalMeters: number) => void;
+  updateMemberItem: (id: string, layout: GangSheetLayout, items: GangSheetItem[], totalMeters: number) => Promise<void>;
 
   // Uye islemleri (API)
   fetchMemberCart: () => Promise<void>;
@@ -38,6 +43,7 @@ export const useCartStore = create<CartState>()(
       guestItems: [],
       memberItems: [],
       isLoading: false,
+      _hasHydrated: false,
 
       addGuestItem: (layout, items, totalMeters) => {
         const newItem: CartItemData = {
@@ -56,13 +62,46 @@ export const useCartStore = create<CartState>()(
 
       clearGuestCart: () => set({ guestItems: [] }),
 
+      updateGuestItem: (id, layout, items, totalMeters) => {
+        set((state) => ({
+          guestItems: state.guestItems.map((item) =>
+            item.id === id ? { ...item, layout, items, totalMeters } : item
+          ),
+        }));
+      },
+
+      updateMemberItem: async (id, layout, items, totalMeters) => {
+        set({ isLoading: true });
+        try {
+          const res = await fetch(`/api/cart/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ layout, items, totalMeters }),
+          });
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data.error || "Güncellenemedi");
+          }
+          await get().fetchMemberCart();
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
       fetchMemberCart: async () => {
         set({ isLoading: true });
         try {
           const res = await fetch("/api/cart");
           if (res.ok) {
             const data = await res.json();
-            set({ memberItems: data.items });
+            const items: CartItemData[] = data.items.map((item: Record<string, unknown>) => ({
+              id: item.id as string,
+              layout: item.layout as GangSheetLayout,
+              items: item.items as GangSheetItem[],
+              totalMeters: Number(item.totalMeters),
+              createdAt: item.createdAt as string,
+            }));
+            set({ memberItems: items });
           }
         } finally {
           set({ isLoading: false });
@@ -77,9 +116,11 @@ export const useCartStore = create<CartState>()(
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ layout, items, totalMeters }),
           });
-          if (res.ok) {
-            await get().fetchMemberCart();
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data.error || "Sepete eklenemedi");
           }
+          await get().fetchMemberCart();
         } finally {
           set({ isLoading: false });
         }
@@ -110,6 +151,9 @@ export const useCartStore = create<CartState>()(
     {
       name: "dtf-guest-cart",
       partialize: (state) => ({ guestItems: state.guestItems }),
+      onRehydrateStorage: () => () => {
+        useCartStore.setState({ _hasHydrated: true });
+      },
     }
   )
 );

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Plus, Check } from "lucide-react";
@@ -64,9 +63,13 @@ export function AddressSelector({ onSelect, onAddNew, selectedId }: AddressSelec
   if (addresses.length === 0) {
     return (
       <div className="text-center py-6">
-        <MapPin className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+        <MapPin className="h-8 w-8 text-muted-foreground/70 mx-auto mb-2" />
         <p className="text-sm text-muted-foreground mb-3">Henuz adres eklemediniz</p>
-        <Button variant="outline" onClick={onAddNew}>
+        <Button
+          variant="outline"
+          onClick={onAddNew}
+          className="text-foreground/80 border-border hover:bg-muted"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Yeni Adres Ekle
         </Button>
@@ -79,23 +82,27 @@ export function AddressSelector({ onSelect, onAddNew, selectedId }: AddressSelec
       {addresses.map((addr) => {
         const isSelected = selectedId === addr.id;
         return (
-          <Card
+          <div
             key={addr.id}
             className={cn(
-              "p-4 cursor-pointer transition-colors",
-              isSelected ? "border-primary bg-primary/5" : "hover:border-muted-foreground/30"
+              "p-4 cursor-pointer transition-all rounded-lg border",
+              isSelected
+                ? "border-primary/40 bg-primary/5"
+                : "border-border bg-foreground/[0.02] hover:border-border"
             )}
             onClick={() => onSelect(addr.id)}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-medium text-sm">{addr.title}</span>
+                  <span className="font-medium text-sm text-foreground">{addr.title}</span>
                   {addr.isDefault && (
-                    <Badge variant="secondary" className="text-[10px] h-4">Varsayilan</Badge>
+                    <Badge className="text-[10px] h-4 bg-primary/10 text-primary border-primary/20">
+                      Varsayilan
+                    </Badge>
                   )}
                 </div>
-                <p className="text-sm">{addr.fullName}</p>
+                <p className="text-sm text-foreground/80">{addr.fullName}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {addr.address}, {addr.district}/{addr.city}
                 </p>
@@ -107,11 +114,15 @@ export function AddressSelector({ onSelect, onAddNew, selectedId }: AddressSelec
                 </div>
               )}
             </div>
-          </Card>
+          </div>
         );
       })}
 
-      <Button variant="outline" className="w-full" onClick={onAddNew}>
+      <Button
+        variant="outline"
+        className="w-full text-foreground/80 border-border hover:bg-muted"
+        onClick={onAddNew}
+      >
         <Plus className="h-4 w-4 mr-2" />
         Yeni Adres Ekle
       </Button>

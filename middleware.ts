@@ -1,35 +1,39 @@
-import { auth } from "@/lib/auth";
+import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const publicPaths = [
-  "/", "/giris", "/kayit", "/api/auth",
+// Pages accessible without login
+const publicPages = [
+  "/", "/giris", "/kayit",
+  "/tasarim",
   "/sepet", "/odeme", "/odeme/basarili", "/odeme/banka-havale",
   "/siparis-takip",
-  "/api/payment/paytr/callback",
-  "/api/orders/track",
 ];
 
-export default async function proxy(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow public paths
-  if (publicPaths.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+  // API routes handle their own auth — skip middleware for all /api/*
+  if (pathname.startsWith("/api/")) {
     return NextResponse.next();
   }
 
   // Allow static files and Next.js internals
   if (
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/api/auth") ||
     pathname.includes(".")
   ) {
     return NextResponse.next();
   }
 
-  // Check session
-  const session = await auth();
-  const isLoggedIn = !!session?.user;
+  // Allow public pages
+  if (publicPages.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+    return NextResponse.next();
+  }
+
+  // Check JWT token for protected pages (edge-compatible, no Prisma needed)
+  const token = await getToken({ req: request });
+  const isLoggedIn = !!token;
   const isAdminPath = pathname.startsWith("/admin");
 
   // Redirect to login if not authenticated
@@ -40,7 +44,7 @@ export default async function proxy(request: NextRequest) {
   }
 
   // Block non-admin users from admin paths
-  if (isAdminPath && session?.user?.role !== "ADMIN") {
+  if (isAdminPath && token?.role !== "ADMIN") {
     return NextResponse.redirect(new URL("/", request.nextUrl.origin));
   }
 

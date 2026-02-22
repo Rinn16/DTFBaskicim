@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import type { Prisma } from "@/generated/prisma/client";
 import type { AddToCartInput } from "@/validations/cart";
 
 export async function getCartItems(userId: string) {
@@ -12,9 +13,22 @@ export async function addCartItem(userId: string, data: AddToCartInput) {
   return db.cartItem.create({
     data: {
       userId,
-      layout: data.layout as any,
+      layout: data.layout as unknown as Prisma.InputJsonValue,
       totalMeters: data.totalMeters,
-      items: data.items as any,
+      items: data.items as unknown as Prisma.InputJsonValue,
+    },
+  });
+}
+
+export async function updateCartItem(userId: string, itemId: string, data: AddToCartInput) {
+  const existing = await db.cartItem.findUnique({ where: { id: itemId } });
+  if (!existing || existing.userId !== userId) return null;
+  return db.cartItem.update({
+    where: { id: itemId },
+    data: {
+      layout: data.layout as unknown as Prisma.InputJsonValue,
+      items: data.items as unknown as Prisma.InputJsonValue,
+      totalMeters: data.totalMeters,
     },
   });
 }

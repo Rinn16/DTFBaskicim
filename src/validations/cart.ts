@@ -1,13 +1,14 @@
 import { z } from "zod";
 
 const gangSheetItemSchema = z.object({
-  imageKey: z.string().min(1),
+  imageKey: z.string(),
   imageName: z.string().min(1),
   originalWidthPx: z.number().positive(),
   originalHeightPx: z.number().positive(),
+  originalUrl: z.string().optional(),
   placements: z.array(z.object({
-    x: z.number().min(0),
-    y: z.number().min(0),
+    x: z.number(),
+    y: z.number(),
     widthCm: z.number().positive(),
     heightCm: z.number().positive(),
     rotation: z.number(),

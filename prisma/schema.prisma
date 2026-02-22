@@ -22,9 +22,7 @@ enum AuthProvider {
 
 enum OrderStatus {
   PENDING_PAYMENT
-  PAYMENT_RECEIVED
   PROCESSING
-  PRINTING
   SHIPPED
   COMPLETED
   CANCELLED
@@ -41,6 +39,11 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+enum BillingType {
+  INDIVIDUAL
+  CORPORATE
 }
 
 // ==================== USER & AUTH ====================
@@ -60,10 +63,20 @@ model User {
   phoneVerified Boolean      @default(false)
   image         String?
 
+  billingType        BillingType @default(INDIVIDUAL)
+  billingFullName    String?
+  billingCompanyName String?
+  billingTaxOffice   String?
+  billingTaxNumber   String?
+  billingAddress     String?     @db.Text
+  billingCity        String?
+  billingDistrict    String?
+  billingZipCode     String?
+
   addresses      Address[]
   orders         Order[]
   cartItems      CartItem[]
-  savedDesigns   SavedDesign[]
+  designDrafts   DesignDraft[]
   specialPricing CustomerPricing?
   accounts       Account[]
   sessions       Session[]
@@ -196,6 +209,14 @@ model DiscountCode {
   @@index([code])
 }
 
+model ShippingConfig {
+  id              String   @id @default("default")
+  shippingCost    Decimal  @db.Decimal(10, 2) @default(49.90)
+  freeShippingMin Decimal  @db.Decimal(10, 2) @default(500)
+  isActive        Boolean  @default(true)
+  updatedAt       DateTime @updatedAt
+}
+
 // ==================== ORDERS ====================
 
 model Order {
@@ -218,6 +239,7 @@ model Order {
   discountAmount Decimal @db.Decimal(10, 2) @default(0)
   taxAmount      Decimal @db.Decimal(10, 2)
   totalAmount    Decimal @db.Decimal(10, 2)
+  shippingCost   Decimal @db.Decimal(10, 2) @default(0)
 
   discountCodeId String?
   discountCode   DiscountCode? @relation(fields: [discountCodeId], references: [id])
@@ -238,6 +260,17 @@ model Order {
 
   customerNote String? @db.Text
   adminNote    String? @db.Text
+
+  billingType        BillingType @default(INDIVIDUAL)
+  billingSameAddress Boolean     @default(true)
+  billingFullName    String?
+  billingCompanyName String?
+  billingTaxOffice   String?
+  billingTaxNumber   String?
+  billingAddress     String?     @db.Text
+  billingCity        String?
+  billingDistrict    String?
+  billingZipCode     String?
 
   items         OrderItem[]
   statusHistory OrderStatusHistory[]
@@ -283,22 +316,21 @@ model OrderStatusHistory {
   @@index([orderId])
 }
 
-// ==================== SAVED DESIGNS & CART ====================
+// ==================== DESIGN DRAFTS ====================
 
-model SavedDesign {
-  id          String  @id @default(cuid())
-  userId      String
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name        String
-  layout      Json
-  totalMeters Decimal @db.Decimal(10, 4)
-  items       Json
-
+model DesignDraft {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String   @default("Adsız Tasarım")
+  data      Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
 }
+
+// ==================== CART ====================
 
 model CartItem {
   id          String  @id @default(cuid())

@@ -1,8 +1,9 @@
 import { db } from "@/lib/db";
 import { calculatePrice } from "@/services/pricing.service";
-import type { PricingTierData, CustomerPricingData } from "@/types/pricing";
+import { sendOrderConfirmation } from "@/services/email.service";
+import type { PricingTierData, CustomerPricingData, ShippingConfigData } from "@/types/pricing";
 import type { GangSheetLayout, GangSheetItem } from "@/types/canvas";
-import type { PaymentMethod } from "@/generated/prisma/client";
+import type { PaymentMethod, BillingType, Prisma } from "@/generated/prisma/client";
 
 function generateOrderNumber(): string {
   const date = new Date();
@@ -36,6 +37,18 @@ interface CreateOrderParams {
   }>;
   discountCode?: string;
   customerNote?: string;
+  billingSameAddress?: boolean;
+  billingInfo?: {
+    billingType: BillingType;
+    billingFullName?: string;
+    billingCompanyName?: string;
+    billingTaxOffice?: string;
+    billingTaxNumber?: string;
+    billingCity?: string;
+    billingDistrict?: string;
+    billingAddress?: string;
+    billingZipCode?: string;
+  };
 }
 
 export async function createOrder(params: CreateOrderParams) {
@@ -43,6 +56,7 @@ export async function createOrder(params: CreateOrderParams) {
     userId, guestEmail, guestName, guestPhone,
     addressId, paymentMethod,
     cartItems, discountCode, customerNote,
+    billingSameAddress, billingInfo,
   } = params;
 
   // Toplam metre hesapla
@@ -50,7 +64,7 @@ export async function createOrder(params: CreateOrderParams) {
     (sum, item) => sum + item.layout.totalHeightCm, 0
   );
 
-  // Fiyatlandirma verilerini al
+  // Fiyatlandırma verilerini al
   const tiers = await db.pricingTier.findMany({
     where: { isActive: true },
     orderBy: { minMeters: "asc" },
@@ -69,7 +83,7 @@ export async function createOrder(params: CreateOrderParams) {
     if (cp) customerPricing = { pricePerMeter: Number(cp.pricePerMeter) };
   }
 
-  // Indirim kodu dogrulama
+  // İndirim kodu doğrulama
   let discountPercent = 0;
   let discountAmount = 0;
   let discountCodeId: string | undefined;
@@ -88,12 +102,22 @@ export async function createOrder(params: CreateOrderParams) {
     }
   }
 
-  // Server-side fiyat hesabi
+  // Kargo ayarlarını al
+  let shippingConfig: ShippingConfigData | undefined;
+  const sc = await db.shippingConfig.findFirst({ where: { id: "default" } });
+  if (sc?.isActive) {
+    shippingConfig = {
+      shippingCost: Number(sc.shippingCost),
+      freeShippingMin: Number(sc.freeShippingMin),
+    };
+  }
+
+  // Server-side fiyat hesabı
   const priceBreakdown = calculatePrice(
-    totalHeightCm, pricingTiers, customerPricing, discountPercent, discountAmount
+    totalHeightCm, pricingTiers, customerPricing, discountPercent, discountAmount, shippingConfig
   );
 
-  // Tum items'i birlestir
+  // Tüm items'i birleştir
   const allItems = cartItems.flatMap((ci) => ci.items);
   const gangSheetLayout: GangSheetLayout = {
     items: allItems,
@@ -101,9 +125,9 @@ export async function createOrder(params: CreateOrderParams) {
     totalWidthCm: 57,
   };
 
-  // Transaction icerisinde siparis olustur
+  // Transaction içerisinde sipariş oluştur
   const order = await db.$transaction(async (tx) => {
-    // Indirim kodu usedCount artir
+    // İndirim kodu usedCount artır
     if (discountCodeId) {
       await tx.discountCode.update({
         where: { id: discountCodeId },
@@ -111,13 +135,13 @@ export async function createOrder(params: CreateOrderParams) {
       });
     }
 
-    // Siparis olustur
+    // Sipariş oluştur
     const orderNumber = generateOrderNumber();
     const newOrder = await tx.order.create({
       data: {
         orderNumber,
-        userId: userId || null,
-        addressId: addressId || null,
+        ...(userId ? { user: { connect: { id: userId } } } : {}),
+        ...(addressId ? { address: { connect: { id: addressId } } } : {}),
         guestEmail: guestEmail || null,
         guestName: guestName || null,
         guestPhone: guestPhone || null,
@@ -127,18 +151,29 @@ export async function createOrder(params: CreateOrderParams) {
         discountAmount: priceBreakdown.discountAmount,
         taxAmount: priceBreakdown.taxAmount,
         totalAmount: priceBreakdown.totalAmount,
-        discountCodeId: discountCodeId || null,
+        shippingCost: priceBreakdown.shippingCost,
+        ...(discountCodeId ? { discountCode: { connect: { id: discountCodeId } } } : {}),
         status: "PENDING_PAYMENT",
         paymentMethod,
         paymentStatus: "PENDING",
-        gangSheetLayout: gangSheetLayout as any,
+        gangSheetLayout: gangSheetLayout as unknown as Prisma.InputJsonValue,
         gangSheetWidth: 6732,
         gangSheetHeight: Math.round(totalHeightCm * 118.11),
         customerNote: customerNote || null,
+        billingType: billingInfo?.billingType ?? "INDIVIDUAL",
+        billingSameAddress: billingSameAddress ?? true,
+        billingFullName: billingInfo?.billingFullName || null,
+        billingCompanyName: billingInfo?.billingCompanyName || null,
+        billingTaxOffice: billingInfo?.billingTaxOffice || null,
+        billingTaxNumber: billingInfo?.billingTaxNumber || null,
+        billingAddress: billingInfo?.billingAddress || null,
+        billingCity: billingInfo?.billingCity || null,
+        billingDistrict: billingInfo?.billingDistrict || null,
+        billingZipCode: billingInfo?.billingZipCode || null,
       },
     });
 
-    // OrderItem'lar olustur
+    // OrderItem'lar oluştur
     for (const item of allItems) {
       await tx.orderItem.create({
         data: {
@@ -148,27 +183,54 @@ export async function createOrder(params: CreateOrderParams) {
           imageWidth: item.originalWidthPx,
           imageHeight: item.originalHeightPx,
           quantity: item.placements.length,
-          placements: item.placements as any,
+          placements: item.placements as unknown as Prisma.InputJsonValue,
         },
       });
     }
 
-    // Durum gecmisi olustur
+    // Durum geçmişi oluştur
     await tx.orderStatusHistory.create({
       data: {
         orderId: newOrder.id,
         toStatus: "PENDING_PAYMENT",
-        note: "Siparis olusturuldu",
+        note: "Sipariş oluşturuldu",
       },
     });
 
-    // Uye ise cart temizle
-    if (userId) {
-      await tx.cartItem.deleteMany({ where: { userId } });
-    }
-
     return newOrder;
   });
+
+  // Fire-and-forget order confirmation email
+  try {
+    let email: string | null = null;
+    let customerName = "Müşterimiz";
+
+    if (userId) {
+      const user = await db.user.findUnique({
+        where: { id: userId },
+        select: { email: true, name: true },
+      });
+      email = user?.email ?? null;
+      if (user?.name) customerName = user.name;
+    } else if (guestEmail) {
+      email = guestEmail;
+      if (guestName) customerName = guestName;
+    }
+
+    if (email) {
+      sendOrderConfirmation(email, {
+        orderNumber: order.orderNumber,
+        customerName,
+        totalMeters: Number(order.totalMeters),
+        totalAmount: Number(order.totalAmount),
+        paymentMethod: order.paymentMethod,
+        status: order.status,
+        itemCount: allItems.length,
+      }).catch((err) => console.error("[email] Order confirmation failed:", err));
+    }
+  } catch (err) {
+    console.error("[email] Order confirmation setup failed:", err);
+  }
 
   return { order, priceBreakdown };
 }

@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const { orderNumber, email } = await request.json();
 
     if (!orderNumber || !email) {
-      return NextResponse.json({ error: "Siparis numarasi ve email zorunlu" }, { status: 400 });
+      return NextResponse.json({ error: "Sipariş numarası ve email zorunlu" }, { status: 400 });
     }
 
     const order = await db.order.findUnique({
@@ -17,20 +17,20 @@ export async function POST(request: Request) {
     });
 
     if (!order) {
-      return NextResponse.json({ error: "Siparis bulunamadi" }, { status: 404 });
+      return NextResponse.json({ error: "Sipariş bulunamadı" }, { status: 404 });
     }
 
-    // Email eslesmesi kontrolu (uye veya misafir)
+    // Email eşleşmesi kontrolü (üye veya misafir)
     const orderEmail = order.guestEmail;
     if (orderEmail?.toLowerCase() !== email.toLowerCase()) {
-      // Uye siparisi olabilir — user tablosundan kontrol et
+      // Üye siparişi olabilir — user tablosundan kontrol et
       if (order.userId) {
         const user = await db.user.findUnique({ where: { id: order.userId } });
         if (!user || user.email?.toLowerCase() !== email.toLowerCase()) {
-          return NextResponse.json({ error: "Siparis bulunamadi" }, { status: 404 });
+          return NextResponse.json({ error: "Sipariş bulunamadı" }, { status: 404 });
         }
       } else {
-        return NextResponse.json({ error: "Siparis bulunamadi" }, { status: 404 });
+        return NextResponse.json({ error: "Sipariş bulunamadı" }, { status: 404 });
       }
     }
 
@@ -48,6 +48,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Order track error:", error);
-    return NextResponse.json({ error: "Siparis takip edilemedi" }, { status: 500 });
+    return NextResponse.json({ error: "Sipariş takip edilemedi" }, { status: 500 });
   }
 }

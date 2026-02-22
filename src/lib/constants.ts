@@ -40,19 +40,27 @@ export const UPLOAD = {
 
 // Bank Transfer Info
 export const BANK_INFO = {
-  ACCOUNT_NAME: process.env.BANK_ACCOUNT_NAME || "DTF Baskicim",
+  ACCOUNT_NAME: process.env.BANK_ACCOUNT_NAME || "DTF Baskıcım",
   IBAN: process.env.BANK_IBAN || "",
   BANK_NAME: process.env.BANK_NAME || "",
 } as const;
 
+// Gang Sheet Export
+export const EXPORT = {
+  S3_PREFIX: 'exports',
+  PNG_COMPRESSION_LEVEL: 2,
+  TIFF_COMPRESSION: 'lzw' as const,
+  DOWNLOAD_URL_EXPIRY: 3600,
+  QUEUE_NAME: 'gang-sheet-export',
+  MAX_RETRIES: 3,
+} as const;
+
 // Order
 export const ORDER_STATUSES = {
-  PENDING_PAYMENT: 'Odeme Bekleniyor',
-  PAYMENT_RECEIVED: 'Odeme Alindi',
-  PROCESSING: 'Hazirlaniyor',
-  PRINTING: 'Basiliyor',
+  PENDING_PAYMENT: 'Ödeme Bekleniyor',
+  PROCESSING: 'Hazırlanıyor',
   SHIPPED: 'Kargoya Verildi',
-  COMPLETED: 'Tamamlandi',
-  CANCELLED: 'Iptal Edildi',
-  REFUNDED: 'Iade Edildi',
+  COMPLETED: 'Tamamlandı',
+  CANCELLED: 'İptal Edildi',
+  REFUNDED: 'İade Edildi',
 } as const;

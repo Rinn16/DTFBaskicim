@@ -1,6 +1,5 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
 import { CreditCard, Building2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,23 +30,29 @@ export function PaymentMethod({ value, onChange }: PaymentMethodProps) {
         const isSelected = value === method.id;
         const Icon = method.icon;
         return (
-          <Card
+          <div
             key={method.id}
             className={cn(
-              "p-4 cursor-pointer transition-colors",
-              isSelected ? "border-primary bg-primary/5" : "hover:border-muted-foreground/30"
+              "p-4 cursor-pointer transition-all rounded-lg border",
+              isSelected
+                ? "border-primary/40 bg-primary/5"
+                : "border-border bg-foreground/[0.02] hover:border-border"
             )}
             onClick={() => onChange(method.id)}
           >
             <div className="flex items-center gap-3">
-              <div className={cn(
-                "w-10 h-10 rounded-lg flex items-center justify-center",
-                isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
-              )}>
+              <div
+                className={cn(
+                  "w-10 h-10 rounded-lg flex items-center justify-center",
+                  isSelected
+                    ? "bg-primary/20 text-primary"
+                    : "bg-muted text-muted-foreground"
+                )}
+              >
                 <Icon className="h-5 w-5" />
               </div>
               <div className="flex-1">
-                <p className="font-medium text-sm">{method.label}</p>
+                <p className="font-medium text-sm text-foreground">{method.label}</p>
                 <p className="text-xs text-muted-foreground">{method.description}</p>
               </div>
               {isSelected && (
@@ -56,7 +61,7 @@ export function PaymentMethod({ value, onChange }: PaymentMethodProps) {
                 </div>
               )}
             </div>
-          </Card>
+          </div>
         );
       })}
     </div>

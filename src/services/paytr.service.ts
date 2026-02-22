@@ -9,7 +9,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 interface PaytrTokenParams {
   merchantOid: string;
   email: string;
-  paymentAmount: number; // kurus cinsinden (TL * 100)
+  paymentAmount: number; // kuruş cinsinden (TL * 100)
   userName: string;
   userAddress: string;
   userPhone: string;
@@ -70,7 +70,7 @@ export async function createPaytrToken(params: PaytrTokenParams): Promise<{ toke
   if (result.status === "success") {
     return { token: result.token };
   }
-  return { error: result.reason || "PayTR token alinamadi" };
+  return { error: result.reason || "PayTR token alınamadı" };
 }
 
 export function verifyPaytrCallback(params: {

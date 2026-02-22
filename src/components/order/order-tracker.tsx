@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Search, Loader2, CheckCircle2, Circle, Clock } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { ORDER_STATUSES } from "@/lib/constants";
+import { StatusTimeline } from "@/components/order/status-timeline";
 
 interface StatusHistoryItem {
   id: string;
@@ -38,7 +39,7 @@ export function OrderTracker() {
 
   const handleTrack = async () => {
     if (!orderNumber.trim() || !email.trim()) {
-      setError("Siparis numarasi ve email adresi zorunlu");
+      setError("Sipariş numarası ve email adresi zorunlu");
       return;
     }
 
@@ -61,10 +62,10 @@ export function OrderTracker() {
         setResult(data.order);
       } else {
         const data = await res.json();
-        setError(data.error || "Siparis bulunamadi");
+        setError(data.error || "Sipariş bulunamadı");
       }
     } catch {
-      setError("Bir hata olustu");
+      setError("Bir hata oluştu");
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +80,7 @@ export function OrderTracker() {
       <Card className="p-5">
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="orderNumber">Siparis Numarasi</Label>
+            <Label htmlFor="orderNumber">Sipariş Numarası</Label>
             <Input
               id="orderNumber"
               placeholder="DTF-XXXXXX-XXXX"
@@ -105,7 +106,7 @@ export function OrderTracker() {
             ) : (
               <Search className="h-4 w-4 mr-2" />
             )}
-            Siparis Sorgula
+            Sipariş Sorgula
           </Button>
           {error && (
             <p className="text-sm text-destructive text-center">{error}</p>
@@ -118,7 +119,7 @@ export function OrderTracker() {
         <Card className="p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-xs text-muted-foreground mb-0.5">Siparis No</p>
+              <p className="text-xs text-muted-foreground mb-0.5">Sipariş No</p>
               <p className="font-mono font-semibold">{result.orderNumber}</p>
             </div>
             <Badge variant="secondary">{statusLabel(result.status)}</Badge>
@@ -134,11 +135,11 @@ export function OrderTracker() {
               <p className="font-semibold tabular-nums">{result.totalMeters.toFixed(2)} m</p>
             </div>
             <div>
-              <p className="text-muted-foreground text-xs">Odeme Yontemi</p>
-              <p className="font-medium">{result.paymentMethod === "CREDIT_CARD" ? "Kredi Karti" : "Banka Havalesi"}</p>
+              <p className="text-muted-foreground text-xs">Ödeme Yöntemi</p>
+              <p className="font-medium">{result.paymentMethod === "CREDIT_CARD" ? "Kredi Kartı" : "Banka Havalesi"}</p>
             </div>
             <div>
-              <p className="text-muted-foreground text-xs">Siparis Tarihi</p>
+              <p className="text-muted-foreground text-xs">Sipariş Tarihi</p>
               <p className="font-medium">{new Date(result.createdAt).toLocaleDateString("tr-TR")}</p>
             </div>
           </div>
@@ -146,36 +147,8 @@ export function OrderTracker() {
           {result.statusHistory.length > 0 && (
             <>
               <Separator className="my-4" />
-              <h3 className="font-semibold text-sm mb-3">Siparis Gecmisi</h3>
-              <div className="space-y-3">
-                {result.statusHistory.map((entry, idx) => {
-                  const isLast = idx === result.statusHistory.length - 1;
-                  return (
-                    <div key={entry.id} className="flex gap-3">
-                      <div className="flex flex-col items-center">
-                        {isLast ? (
-                          <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                        ) : (
-                          <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                        )}
-                        {idx < result.statusHistory.length - 1 && (
-                          <div className="w-px h-full bg-border mt-1" />
-                        )}
-                      </div>
-                      <div className="pb-3">
-                        <p className="text-sm font-medium">{statusLabel(entry.toStatus)}</p>
-                        {entry.note && (
-                          <p className="text-xs text-muted-foreground">{entry.note}</p>
-                        )}
-                        <p className="text-[11px] text-muted-foreground mt-0.5">
-                          <Clock className="h-3 w-3 inline mr-1" />
-                          {new Date(entry.createdAt).toLocaleString("tr-TR")}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <h3 className="font-semibold text-sm mb-3">Sipariş Geçmişi</h3>
+              <StatusTimeline statusHistory={result.statusHistory} />
             </>
           )}
         </Card>

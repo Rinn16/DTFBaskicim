@@ -31,7 +31,7 @@ function BankaHavaleContent() {
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
     setCopiedField(field);
-    toast.success("Kopyalandi!");
+    toast.success("Kopyalandı!");
     setTimeout(() => setCopiedField(null), 2000);
   };
 
@@ -41,9 +41,9 @@ function BankaHavaleContent() {
         <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
           <Building2 className="h-8 w-8 text-blue-600" />
         </div>
-        <h1 className="text-2xl font-bold mb-2">Banka Havalesi ile Odeme</h1>
+        <h1 className="text-2xl font-bold mb-2">Banka Havalesi ile Ödeme</h1>
         <p className="text-muted-foreground">
-          Asagidaki banka bilgilerine havale/EFT yaparak odemenizi tamamlayabilirsiniz.
+          Aşağıdaki banka bilgilerine havale/EFT yaparak ödemenizi tamamlayabilirsiniz.
         </p>
       </div>
 
@@ -51,7 +51,7 @@ function BankaHavaleContent() {
       <Card className="p-4 mb-4 border-primary/30 bg-primary/5">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-muted-foreground mb-0.5">Siparis Numarasi</p>
+            <p className="text-xs text-muted-foreground mb-0.5">Sipariş Numarası</p>
             <p className="font-mono font-bold text-lg">{orderNumber}</p>
           </div>
           <Button
@@ -80,7 +80,7 @@ function BankaHavaleContent() {
             </div>
           )}
           <div>
-            <p className="text-xs text-muted-foreground mb-0.5">Hesap Adi</p>
+            <p className="text-xs text-muted-foreground mb-0.5">Hesap Adı</p>
             <p className="font-medium">{BANK_INFO.ACCOUNT_NAME}</p>
           </div>
           <div>
@@ -106,13 +106,13 @@ function BankaHavaleContent() {
             </div>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground mb-0.5">Aciklama</p>
+            <p className="text-xs text-muted-foreground mb-0.5">Açıklama</p>
             <div className="flex items-center justify-between">
-              <p className="font-mono font-medium text-sm">Siparis No: {orderNumber}</p>
+              <p className="font-mono font-medium text-sm">Sipariş No: {orderNumber}</p>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => copyToClipboard(`Siparis No: ${orderNumber}`, "desc")}
+                onClick={() => copyToClipboard(`Sipariş No: ${orderNumber}`, "desc")}
               >
                 {copiedField === "desc" ? (
                   <Check className="h-4 w-4 mr-1" />
@@ -131,10 +131,10 @@ function BankaHavaleContent() {
         <div className="flex gap-3">
           <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-amber-800">Onemli</p>
+            <p className="text-sm font-medium text-amber-800">Önemli</p>
             <p className="text-xs text-amber-700 mt-0.5">
-              Lutfen havale/EFT aciklamasina siparis numaranizi yazmayai unutmayin.
-              Odemeniz onaylandiktan sonra sipaarisiniz hazilanmaya baslanacaktir.
+              Lütfen havale/EFT açıklamasına sipariş numaranızı yazmayı unutmayın.
+              Ödemeniz onaylandıktan sonra siparişiniz hazırlanmaya başlanacaktır.
             </p>
           </div>
         </div>
@@ -145,19 +145,19 @@ function BankaHavaleContent() {
           <Button asChild className="w-full">
             <Link href="/hesabim/siparislerim">
               <Package className="h-4 w-4 mr-2" />
-              Siparislerime Git
+              Siparişlerime Git
             </Link>
           </Button>
         ) : (
           <Button asChild className="w-full">
             <Link href="/siparis-takip">
               <Search className="h-4 w-4 mr-2" />
-              Siparis Takip
+              Sipariş Takip
             </Link>
           </Button>
         )}
         <Button variant="outline" asChild className="w-full">
-          <Link href="/tasarim">Yeni Tasarim Olustur</Link>
+          <Link href="/tasarim">Yeni Tasarım Oluştur</Link>
         </Button>
       </div>
     </div>

@@ -21,13 +21,21 @@ export async function GET(
     });
 
     if (!order) {
-      return NextResponse.json({ error: "Siparis bulunamadi" }, { status: 404 });
+      return NextResponse.json({ error: "Sipariş bulunamadı" }, { status: 404 });
     }
 
-    // Yetki kontrolu: uye kendi siparisini, misafir erisemez (track endpoint kullanmali)
-    if (order.userId && (!session?.user?.id || session.user.id !== order.userId)) {
+    // Yetki kontrolü
+    if (order.userId) {
+      // Üye siparişi: sadece sipariş sahibi veya admin erişebilir
+      if (!session?.user?.id || session.user.id !== order.userId) {
+        if (session?.user?.role !== "ADMIN") {
+          return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 403 });
+        }
+      }
+    } else {
+      // Misafir siparişi: sadece admin erişebilir (misafirler track endpoint kullanmalı)
       if (session?.user?.role !== "ADMIN") {
-        return NextResponse.json({ error: "Yetkisiz erisim" }, { status: 403 });
+        return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 403 });
       }
     }
 
@@ -44,6 +52,6 @@ export async function GET(
     });
   } catch (error) {
     console.error("Order detail error:", error);
-    return NextResponse.json({ error: "Siparis detayi yuklenemedi" }, { status: 500 });
+    return NextResponse.json({ error: "Sipariş detayı yüklenemedi" }, { status: 500 });
   }
 }
