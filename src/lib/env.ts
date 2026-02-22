@@ -18,6 +18,7 @@ const envSchema = z.object({
   S3_SECRET_KEY: z.string().min(1, "S3_SECRET_KEY is required"),
   S3_BUCKET: z.string().default("dtf-uploads"),
   S3_REGION: z.string().default("us-east-1"),
+  S3_PUBLIC_URL: z.string().optional(),
 
   // Redis
   REDIS_URL: z.string().min(1, "REDIS_URL is required"),

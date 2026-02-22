@@ -72,8 +72,15 @@ export async function POST(request: Request) {
       Expires: UPLOAD.PRESIGN_EXPIRY,
     });
 
+    // Replace internal Docker hostname with public URL for browser access
+    const publicS3Url = process.env.S3_PUBLIC_URL || presignedPost.url;
+    const url = presignedPost.url.replace(
+      process.env.S3_ENDPOINT!,
+      publicS3Url
+    );
+
     return NextResponse.json({
-      url: presignedPost.url,
+      url,
       fields: presignedPost.fields,
       key,
     });

@@ -1,10 +1,14 @@
 import type { NextConfig } from "next";
 
+const s3PublicUrl = process.env.S3_PUBLIC_URL || process.env.S3_ENDPOINT || "http://localhost:9000";
+const s3PublicHost = new URL(s3PublicUrl).hostname;
+const s3PublicProtocol = s3PublicUrl.startsWith("https") ? "https" : "http";
+
 const nextConfig: NextConfig = {
   output: "standalone",
   env: {
     NEXT_PUBLIC_S3_PUBLIC_URL:
-      `${process.env.S3_ENDPOINT || "http://localhost:9000"}/${process.env.S3_BUCKET || "dtf-uploads"}`,
+      `${s3PublicUrl}/${process.env.S3_BUCKET || "dtf-uploads"}`,
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts"],
@@ -16,8 +20,8 @@ const nextConfig: NextConfig = {
         hostname: "lh3.googleusercontent.com",
       },
       {
-        protocol: process.env.S3_ENDPOINT?.startsWith("https") ? "https" : "http",
-        hostname: new URL(process.env.S3_ENDPOINT || "http://localhost:9000").hostname,
+        protocol: s3PublicProtocol as "http" | "https",
+        hostname: s3PublicHost,
       },
     ],
   },
@@ -43,12 +47,9 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paytr.com",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://lh3.googleusercontent.com " +
-                (process.env.S3_ENDPOINT || "http://localhost:9000"),
+              "img-src 'self' data: blob: https://lh3.googleusercontent.com " + s3PublicUrl,
               "font-src 'self'",
-              "connect-src 'self' " +
-                (process.env.S3_ENDPOINT || "http://localhost:9000") +
-                " https://www.paytr.com",
+              "connect-src 'self' " + s3PublicUrl + " https://www.paytr.com",
               "frame-src https://www.paytr.com",
               "frame-ancestors 'none'",
               "base-uri 'self'",
