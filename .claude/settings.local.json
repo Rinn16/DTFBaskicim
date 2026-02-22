@@ -25,7 +25,12 @@
       "Bash(docker compose:*)",
       "Bash(npm update:*)",
       "Bash(xargs:*)",
-      "Bash(redis-cli:*)"
+      "Bash(redis-cli:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.prisma.io)",
+      "Bash(head:*)",
+      "Bash(cd:*)",
+      "Bash(node:*)"
     ]
   }
 }
