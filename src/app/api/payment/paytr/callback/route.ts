@@ -20,10 +20,10 @@ export async function POST(request: Request) {
       return new Response("FAIL", { status: 400 });
     }
 
-    // Idempotency: zaten işlenmiş mi?
+    // Idempotency: sipariş zaten işlenmiş veya silinmiş olabilir
     const order = await db.order.findUnique({ where: { orderNumber: merchantOid } });
     if (!order) {
-      console.error("PayTR callback: order not found", merchantOid);
+      // Sipariş bulunamadı — daha önce silinmiş (başarısız ödeme) veya hiç oluşmamış
       return new Response("OK");
     }
 
@@ -75,23 +75,9 @@ export async function POST(request: Request) {
         console.error("Failed to enqueue export job:", queueErr);
       }
     } else {
-      await db.$transaction([
-        db.order.update({
-          where: { orderNumber: merchantOid },
-          data: {
-            paymentStatus: "FAILED",
-            status: "CANCELLED",
-          },
-        }),
-        db.orderStatusHistory.create({
-          data: {
-            orderId: order.id,
-            fromStatus: "PENDING_PAYMENT",
-            toStatus: "CANCELLED",
-            note: "Ödeme başarısız",
-          },
-        }),
-      ]);
+      // Ödeme başarısız — siparişi tamamen sil
+      await db.order.delete({ where: { id: order.id } });
+      console.log(`PayTR callback: payment failed, order ${merchantOid} deleted`);
     }
 
     return new Response("OK");
