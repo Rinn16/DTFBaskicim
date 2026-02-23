@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { addressSchema } from "@/validations/address";
 import { guestInfoSchema } from "@/validations/checkout";
 
-const guestAddressSchema = addressSchema.omit({ title: true }).merge(guestInfoSchema);
+const guestAddressSchema = addressSchema.omit({ title: true, fullName: true, phone: true }).merge(guestInfoSchema);
 type GuestAddressData = ReturnType<typeof guestAddressSchema.parse>;
 type MemberAddressData = ReturnType<typeof addressSchema.parse>;
 
@@ -65,31 +65,33 @@ export function AddressForm({ isGuest, onSubmit, onCancel, isSubmitting }: Addre
       )}
 
       {!isGuest && (
-        <div className="space-y-1.5">
-          <Label htmlFor="title" className="text-foreground/80 text-xs">Adres Basligi *</Label>
-          <Input id="title" {...register("title")} placeholder="Ev, Is, vb." className={inputClass} />
-          {err.title && (
-            <p className="text-xs text-red-400">{err.title.message}</p>
-          )}
-        </div>
-      )}
+        <>
+          <div className="space-y-1.5">
+            <Label htmlFor="title" className="text-foreground/80 text-xs">Adres Basligi *</Label>
+            <Input id="title" {...register("title")} placeholder="Ev, Is, vb." className={inputClass} />
+            {err.title && (
+              <p className="text-xs text-red-400">{err.title.message}</p>
+            )}
+          </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="fullName" className="text-foreground/80 text-xs">Alici Adi *</Label>
-          <Input id="fullName" {...register("fullName")} placeholder="Ad Soyad" className={inputClass} />
-          {err.fullName && (
-            <p className="text-xs text-red-400">{err.fullName.message}</p>
-          )}
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="phone" className="text-foreground/80 text-xs">Telefon *</Label>
-          <Input id="phone" {...register("phone")} placeholder="05XX XXX XX XX" className={inputClass} />
-          {err.phone && (
-            <p className="text-xs text-red-400">{err.phone.message}</p>
-          )}
-        </div>
-      </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="fullName" className="text-foreground/80 text-xs">Alici Adi *</Label>
+              <Input id="fullName" {...register("fullName")} placeholder="Ad Soyad" className={inputClass} />
+              {err.fullName && (
+                <p className="text-xs text-red-400">{err.fullName.message}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="phone" className="text-foreground/80 text-xs">Telefon *</Label>
+              <Input id="phone" {...register("phone")} placeholder="05XX XXX XX XX" className={inputClass} />
+              {err.phone && (
+                <p className="text-xs text-red-400">{err.phone.message}</p>
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">

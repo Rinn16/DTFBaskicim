@@ -222,8 +222,8 @@ export default function OdemePage() {
           guestPhone: guestData.guestPhone,
         };
         body.guestAddress = {
-          fullName: guestData.fullName,
-          phone: guestData.phone,
+          fullName: guestData.guestName,
+          phone: guestData.guestPhone,
           city: guestData.city,
           district: guestData.district,
           address: guestData.address,

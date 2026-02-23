@@ -40,7 +40,8 @@ export const phoneLoginSchema = z.object({
   phone: z
     .string()
     .min(1, "Telefon numarası gerekli")
-    .regex(/^(\+90|0)?[0-9]{10}$/, "Geçerli bir telefon numarası girin"),
+    .transform((v) => v.replace(/\s/g, ""))
+    .pipe(z.string().regex(/^(\+90|0)?[0-9]{10}$/, "Geçerli bir telefon numarası girin")),
 });
 
 export const otpVerifySchema = z.object({

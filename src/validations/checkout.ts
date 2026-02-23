@@ -3,7 +3,7 @@ import { z } from "zod";
 export const guestInfoSchema = z.object({
   guestName: z.string().min(2, "Ad soyad zorunlu").max(100),
   guestEmail: z.string().email("Geçerli email adresi girin"),
-  guestPhone: z.string().regex(/^(\+90|0)?[0-9]{10}$/, "Geçerli telefon numarası girin"),
+  guestPhone: z.string().transform((v) => v.replace(/\s/g, "")).pipe(z.string().regex(/^(\+90|0)?[0-9]{10}$/, "Geçerli telefon numarası girin")),
 });
 
 const billingAddressFields = {
@@ -37,7 +37,7 @@ export const checkoutSchema = z.object({
   addressId: z.string().optional(),
   guestAddress: z.object({
     fullName: z.string().min(2).max(100),
-    phone: z.string().regex(/^(\+90|0)?[0-9]{10}$/),
+    phone: z.string().transform((v) => v.replace(/\s/g, "")).pipe(z.string().regex(/^(\+90|0)?[0-9]{10}$/)),
     city: z.string().min(1).max(50),
     district: z.string().min(1).max(50),
     address: z.string().min(10).max(400),
