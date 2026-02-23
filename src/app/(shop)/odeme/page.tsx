@@ -126,12 +126,13 @@ export default function OdemePage() {
     fetchBilling();
   }, [isAuthenticated]);
 
-  // Redirect if cart is empty
+  // Redirect if cart is empty (skip when already in payment/redirect step)
   useEffect(() => {
+    if (step !== "form") return;
     if (status !== "loading" && cartItems.length === 0) {
       router.replace("/sepet");
     }
-  }, [status, cartItems.length, router]);
+  }, [status, cartItems.length, router, step]);
 
   const totalHeightCm = cartItems.reduce(
     (sum, item) => sum + item.layout.totalHeightCm,
@@ -268,10 +269,10 @@ export default function OdemePage() {
 
         if (tokenRes.ok) {
           const tokenData = await tokenRes.json();
-          // Ödeme sayfası açıldı -- guest sepeti temizle
-          if (!isAuthenticated) clearGuestCart();
           setPaytrToken(tokenData.token);
           setStep("payment");
+          // Ödeme adımına geçtikten sonra guest sepeti temizle
+          if (!isAuthenticated) clearGuestCart();
         } else {
           const errData = await tokenRes.json().catch(() => null);
           toast.error(
