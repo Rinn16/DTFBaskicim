@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import type { FabricObject } from "fabric";
-import { Trash2, Plus, Wand2, FilePlus, FolderOpen, Pencil, Check, X } from "lucide-react";
+import { Trash2, Plus, Wand2, FilePlus, FolderOpen, Pencil, Check, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,7 @@ import { DpiBadge } from "./dpi-badge";
 import { ImageResizeDialog } from "./image-resize-dialog";
 import { DraftListSheet } from "./draft-list-sheet";
 import { useCanvasStore } from "@/stores/canvas-store";
+import { useUploadStore } from "@/stores/upload-store";
 import { useDraftStore } from "@/stores/draft-store";
 import { addImageToCanvas, clearCanvasDesigns } from "./roll-canvas";
 import { autoPack } from "@/services/packing.service";
@@ -56,6 +57,8 @@ export function DesignSidebar() {
     saveMemberDraft,
     updateMemberDraft,
   } = useDraftStore();
+
+  const uploadingFiles = useUploadStore((s) => s.files);
 
   const [autoPlaceOpen, setAutoPlaceOpen] = useState(false);
   const [draftsOpen, setDraftsOpen] = useState(false);
@@ -320,12 +323,38 @@ export function DesignSidebar() {
       />
 
       <ScrollArea className="flex-1 min-h-0 p-4">
-        {uploadedImages.length === 0 ? (
+        {uploadedImages.length === 0 && uploadingFiles.length === 0 ? (
           <div className="text-sm text-slate-500 text-center py-8">
             Henüz tasarım yüklenmedi
           </div>
         ) : (
           <div className="space-y-3">
+            {/* Uploading files with progress */}
+            {uploadingFiles.map((uf) => (
+              <div
+                key={uf.id}
+                className="flex items-center gap-3 rounded-lg border border-white/5 p-2 bg-[#0a0f16]"
+              >
+                <div className="w-16 h-16 flex-shrink-0 rounded bg-black/40 flex items-center justify-center">
+                  <Loader2 className="h-5 w-5 text-cyan-400 animate-spin" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium truncate text-slate-100">
+                    {uf.fileName}
+                  </p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Yükleniyor... %{uf.progress}
+                  </p>
+                  <div className="mt-1.5 h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-cyan-400 transition-all duration-300"
+                      style={{ width: `${uf.progress}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
             {uploadedImages.map((image) => (
               <div
                 key={image.id}

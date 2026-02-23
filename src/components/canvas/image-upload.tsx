@@ -6,9 +6,13 @@ import { Button } from "@/components/ui/button";
 import { UPLOAD, ROLL_CONFIG } from "@/lib/constants";
 import { toast } from "sonner";
 import { useCanvasStore } from "@/stores/canvas-store";
+import { useUploadStore } from "@/stores/upload-store";
 import type { UploadedImage } from "@/types/canvas";
 
-async function uploadToS3(file: File): Promise<{ key: string; url: string } | null> {
+async function uploadToS3(
+  file: File,
+  onProgress?: (percent: number) => void
+): Promise<{ key: string; url: string } | null> {
   try {
     // Get presigned URL
     const presignRes = await fetch("/api/upload/presign", {
@@ -25,14 +29,27 @@ async function uploadToS3(file: File): Promise<{ key: string; url: string } | nu
 
     const { url, fields, key } = await presignRes.json();
 
-    // Upload to S3/MinIO
+    // Upload to S3/MinIO with progress via XMLHttpRequest
     const formData = new FormData();
     Object.entries(fields).forEach(([k, v]) => formData.append(k, v as string));
     formData.append("file", file);
 
-    const uploadRes = await fetch(url, { method: "POST", body: formData });
+    const uploadOk = await new Promise<boolean>((resolve) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", url);
 
-    if (!uploadRes.ok && uploadRes.status !== 204) return null;
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable && onProgress) {
+          onProgress(Math.round((e.loaded / e.total) * 100));
+        }
+      };
+
+      xhr.onload = () => resolve(xhr.status >= 200 && xhr.status < 300 || xhr.status === 204);
+      xhr.onerror = () => resolve(false);
+      xhr.send(formData);
+    });
+
+    if (!uploadOk) return null;
 
     // Construct the object URL
     const objectUrl = `${url}/${key}`;
@@ -64,6 +81,10 @@ export function ImageUpload() {
         return;
       }
 
+      const uploadId = `up-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+      const { addFile, updateProgress, removeFile } = useUploadStore.getState();
+      addFile({ id: uploadId, fileName: file.name, progress: 0 });
+
       // Read image dimensions via blob URL
       const blobUrl = URL.createObjectURL(file);
       const img = new Image();
@@ -75,8 +96,6 @@ export function ImageUpload() {
         const heightCm = heightPx / ROLL_CONFIG.PX_PER_CM;
 
         // Create a base64 thumbnail for localStorage persistence
-        // (blob URLs die on page reload, this survives)
-        // Uses PNG to preserve transparency, 512px max for decent canvas quality
         const thumbCanvas = document.createElement("canvas");
         const MAX_THUMB = 512;
         const scale = Math.min(MAX_THUMB / widthPx, MAX_THUMB / heightPx, 1);
@@ -88,8 +107,12 @@ export function ImageUpload() {
         }
         const persistedThumbnail = thumbCanvas.toDataURL("image/png");
 
-        // Upload to S3 — required for export pipeline
-        const s3Result = await uploadToS3(file);
+        // Upload to S3 with progress tracking
+        const s3Result = await uploadToS3(file, (percent) => {
+          updateProgress(uploadId, percent);
+        });
+
+        removeFile(uploadId);
 
         if (!s3Result) {
           URL.revokeObjectURL(blobUrl);
@@ -115,6 +138,7 @@ export function ImageUpload() {
       };
 
       img.onerror = () => {
+        removeFile(uploadId);
         URL.revokeObjectURL(blobUrl);
         toast.error("Dosya okunamadı. Lütfen geçerli bir görsel dosyası yükleyin.");
       };

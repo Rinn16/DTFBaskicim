@@ -161,67 +161,83 @@ export function RollCanvas() {
     []
   );
 
-  // Apply history state (undo/redo) — rebuild fabric canvas from placements
+  // Apply history state (undo/redo) — diff-based to avoid flicker
   const applyHistoryState = useCallback(
     (restoredPlacements: Placement[]) => {
       const canvas = fabricRef.current;
       if (!canvas) return;
 
-      const historyStore = useHistoryStore.getState();
-
-      // Save current placements to the opposite stack
-      // (undo saves to future, redo saves to past)
-      const currentPlacements = useCanvasStore.getState().placements;
-
-      // Determine which direction we're restoring
-      // The calling code already popped from one stack; we push current to the other
-      // If _isRestoring was set by undo(), push current to future
-      // If _isRestoring was set by redo(), push current to past
-      // We detect this by checking which function was called — but both set _isRestoring.
-      // The caller will handle the push direction via a wrapper.
-
-      // Clear all design objects from fabric canvas
-      const designObjects = canvas
-        .getObjects()
-        .filter(
-          (obj) =>
-            !(obj as fabric.FabricObject & { _isBackground?: boolean })
-              ._isBackground
-        );
-      designObjects.forEach((obj) => canvas.remove(obj));
       canvas.discardActiveObject();
+
+      // Build map of existing fabric objects by placement ID
+      const existingObjects = new Map<string, fabric.FabricObject>();
+      for (const obj of canvas.getObjects()) {
+        if ((obj as fabric.FabricObject & { _isBackground?: boolean })._isBackground) continue;
+        const pid = (obj as fabric.FabricObject & { _placementId?: string })._placementId;
+        if (pid) existingObjects.set(pid, obj);
+      }
+
+      const restoredIds = new Set(restoredPlacements.map((p) => p.id));
+
+      // Remove objects no longer in restored placements
+      for (const [pid, obj] of existingObjects) {
+        if (!restoredIds.has(pid)) {
+          canvas.remove(obj);
+          existingObjects.delete(pid);
+        }
+      }
+
+      // Update existing or add new
+      const { uploadedImages } = useCanvasStore.getState();
+      for (const placement of restoredPlacements) {
+        const existing = existingObjects.get(placement.id);
+
+        if (existing) {
+          const displayLeft = cmToDisplayPx(placement.x);
+          const displayTop = cmToDisplayPx(placement.y);
+          const displayWidth = cmToDisplayPx(placement.widthCm);
+          const displayHeight = cmToDisplayPx(placement.heightCm);
+          const scaleX = displayWidth / (existing.width || 1);
+          const scaleY = displayHeight / (existing.height || 1);
+
+          let left = displayLeft;
+          let top = displayTop;
+          if (placement.rotation === 90) {
+            left = displayLeft + displayHeight;
+          } else if (placement.rotation === 270) {
+            top = displayTop + displayWidth;
+          }
+
+          existing.set({ left, top, scaleX, scaleY, angle: placement.rotation });
+          existing.setCoords();
+        } else {
+          const image = uploadedImages.find((img) => img.id === placement.imageId);
+          if (!image) continue;
+          const canvasUrl =
+            image.originalUrl && !image.originalUrl.startsWith("blob:")
+              ? image.originalUrl
+              : image.thumbnailUrl;
+          addImageToCanvas(
+            canvas,
+            canvasUrl,
+            placement.id,
+            placement.x,
+            placement.y,
+            placement.widthCm,
+            placement.heightCm,
+            placement.rotation
+          );
+        }
+      }
+
+      canvas.renderAll();
 
       // Update store without triggering history push (_isRestoring is true)
       useCanvasStore.setState({ placements: restoredPlacements });
       useCanvasStore.getState().recalculateHeight();
 
-      // Re-add images to fabric canvas
-      const { uploadedImages } = useCanvasStore.getState();
-      for (const placement of restoredPlacements) {
-        const image = uploadedImages.find((img) => img.id === placement.imageId);
-        if (!image) continue;
-        const canvasUrl =
-          image.originalUrl && !image.originalUrl.startsWith("blob:")
-            ? image.originalUrl
-            : image.thumbnailUrl;
-        addImageToCanvas(
-          canvas,
-          canvasUrl,
-          placement.id,
-          placement.x,
-          placement.y,
-          placement.widthCm,
-          placement.heightCm,
-          placement.rotation
-        );
-      }
-
       // Reset _isRestoring flag
-      historyStore._isRestoring = false;
       useHistoryStore.setState({ _isRestoring: false });
-
-      // Push current state to appropriate stack
-      // This is handled by the caller (handleUndo/handleRedo) — they manage the stack themselves
     },
     []
   );

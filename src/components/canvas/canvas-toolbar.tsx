@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/popover";
 import { useCanvasStore } from "@/stores/canvas-store";
 import { useHistoryStore } from "@/stores/history-store";
-import { clearCanvasDesigns, addImageToCanvas } from "./roll-canvas";
+import { clearCanvasDesigns, addImageToCanvas, cmToDisplayPx } from "./roll-canvas";
 
 const BG_COLORS = [
   { value: "#ffffff", label: "Beyaz" },
@@ -459,42 +459,82 @@ export function CanvasToolbar() {
   );
 }
 
-/** Apply a history snapshot to the fabric canvas and store */
+/** Apply a history snapshot to the fabric canvas and store.
+ *  Uses diff-based approach: reuses existing fabric objects where possible
+ *  to avoid the flicker caused by removing all + async re-loading images.
+ */
 function applyHistoryToCanvas(canvas: FabricCanvas, restoredPlacements: Placement[]) {
-  // Clear all design objects from fabric canvas
-  const designObjects = canvas
-    .getObjects()
-    .filter(
-      (obj) =>
-        !(obj as FabricObject & { _isBackground?: boolean })._isBackground
-    );
-  designObjects.forEach((obj) => canvas.remove(obj));
   canvas.discardActiveObject();
+
+  // Build map of existing fabric objects by placement ID
+  const existingObjects = new Map<string, FabricObject>();
+  for (const obj of canvas.getObjects()) {
+    if ((obj as FabricObject & { _isBackground?: boolean })._isBackground) continue;
+    const pid = (obj as FabricObject & { _placementId?: string })._placementId;
+    if (pid) existingObjects.set(pid, obj as FabricObject);
+  }
+
+  // Build set of restored placement IDs
+  const restoredIds = new Set(restoredPlacements.map((p) => p.id));
+
+  // Remove objects that are no longer in restored placements
+  for (const [pid, obj] of existingObjects) {
+    if (!restoredIds.has(pid)) {
+      canvas.remove(obj);
+      existingObjects.delete(pid);
+    }
+  }
+
+  // Update existing objects or add new ones
+  const { uploadedImages } = useCanvasStore.getState();
+  for (const placement of restoredPlacements) {
+    const existing = existingObjects.get(placement.id);
+
+    if (existing) {
+      // Reuse — just update position/size
+      const displayLeft = cmToDisplayPx(placement.x);
+      const displayTop = cmToDisplayPx(placement.y);
+      const displayWidth = cmToDisplayPx(placement.widthCm);
+      const displayHeight = cmToDisplayPx(placement.heightCm);
+      const scaleX = displayWidth / (existing.width || 1);
+      const scaleY = displayHeight / (existing.height || 1);
+
+      let left = displayLeft;
+      let top = displayTop;
+      if (placement.rotation === 90) {
+        left = displayLeft + displayHeight;
+      } else if (placement.rotation === 270) {
+        top = displayTop + displayWidth;
+      }
+
+      existing.set({ left, top, scaleX, scaleY, angle: placement.rotation });
+      existing.setCoords();
+    } else {
+      // New placement — need to load image
+      const image = uploadedImages.find((img) => img.id === placement.imageId);
+      if (!image) continue;
+      const canvasUrl =
+        image.originalUrl && !image.originalUrl.startsWith("blob:")
+          ? image.originalUrl
+          : image.thumbnailUrl;
+      addImageToCanvas(
+        canvas,
+        canvasUrl,
+        placement.id,
+        placement.x,
+        placement.y,
+        placement.widthCm,
+        placement.heightCm,
+        placement.rotation
+      );
+    }
+  }
+
+  canvas.renderAll();
 
   // Update store without triggering history push (_isRestoring is true)
   useCanvasStore.setState({ placements: restoredPlacements });
   useCanvasStore.getState().recalculateHeight();
-
-  // Re-add images to fabric canvas
-  const { uploadedImages } = useCanvasStore.getState();
-  for (const placement of restoredPlacements) {
-    const image = uploadedImages.find((img) => img.id === placement.imageId);
-    if (!image) continue;
-    const canvasUrl =
-      image.originalUrl && !image.originalUrl.startsWith("blob:")
-        ? image.originalUrl
-        : image.thumbnailUrl;
-    addImageToCanvas(
-      canvas,
-      canvasUrl,
-      placement.id,
-      placement.x,
-      placement.y,
-      placement.widthCm,
-      placement.heightCm,
-      placement.rotation
-    );
-  }
 
   // Reset _isRestoring flag
   useHistoryStore.setState({ _isRestoring: false });
