@@ -31,7 +31,8 @@
       "Bash(head:*)",
       "Bash(cd:*)",
       "Bash(node:*)",
-      "Bash(cd /c/Users/Rin/Desktop/DTFBaskicim && npx prisma generate 2>&1)"
+      "Bash(cd /c/Users/Rin/Desktop/DTFBaskicim && npx prisma generate 2>&1)",
+      "Bash(tail:*)"
     ]
   }
 }

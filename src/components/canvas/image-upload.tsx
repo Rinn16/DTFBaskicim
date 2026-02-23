@@ -4,6 +4,7 @@ import { useCallback, useRef } from "react";
 import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UPLOAD, ROLL_CONFIG } from "@/lib/constants";
+import { toast } from "sonner";
 import { useCanvasStore } from "@/stores/canvas-store";
 import type { UploadedImage } from "@/types/canvas";
 
@@ -53,13 +54,13 @@ export function ImageUpload() {
           file.type as (typeof UPLOAD.ALLOWED_TYPES)[number]
         )
       ) {
-        alert("Desteklenmeyen dosya formatı. PNG, JPG, TIFF veya WebP yükleyin.");
+        toast.error("Desteklenmeyen dosya formatı. PNG, JPG, TIFF veya WebP yükleyin.");
         return;
       }
 
       // Validate size
       if (file.size > UPLOAD.MAX_FILE_SIZE) {
-        alert("Dosya boyutu 50MB'dan büyük olamaz.");
+        toast.error("Dosya boyutu 50MB'dan büyük olamaz.");
         return;
       }
 
@@ -92,7 +93,7 @@ export function ImageUpload() {
 
         if (!s3Result) {
           URL.revokeObjectURL(blobUrl);
-          alert("Görsel yüklenemedi. Lütfen tekrar deneyin.");
+          toast.error("Görsel yüklenemedi. Lütfen tekrar deneyin.");
           return;
         }
 
@@ -115,7 +116,7 @@ export function ImageUpload() {
 
       img.onerror = () => {
         URL.revokeObjectURL(blobUrl);
-        alert("Dosya okunamadı. Lütfen geçerli bir görsel dosyası yükleyin.");
+        toast.error("Dosya okunamadı. Lütfen geçerli bir görsel dosyası yükleyin.");
       };
 
       img.src = blobUrl;

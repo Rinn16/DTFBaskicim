@@ -73,11 +73,10 @@ export async function POST(request: Request) {
     });
 
     // Replace internal Docker hostname with public URL for browser access
-    const publicS3Url = process.env.S3_PUBLIC_URL || presignedPost.url;
-    const url = presignedPost.url.replace(
-      process.env.S3_ENDPOINT!,
-      publicS3Url
-    );
+    const publicS3Url = process.env.S3_PUBLIC_URL;
+    const url = publicS3Url
+      ? presignedPost.url.replace(process.env.S3_ENDPOINT!, publicS3Url)
+      : presignedPost.url;
 
     return NextResponse.json({
       url,

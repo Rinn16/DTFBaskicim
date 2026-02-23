@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { FabricObject } from "fabric";
+import type { FabricObject, Canvas as FabricCanvas } from "fabric";
+import type { Placement } from "@/types/canvas";
 import {
   Trash2,
   RotateCcw,
@@ -13,6 +14,8 @@ import {
   Info,
   ChevronDown,
   Palette,
+  Undo2,
+  Redo2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -27,7 +30,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useCanvasStore } from "@/stores/canvas-store";
-import { clearCanvasDesigns } from "./roll-canvas";
+import { useHistoryStore } from "@/stores/history-store";
+import { clearCanvasDesigns, addImageToCanvas } from "./roll-canvas";
 
 const BG_COLORS = [
   { value: "#ffffff", label: "Beyaz" },
@@ -58,6 +62,43 @@ export function CanvasToolbar() {
   const setSnapToGrid = useCanvasStore((s) => s.setSnapToGrid);
   const zoom = useCanvasStore((s) => s.zoom);
   const setZoom = useCanvasStore((s) => s.setZoom);
+
+  const pastLength = useHistoryStore((s) => s.past.length);
+  const futureLength = useHistoryStore((s) => s.future.length);
+
+  const handleUndo = () => {
+    if (!canvas) return;
+    const historyStore = useHistoryStore.getState();
+    const currentPlacements = useCanvasStore.getState().placements;
+
+    const entry = historyStore.undo();
+    if (!entry) return;
+
+    // Push current state to future
+    useHistoryStore.setState((state) => ({
+      future: [...state.future, currentPlacements.map((p) => ({ ...p }))],
+    }));
+
+    // Apply restored state
+    applyHistoryToCanvas(canvas, entry);
+  };
+
+  const handleRedo = () => {
+    if (!canvas) return;
+    const historyStore = useHistoryStore.getState();
+    const currentPlacements = useCanvasStore.getState().placements;
+
+    const entry = historyStore.redo();
+    if (!entry) return;
+
+    // Push current state to past
+    useHistoryStore.setState((state) => ({
+      past: [...state.past, currentPlacements.map((p) => ({ ...p }))],
+    }));
+
+    // Apply restored state
+    applyHistoryToCanvas(canvas, entry);
+  };
 
   const handleDeleteSelected = () => {
     if (!canvas) return;
@@ -262,6 +303,44 @@ export function CanvasToolbar() {
           className="h-5 mx-1.5 bg-white/10"
         />
 
+        {/* Undo/Redo */}
+        <div className="flex items-center gap-0.5">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-slate-400"
+                onClick={handleUndo}
+                disabled={pastLength === 0}
+              >
+                <Undo2 className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Geri Al (Ctrl+Z)</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-slate-400"
+                onClick={handleRedo}
+                disabled={futureLength === 0}
+              >
+                <Redo2 className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>İleri Al (Ctrl+Y)</TooltipContent>
+          </Tooltip>
+        </div>
+
+        <Separator
+          orientation="vertical"
+          className="h-5 mx-1.5 bg-white/10"
+        />
+
         {/* Right-center group — DPI info */}
         <Tooltip>
           <TooltipTrigger asChild>
@@ -378,4 +457,45 @@ export function CanvasToolbar() {
       )}
     </div>
   );
+}
+
+/** Apply a history snapshot to the fabric canvas and store */
+function applyHistoryToCanvas(canvas: FabricCanvas, restoredPlacements: Placement[]) {
+  // Clear all design objects from fabric canvas
+  const designObjects = canvas
+    .getObjects()
+    .filter(
+      (obj) =>
+        !(obj as FabricObject & { _isBackground?: boolean })._isBackground
+    );
+  designObjects.forEach((obj) => canvas.remove(obj));
+  canvas.discardActiveObject();
+
+  // Update store without triggering history push (_isRestoring is true)
+  useCanvasStore.setState({ placements: restoredPlacements });
+  useCanvasStore.getState().recalculateHeight();
+
+  // Re-add images to fabric canvas
+  const { uploadedImages } = useCanvasStore.getState();
+  for (const placement of restoredPlacements) {
+    const image = uploadedImages.find((img) => img.id === placement.imageId);
+    if (!image) continue;
+    const canvasUrl =
+      image.originalUrl && !image.originalUrl.startsWith("blob:")
+        ? image.originalUrl
+        : image.thumbnailUrl;
+    addImageToCanvas(
+      canvas,
+      canvasUrl,
+      placement.id,
+      placement.x,
+      placement.y,
+      placement.widthCm,
+      placement.heightCm,
+      placement.rotation
+    );
+  }
+
+  // Reset _isRestoring flag
+  useHistoryStore.setState({ _isRestoring: false });
 }

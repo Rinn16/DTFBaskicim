@@ -329,7 +329,12 @@ export function DesignSidebar() {
             {uploadedImages.map((image) => (
               <div
                 key={image.id}
-                className="flex items-start gap-3 rounded-lg border border-white/5 p-2 bg-[#0a0f16]"
+                className="flex items-start gap-3 rounded-lg border border-white/5 p-2 bg-[#0a0f16] cursor-grab active:cursor-grabbing"
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.setData("application/x-dtf-image", image.id);
+                  e.dataTransfer.effectAllowed = "copy";
+                }}
               >
                 {/* Thumbnail */}
                 <div className="w-16 h-16 flex-shrink-0 rounded overflow-hidden bg-black/40">
