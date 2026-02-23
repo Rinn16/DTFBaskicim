@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import type { Canvas as FabricCanvas } from "fabric";
 import type { UploadedImage, Placement, GangSheetItem, DesignDraftData } from "@/types/canvas";
 import type { PricingTierData, PriceBreakdown, CustomerPricingData } from "@/types/pricing";
@@ -103,6 +103,30 @@ function resolveThumbnailUrl(img: UploadedImage): string {
   if (img.persistedThumbnail) return img.persistedThumbnail;
   // 3. Current thumbnailUrl (blob – only works in same session)
   return img.thumbnailUrl;
+}
+
+// Debounced localStorage: batches writes to reduce I/O during rapid updates
+function createDebouncedLocalStorage(delay: number) {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let pending: { key: string; value: string } | null = null;
+
+  return {
+    getItem: (name: string) => localStorage.getItem(name),
+    setItem: (name: string, value: string) => {
+      pending = { key: name, value };
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (pending) localStorage.setItem(pending.key, pending.value);
+        pending = null;
+        timer = null;
+      }, delay);
+    },
+    removeItem: (name: string) => {
+      if (timer) clearTimeout(timer);
+      pending = null;
+      localStorage.removeItem(name);
+    },
+  };
 }
 
 export const useCanvasStore = create<CanvasState>()(
@@ -486,6 +510,7 @@ export const useCanvasStore = create<CanvasState>()(
     {
       name: "dtf-canvas-state",
       version: 1,
+      storage: createJSONStorage(() => createDebouncedLocalStorage(2000)),
 
       // v0→v1: old thumbnails were JPEG (lost transparency → black bg) at 200px (blurry).
       // Drop images that only have JPEG base64; keep those with S3 URLs or PNG thumbs.

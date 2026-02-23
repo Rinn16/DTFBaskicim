@@ -42,6 +42,7 @@ export function RollCanvas() {
 
   const showRuler = useCanvasStore((s) => s.showRuler);
   const zoom = useCanvasStore((s) => s.zoom);
+  const totalHeightCm = useCanvasStore((s) => s.totalHeightCm);
 
   // Observe container height changes
   useEffect(() => {
@@ -660,37 +661,41 @@ export function RollCanvas() {
     return Math.max(containerHeight - 32, FALLBACK_MIN_HEIGHT);
   }, [containerHeight]);
 
-  // Subscribe to overlappingIds — highlight overlapping placements with red border
+  // Subscribe to overlappingIds — highlight only changed placements
   useEffect(() => {
-    let prevIds: Set<string> = new Set();
+    let prevIds = new Set<string>();
     const unsub = useCanvasStore.subscribe((state) => {
       const { overlappingIds } = state;
-      // Skip if same reference
       if (overlappingIds === prevIds) return;
-      prevIds = overlappingIds;
 
       const canvas = fabricRef.current;
       if (!canvas) return;
 
-      const objects = canvas.getObjects();
-      for (const obj of objects) {
-        const pid = (obj as fabric.FabricObject & { _placementId?: string })._placementId;
-        if (!pid) continue;
+      // Find IDs that changed status (added or removed from overlap set)
+      const added = new Set<string>();
+      const removed = new Set<string>();
+      for (const id of overlappingIds) {
+        if (!prevIds.has(id)) added.add(id);
+      }
+      for (const id of prevIds) {
+        if (!overlappingIds.has(id)) removed.add(id);
+      }
 
-        if (overlappingIds.has(pid)) {
-          obj.set({
-            stroke: "#ef4444",
-            strokeWidth: 2,
-            borderColor: "#ef4444",
-            cornerColor: "#ef4444",
-          });
+      prevIds = overlappingIds;
+
+      // Nothing changed visually
+      if (added.size === 0 && removed.size === 0) return;
+
+      // Only update objects whose status changed
+      const changedIds = new Set([...added, ...removed]);
+      for (const obj of canvas.getObjects()) {
+        const pid = (obj as fabric.FabricObject & { _placementId?: string })._placementId;
+        if (!pid || !changedIds.has(pid)) continue;
+
+        if (added.has(pid)) {
+          obj.set({ stroke: "#ef4444", strokeWidth: 2, borderColor: "#ef4444", cornerColor: "#ef4444" });
         } else {
-          obj.set({
-            stroke: undefined,
-            strokeWidth: 0,
-            borderColor: "#3b82f6",
-            cornerColor: "#3b82f6",
-          });
+          obj.set({ stroke: undefined, strokeWidth: 0, borderColor: "#3b82f6", cornerColor: "#3b82f6" });
         }
       }
       canvas.renderAll();
@@ -724,12 +729,12 @@ export function RollCanvas() {
     return unsub;
   }, [drawRollBackground, getMinCanvasHeight]);
 
-  // Resize canvas and redraw background when placements or container size change
+  // Resize canvas and redraw background when height or container size change
   useEffect(() => {
     const canvas = fabricRef.current;
     if (!canvas) return;
 
-    const { totalHeightCm, showGrid } = useCanvasStore.getState();
+    const { showGrid } = useCanvasStore.getState();
     const minHeightCm = ROLL_CONFIG.MIN_HEIGHT_CM;
     const heightCm = Math.max(totalHeightCm + 10, minHeightCm);
     const heightPx = cmToDisplayPx(heightCm);
@@ -741,7 +746,7 @@ export function RollCanvas() {
     });
 
     drawRollBackground(canvas, canvasHeight, showGrid);
-  }, [placements, containerHeight, drawRollBackground, getMinCanvasHeight]);
+  }, [totalHeightCm, containerHeight, drawRollBackground, getMinCanvasHeight]);
 
   // Drag & Drop handlers
   const handleDragOver = useCallback((e: React.DragEvent) => {
