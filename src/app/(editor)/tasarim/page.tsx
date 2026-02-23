@@ -25,7 +25,7 @@ export default function DesignPage() {
           <CanvasToolbar />
 
           {/* Canvas area */}
-          <div className="flex-1 relative bg-[#05080c] workspace-grid overflow-auto">
+          <div className="flex-1 flex flex-col relative bg-[#05080c] workspace-grid overflow-hidden">
             <RollCanvas />
           </div>
         </div>

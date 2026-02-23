@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import * as fabric from "fabric";
 import { useCanvasStore } from "@/stores/canvas-store";
 import { ROLL_CONFIG } from "@/lib/constants";
@@ -8,7 +8,7 @@ import { ROLL_CONFIG } from "@/lib/constants";
 // Display dimensions
 const DISPLAY_WIDTH = 800;
 const DISPLAY_PX_PER_CM = DISPLAY_WIDTH / ROLL_CONFIG.PRINT_WIDTH_CM; // ~14.04 px/cm
-const MIN_CANVAS_HEIGHT = 600;
+const FALLBACK_MIN_HEIGHT = 600;
 
 /** Convert cm to display pixels */
 export function cmToDisplayPx(cm: number): number {
@@ -24,12 +24,24 @@ export function RollCanvas() {
   const canvasElRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
+  const [containerHeight, setContainerHeight] = useState(0);
 
   const { setCanvas, placements, updatePlacement, removePlacement } =
     useCanvasStore();
 
   const showRuler = useCanvasStore((s) => s.showRuler);
   const zoom = useCanvasStore((s) => s.zoom);
+
+  // Observe container height changes
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setContainerHeight(entry.contentRect.height);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // Draw the roll background with grid lines
   const drawRollBackground = useCallback(
@@ -146,7 +158,7 @@ export function RollCanvas() {
 
     const canvas = new fabric.Canvas(canvasElRef.current, {
       width: DISPLAY_WIDTH,
-      height: MIN_CANVAS_HEIGHT,
+      height: FALLBACK_MIN_HEIGHT,
       backgroundColor: canvasBgColor,
       selection: true,
     });
@@ -155,7 +167,7 @@ export function RollCanvas() {
     setCanvas(canvas);
 
     // Draw initial background
-    drawRollBackground(canvas, MIN_CANVAS_HEIGHT, showGrid);
+    drawRollBackground(canvas, FALLBACK_MIN_HEIGHT, showGrid);
 
     // Restore persisted placements onto the canvas (runs once after init)
     const { placements: savedPlacements, uploadedImages: savedImages } =
@@ -288,6 +300,13 @@ export function RollCanvas() {
     };
   }, [setCanvas, drawRollBackground, updatePlacement, removePlacement]);
 
+  // Calculate minimum canvas height to fill the visible container
+  const getMinCanvasHeight = useCallback(() => {
+    if (containerHeight <= 0) return FALLBACK_MIN_HEIGHT;
+    // py-4 = 32px padding around canvas; subtract it from available space
+    return Math.max(containerHeight - 32, FALLBACK_MIN_HEIGHT);
+  }, [containerHeight]);
+
   // Subscribe to canvasBgColor and showGrid changes from store
   useEffect(() => {
     const unsub = useCanvasStore.subscribe((state, prev) => {
@@ -306,15 +325,15 @@ export function RollCanvas() {
         const minHeightCm = ROLL_CONFIG.MIN_HEIGHT_CM;
         const heightCm = Math.max(totalHeightCm + 10, minHeightCm);
         const heightPx = cmToDisplayPx(heightCm);
-        const canvasHeight = Math.max(heightPx, MIN_CANVAS_HEIGHT);
+        const canvasHeight = Math.max(heightPx, getMinCanvasHeight());
         drawRollBackground(canvas, canvasHeight, state.showGrid);
       }
     });
 
     return unsub;
-  }, [drawRollBackground]);
+  }, [drawRollBackground, getMinCanvasHeight]);
 
-  // Resize canvas and redraw background when placements change
+  // Resize canvas and redraw background when placements or container size change
   useEffect(() => {
     const canvas = fabricRef.current;
     if (!canvas) return;
@@ -323,7 +342,7 @@ export function RollCanvas() {
     const minHeightCm = ROLL_CONFIG.MIN_HEIGHT_CM;
     const heightCm = Math.max(totalHeightCm + 10, minHeightCm);
     const heightPx = cmToDisplayPx(heightCm);
-    const canvasHeight = Math.max(heightPx, MIN_CANVAS_HEIGHT);
+    const canvasHeight = Math.max(heightPx, getMinCanvasHeight());
 
     canvas.setDimensions({
       width: DISPLAY_WIDTH,
@@ -331,7 +350,7 @@ export function RollCanvas() {
     });
 
     drawRollBackground(canvas, canvasHeight, showGrid);
-  }, [placements, drawRollBackground]);
+  }, [placements, containerHeight, drawRollBackground, getMinCanvasHeight]);
 
   return (
     <div ref={containerRef} className="flex-1 overflow-hidden relative">
@@ -360,10 +379,12 @@ export function RollCanvas() {
 
 function RulerMarks() {
   const totalHeightCm = useCanvasStore((s) => s.totalHeightCm);
-  const markCount = Math.max(
-    Math.ceil(totalHeightCm) + 10,
-    ROLL_CONFIG.MIN_HEIGHT_CM
-  );
+  const canvas = useCanvasStore((s) => s.canvas);
+  // Match ruler height to actual canvas height
+  const canvasHeightCm = canvas
+    ? displayPxToCm(canvas.getHeight())
+    : Math.max(totalHeightCm + 10, ROLL_CONFIG.MIN_HEIGHT_CM);
+  const markCount = Math.ceil(canvasHeightCm);
 
   const marks = [];
   for (let i = 0; i <= markCount; i++) {
