@@ -3,6 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        S3_PUBLIC_URL: ${S3_PUBLIC_URL:-}
+        S3_ENDPOINT: ${S3_ENDPOINT:-http://minio:9000}
+        S3_BUCKET: ${S3_BUCKET:-dtf-uploads}
     container_name: dtf-app
     restart: unless-stopped
     ports:
@@ -24,6 +28,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        S3_PUBLIC_URL: ${S3_PUBLIC_URL:-}
+        S3_ENDPOINT: ${S3_ENDPOINT:-http://minio:9000}
+        S3_BUCKET: ${S3_BUCKET:-dtf-uploads}
     container_name: dtf-worker
     restart: unless-stopped
     command: ["node", "-e", "require('./scripts/export-worker.js')"]

@@ -13,6 +13,14 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Build args for next.config.ts (CSP headers, image config)
+ARG S3_PUBLIC_URL
+ARG S3_ENDPOINT
+ARG S3_BUCKET
+ENV S3_PUBLIC_URL=$S3_PUBLIC_URL
+ENV S3_ENDPOINT=$S3_ENDPOINT
+ENV S3_BUCKET=$S3_BUCKET
+
 # Generate Prisma client
 RUN npx prisma generate
 
