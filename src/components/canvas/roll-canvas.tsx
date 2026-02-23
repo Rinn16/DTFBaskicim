@@ -3,7 +3,10 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import * as fabric from "fabric";
 import { useCanvasStore } from "@/stores/canvas-store";
+import { useHistoryStore } from "@/stores/history-store";
 import { ROLL_CONFIG } from "@/lib/constants";
+import { getEffectiveDimensions } from "@/lib/placement-utils";
+import type { Placement } from "@/types/canvas";
 
 // Display dimensions
 const DISPLAY_WIDTH = 800;
@@ -20,13 +23,21 @@ export function displayPxToCm(px: number): number {
   return px / DISPLAY_PX_PER_CM;
 }
 
+interface PlacementClipboard {
+  imageId: string;
+  widthCm: number;
+  heightCm: number;
+  rotation: number;
+}
+
 export function RollCanvas() {
   const canvasElRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
+  const clipboardRef = useRef<PlacementClipboard[]>([]);
   const [containerHeight, setContainerHeight] = useState(0);
 
-  const { setCanvas, placements, updatePlacement, removePlacement } =
+  const { setCanvas, placements, updatePlacement, removePlacement, addPlacement } =
     useCanvasStore();
 
   const showRuler = useCanvasStore((s) => s.showRuler);
@@ -150,6 +161,109 @@ export function RollCanvas() {
     []
   );
 
+  // Apply history state (undo/redo) — rebuild fabric canvas from placements
+  const applyHistoryState = useCallback(
+    (restoredPlacements: Placement[]) => {
+      const canvas = fabricRef.current;
+      if (!canvas) return;
+
+      const historyStore = useHistoryStore.getState();
+
+      // Save current placements to the opposite stack
+      // (undo saves to future, redo saves to past)
+      const currentPlacements = useCanvasStore.getState().placements;
+
+      // Determine which direction we're restoring
+      // The calling code already popped from one stack; we push current to the other
+      // If _isRestoring was set by undo(), push current to future
+      // If _isRestoring was set by redo(), push current to past
+      // We detect this by checking which function was called — but both set _isRestoring.
+      // The caller will handle the push direction via a wrapper.
+
+      // Clear all design objects from fabric canvas
+      const designObjects = canvas
+        .getObjects()
+        .filter(
+          (obj) =>
+            !(obj as fabric.FabricObject & { _isBackground?: boolean })
+              ._isBackground
+        );
+      designObjects.forEach((obj) => canvas.remove(obj));
+      canvas.discardActiveObject();
+
+      // Update store without triggering history push (_isRestoring is true)
+      useCanvasStore.setState({ placements: restoredPlacements });
+      useCanvasStore.getState().recalculateHeight();
+
+      // Re-add images to fabric canvas
+      const { uploadedImages } = useCanvasStore.getState();
+      for (const placement of restoredPlacements) {
+        const image = uploadedImages.find((img) => img.id === placement.imageId);
+        if (!image) continue;
+        const canvasUrl =
+          image.originalUrl && !image.originalUrl.startsWith("blob:")
+            ? image.originalUrl
+            : image.thumbnailUrl;
+        addImageToCanvas(
+          canvas,
+          canvasUrl,
+          placement.id,
+          placement.x,
+          placement.y,
+          placement.widthCm,
+          placement.heightCm,
+          placement.rotation
+        );
+      }
+
+      // Reset _isRestoring flag
+      historyStore._isRestoring = false;
+      useHistoryStore.setState({ _isRestoring: false });
+
+      // Push current state to appropriate stack
+      // This is handled by the caller (handleUndo/handleRedo) — they manage the stack themselves
+    },
+    []
+  );
+
+  // Undo handler
+  const handleUndo = useCallback(() => {
+    const historyStore = useHistoryStore.getState();
+    const currentPlacements = useCanvasStore.getState().placements;
+
+    const entry = historyStore.undo();
+    if (!entry) return;
+
+    // Push current state to future
+    useHistoryStore.setState((state) => ({
+      future: [...state.future, currentPlacements.map((p) => ({ ...p }))],
+    }));
+
+    applyHistoryState(entry);
+  }, [applyHistoryState]);
+
+  // Redo handler
+  const handleRedo = useCallback(() => {
+    const historyStore = useHistoryStore.getState();
+    const currentPlacements = useCanvasStore.getState().placements;
+
+    const entry = historyStore.redo();
+    if (!entry) return;
+
+    // Push current state to past
+    useHistoryStore.setState((state) => ({
+      past: [...state.past, currentPlacements.map((p) => ({ ...p }))],
+    }));
+
+    applyHistoryState(entry);
+  }, [applyHistoryState]);
+
+  // Refs for undo/redo to avoid stale closures in the keydown handler
+  const handleUndoRef = useRef(handleUndo);
+  const handleRedoRef = useRef(handleRedo);
+  handleUndoRef.current = handleUndo;
+  handleRedoRef.current = handleRedo;
+
   // Initialize canvas
   useEffect(() => {
     if (!canvasElRef.current || fabricRef.current) return;
@@ -272,21 +386,243 @@ export function RollCanvas() {
       });
     });
 
-    // Handle delete key
+    // Keyboard shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Delete" || e.key === "Backspace") {
+      // Don't handle shortcuts when typing in inputs
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
+      const ctrl = e.ctrlKey || e.metaKey;
+
+      // Ctrl+Z — Undo
+      if (ctrl && !e.shiftKey && e.key === "z") {
+        e.preventDefault();
+        handleUndoRef.current();
+        return;
+      }
+
+      // Ctrl+Y or Ctrl+Shift+Z — Redo
+      if ((ctrl && e.key === "y") || (ctrl && e.shiftKey && e.key === "Z")) {
+        e.preventDefault();
+        handleRedoRef.current();
+        return;
+      }
+
+      // Ctrl+C — Copy
+      if (ctrl && e.key === "c") {
         const activeObjects = canvas.getActiveObjects();
-        activeObjects.forEach((obj) => {
+        if (activeObjects.length === 0) return;
+        e.preventDefault();
+
+        const currentPlacements = useCanvasStore.getState().placements;
+        const copied: PlacementClipboard[] = [];
+        for (const obj of activeObjects) {
           const placementId = (
             obj as fabric.FabricObject & { _placementId?: string }
           )._placementId;
-          if (placementId) {
-            removePlacement(placementId);
+          if (!placementId) continue;
+          const placement = currentPlacements.find((p) => p.id === placementId);
+          if (!placement) continue;
+          copied.push({
+            imageId: placement.imageId,
+            widthCm: placement.widthCm,
+            heightCm: placement.heightCm,
+            rotation: placement.rotation,
+          });
+        }
+        clipboardRef.current = copied;
+        return;
+      }
+
+      // Ctrl+V — Paste
+      if (ctrl && e.key === "v") {
+        if (clipboardRef.current.length === 0) return;
+        e.preventDefault();
+
+        const { uploadedImages, placements: currentPlacements, gapCm } = useCanvasStore.getState();
+        const OFFSET_CM = 1;
+
+        // Find bottom of existing placements for positioning
+        let maxY = 0;
+        if (currentPlacements.length > 0) {
+          maxY = Math.max(
+            ...currentPlacements.map((p) => {
+              const { height } = getEffectiveDimensions(p);
+              return p.y + height;
+            })
+          ) + gapCm;
+        }
+
+        for (const item of clipboardRef.current) {
+          const image = uploadedImages.find((img) => img.id === item.imageId);
+          if (!image) continue;
+
+          const placementId = `p-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+          useCanvasStore.getState().addPlacement({
+            id: placementId,
+            imageId: item.imageId,
+            x: OFFSET_CM,
+            y: maxY,
+            widthCm: item.widthCm,
+            heightCm: item.heightCm,
+            rotation: item.rotation,
+          });
+
+          const canvasUrl =
+            image.originalUrl && !image.originalUrl.startsWith("blob:")
+              ? image.originalUrl
+              : image.thumbnailUrl;
+          addImageToCanvas(
+            canvas,
+            canvasUrl,
+            placementId,
+            OFFSET_CM,
+            maxY,
+            item.widthCm,
+            item.heightCm,
+            item.rotation
+          );
+
+          const { height } = getEffectiveDimensions(item);
+          maxY += height + gapCm;
+        }
+        return;
+      }
+
+      // Ctrl+D — Duplicate
+      if (ctrl && e.key === "d") {
+        e.preventDefault();
+        const activeObjects = canvas.getActiveObjects();
+        if (activeObjects.length === 0) return;
+
+        const { placements: currentPlacements, uploadedImages, gapCm } = useCanvasStore.getState();
+
+        for (const obj of activeObjects) {
+          const placementId = (
+            obj as fabric.FabricObject & { _placementId?: string }
+          )._placementId;
+          if (!placementId) continue;
+          const placement = currentPlacements.find((p) => p.id === placementId);
+          if (!placement) continue;
+
+          const image = uploadedImages.find((img) => img.id === placement.imageId);
+          if (!image) continue;
+
+          const newId = `p-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+          const offsetCm = 1;
+
+          useCanvasStore.getState().addPlacement({
+            id: newId,
+            imageId: placement.imageId,
+            x: placement.x + offsetCm,
+            y: placement.y + offsetCm,
+            widthCm: placement.widthCm,
+            heightCm: placement.heightCm,
+            rotation: placement.rotation,
+          });
+
+          const canvasUrl =
+            image.originalUrl && !image.originalUrl.startsWith("blob:")
+              ? image.originalUrl
+              : image.thumbnailUrl;
+          addImageToCanvas(
+            canvas,
+            canvasUrl,
+            newId,
+            placement.x + offsetCm,
+            placement.y + offsetCm,
+            placement.widthCm,
+            placement.heightCm,
+            placement.rotation
+          );
+        }
+        return;
+      }
+
+      // Ctrl+A — Select all
+      if (ctrl && e.key === "a") {
+        e.preventDefault();
+        const designObjects = canvas
+          .getObjects()
+          .filter(
+            (obj) =>
+              !(obj as fabric.FabricObject & { _isBackground?: boolean })
+                ._isBackground
+          );
+        if (designObjects.length > 0) {
+          const sel = new fabric.ActiveSelection(designObjects, { canvas });
+          canvas.setActiveObject(sel);
+          canvas.renderAll();
+        }
+        return;
+      }
+
+      // Escape — Deselect
+      if (e.key === "Escape") {
+        canvas.discardActiveObject();
+        canvas.renderAll();
+        return;
+      }
+
+      // Delete / Backspace — Remove selected
+      if (e.key === "Delete" || e.key === "Backspace") {
+        const activeObjects = canvas.getActiveObjects();
+        activeObjects.forEach((obj) => {
+          const pid = (
+            obj as fabric.FabricObject & { _placementId?: string }
+          )._placementId;
+          if (pid) {
+            removePlacement(pid);
           }
           canvas.remove(obj);
         });
         canvas.discardActiveObject();
         canvas.renderAll();
+        return;
+      }
+
+      // Arrow keys — Nudge selected objects
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        const activeObjects = canvas.getActiveObjects();
+        if (activeObjects.length === 0) return;
+        e.preventDefault();
+
+        const nudgePx = e.shiftKey ? 10 : 1;
+        let dx = 0;
+        let dy = 0;
+        if (e.key === "ArrowLeft") dx = -nudgePx;
+        if (e.key === "ArrowRight") dx = nudgePx;
+        if (e.key === "ArrowUp") dy = -nudgePx;
+        if (e.key === "ArrowDown") dy = nudgePx;
+
+        // If there's an ActiveSelection, move the group
+        const activeObj = canvas.getActiveObject();
+        if (activeObj) {
+          activeObj.set({
+            left: (activeObj.left ?? 0) + dx,
+            top: (activeObj.top ?? 0) + dy,
+          });
+          activeObj.setCoords();
+
+          // Update all placements in the selection
+          for (const obj of activeObjects) {
+            const pid = (
+              obj as fabric.FabricObject & { _placementId?: string }
+            )._placementId;
+            if (!pid) continue;
+            const bound = obj.getBoundingRect();
+            const width = (obj.width ?? 0) * (obj.scaleX ?? 1);
+            const height = (obj.height ?? 0) * (obj.scaleY ?? 1);
+            updatePlacement(pid, {
+              x: displayPxToCm(bound.left + dx),
+              y: displayPxToCm(bound.top + dy),
+              widthCm: displayPxToCm(width),
+              heightCm: displayPxToCm(height),
+            });
+          }
+          canvas.renderAll();
+        }
       }
     };
 
@@ -298,6 +634,7 @@ export function RollCanvas() {
       fabricRef.current = null;
       setCanvas(null);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setCanvas, drawRollBackground, updatePlacement, removePlacement]);
 
   // Calculate minimum canvas height to fill the visible container
@@ -306,6 +643,44 @@ export function RollCanvas() {
     // py-4 = 32px padding around canvas; subtract it from available space
     return Math.max(containerHeight - 32, FALLBACK_MIN_HEIGHT);
   }, [containerHeight]);
+
+  // Subscribe to overlappingIds — highlight overlapping placements with red border
+  useEffect(() => {
+    let prevIds: Set<string> = new Set();
+    const unsub = useCanvasStore.subscribe((state) => {
+      const { overlappingIds } = state;
+      // Skip if same reference
+      if (overlappingIds === prevIds) return;
+      prevIds = overlappingIds;
+
+      const canvas = fabricRef.current;
+      if (!canvas) return;
+
+      const objects = canvas.getObjects();
+      for (const obj of objects) {
+        const pid = (obj as fabric.FabricObject & { _placementId?: string })._placementId;
+        if (!pid) continue;
+
+        if (overlappingIds.has(pid)) {
+          obj.set({
+            stroke: "#ef4444",
+            strokeWidth: 2,
+            borderColor: "#ef4444",
+            cornerColor: "#ef4444",
+          });
+        } else {
+          obj.set({
+            stroke: undefined,
+            strokeWidth: 0,
+            borderColor: "#3b82f6",
+            cornerColor: "#3b82f6",
+          });
+        }
+      }
+      canvas.renderAll();
+    });
+    return unsub;
+  }, []);
 
   // Subscribe to canvasBgColor and showGrid changes from store
   useEffect(() => {
@@ -352,6 +727,84 @@ export function RollCanvas() {
     drawRollBackground(canvas, canvasHeight, showGrid);
   }, [placements, containerHeight, drawRollBackground, getMinCanvasHeight]);
 
+  // Drag & Drop handlers
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    if (e.dataTransfer.types.includes("application/x-dtf-image")) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "copy";
+    }
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      const imageId = e.dataTransfer.getData("application/x-dtf-image");
+      if (!imageId) return;
+      e.preventDefault();
+
+      const canvas = fabricRef.current;
+      if (!canvas) return;
+
+      const { uploadedImages, gapCm } = useCanvasStore.getState();
+      const image = uploadedImages.find((img) => img.id === imageId);
+      if (!image) return;
+
+      // Clamp to roll width
+      let widthCm = image.widthCm;
+      let heightCm = image.heightCm;
+      if (widthCm > ROLL_CONFIG.PRINT_WIDTH_CM) {
+        const scale = ROLL_CONFIG.PRINT_WIDTH_CM / widthCm;
+        widthCm = ROLL_CONFIG.PRINT_WIDTH_CM;
+        heightCm = heightCm * scale;
+      }
+
+      // Calculate drop position in canvas coordinates
+      const canvasEl = canvas.getSelectionElement();
+      const rect = canvasEl.getBoundingClientRect();
+      const currentZoom = useCanvasStore.getState().zoom;
+
+      // Mouse position relative to canvas element, accounting for zoom
+      const mouseX = (e.clientX - rect.left) / currentZoom;
+      const mouseY = (e.clientY - rect.top) / currentZoom;
+
+      // Convert to cm and center the image on drop point
+      let xCm = displayPxToCm(mouseX) - widthCm / 2;
+      let yCm = displayPxToCm(mouseY) - heightCm / 2;
+
+      // Clamp within bounds
+      xCm = Math.max(0, Math.min(xCm, ROLL_CONFIG.PRINT_WIDTH_CM - widthCm));
+      yCm = Math.max(0, yCm);
+
+      const placementId = `p-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+      addPlacement({
+        id: placementId,
+        imageId: image.id,
+        x: Math.round(xCm * 100) / 100,
+        y: Math.round(yCm * 100) / 100,
+        widthCm,
+        heightCm,
+        rotation: 0,
+      });
+
+      const canvasUrl =
+        image.originalUrl && !image.originalUrl.startsWith("blob:")
+          ? image.originalUrl
+          : image.thumbnailUrl;
+
+      addImageToCanvas(
+        canvas,
+        canvasUrl,
+        placementId,
+        Math.round(xCm * 100) / 100,
+        Math.round(yCm * 100) / 100,
+        widthCm,
+        heightCm,
+        0
+      );
+    },
+    [addPlacement]
+  );
+
   return (
     <div ref={containerRef} className="flex-1 overflow-hidden relative">
       {/* CM Ruler on left side */}
@@ -369,6 +822,8 @@ export function RollCanvas() {
             transform: `scale(${zoom})`,
             transformOrigin: "top center",
           }}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
         >
           <canvas ref={canvasElRef} />
         </div>

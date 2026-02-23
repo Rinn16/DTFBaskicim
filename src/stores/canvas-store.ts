@@ -8,7 +8,8 @@ import type { PricingTierData, PriceBreakdown, CustomerPricingData } from "@/typ
 import type { CartItemData } from "@/stores/cart-store";
 import { ROLL_CONFIG } from "@/lib/constants";
 import { calculatePrice } from "@/services/pricing.service";
-import { getEffectiveDimensions } from "@/lib/placement-utils";
+import { getEffectiveDimensions, findOverlappingPlacements } from "@/lib/placement-utils";
+import { useHistoryStore } from "@/stores/history-store";
 
 
 interface CanvasState {
@@ -85,6 +86,10 @@ interface CanvasState {
   loadDraft: (data: DesignDraftData) => void;
   resetCanvas: () => void;
 
+  // Overlap detection
+  overlappingIds: Set<string>;
+  recalculateOverlaps: () => void;
+
   // Actions
   recalculatePrice: () => void;
   recalculateHeight: () => void;
@@ -137,22 +142,26 @@ export const useCanvasStore = create<CanvasState>()(
 
       placements: [],
       setPlacements: (placements) => {
+        useHistoryStore.getState().pushState(get().placements);
         set({ placements });
         get().recalculateHeight();
       },
       addPlacement: (placement) => {
+        useHistoryStore.getState().pushState(get().placements);
         set((state) => ({
           placements: [...state.placements, placement],
         }));
         get().recalculateHeight();
       },
       removePlacement: (id) => {
+        useHistoryStore.getState().pushState(get().placements);
         set((state) => ({
           placements: state.placements.filter((p) => p.id !== id),
         }));
         get().recalculateHeight();
       },
       updatePlacement: (id, updates) => {
+        useHistoryStore.getState().pushState(get().placements);
         set((state) => ({
           placements: state.placements.map((p) =>
             p.id === id ? { ...p, ...updates } : p
@@ -161,7 +170,8 @@ export const useCanvasStore = create<CanvasState>()(
         get().recalculateHeight();
       },
       clearPlacements: () => {
-        set({ placements: [], totalHeightCm: 0, priceBreakdown: null });
+        useHistoryStore.getState().pushState(get().placements);
+        set({ placements: [], totalHeightCm: 0, priceBreakdown: null, overlappingIds: new Set<string>() });
       },
 
       autoPlaceQuantities: {},
@@ -446,10 +456,17 @@ export const useCanvasStore = create<CanvasState>()(
         set({ priceBreakdown: breakdown });
       },
 
+      overlappingIds: new Set<string>(),
+      recalculateOverlaps: () => {
+        const { placements } = get();
+        const overlappingIds = findOverlappingPlacements(placements);
+        set({ overlappingIds });
+      },
+
       recalculateHeight: () => {
         const { placements } = get();
         if (placements.length === 0) {
-          set({ totalHeightCm: 0 });
+          set({ totalHeightCm: 0, overlappingIds: new Set<string>() });
           get().recalculatePrice();
           return;
         }
@@ -463,6 +480,7 @@ export const useCanvasStore = create<CanvasState>()(
         const totalHeightCm = Math.round(maxY * 100) / 100;
         set({ totalHeightCm });
         get().recalculatePrice();
+        get().recalculateOverlaps();
       },
     }),
     {

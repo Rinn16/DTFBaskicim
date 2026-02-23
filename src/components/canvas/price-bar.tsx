@@ -18,6 +18,7 @@ import {
   ChevronUp,
   Ruler,
   Save,
+  AlertTriangle,
 } from "lucide-react";
 import { useCanvasStore } from "@/stores/canvas-store";
 import { useCartStore } from "@/stores/cart-store";
@@ -88,6 +89,7 @@ export function PriceBar() {
     setActiveDraftId,
     snapshotCurrentState,
     resetCanvas,
+    overlappingIds,
   } = useCanvasStore();
 
   const {
@@ -153,7 +155,14 @@ export function PriceBar() {
     setDiscountError("");
   };
 
+  const hasOverlap = overlappingIds.size > 0;
+
   const handleAddToCart = async () => {
+    if (hasOverlap) {
+      toast.error("Üst üste binen tasarımlar var! Lütfen çakışan görselleri düzeltin.");
+      return;
+    }
+
     const data = buildDesignData();
     if (!data) {
       toast.error("Tasarım verileri oluşturulamadı. Lütfen görselleri tekrar yükleyin.");
@@ -414,10 +423,16 @@ export function PriceBar() {
                 : "0.00 TL"}
             </div>
           </div>
+          {hasOverlap && (
+            <div className="flex items-center gap-1 text-red-400">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="text-xs font-medium">Çakışma var</span>
+            </div>
+          )}
           <Button
             size="lg"
             className="h-10 px-6 editor-glow-btn"
-            disabled={placements.length === 0}
+            disabled={placements.length === 0 || hasOverlap}
             onClick={handleAddToCart}
           >
             {editingCartItemId ? (
