@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     const userName = order.user?.name
       ? `${order.user.name} ${order.user.surname || ""}`
       : order.guestName || "";
-    const userPhone = order.user?.phone || order.guestPhone || "";
+    const userPhone = order.address?.phone || order.user?.phone || order.guestPhone || "";
     const userAddress = order.address
       ? `${order.address.address}, ${order.address.district}/${order.address.city}`
       : "Belirtilmedi";
