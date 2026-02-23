@@ -156,10 +156,16 @@ export function PriceBar() {
   };
 
   const hasOverlap = overlappingIds.size > 0;
+  const belowMinimum = totalHeightCm > 0 && totalHeightCm < 100;
 
   const handleAddToCart = async () => {
     if (hasOverlap) {
       toast.error("Üst üste binen tasarımlar var! Lütfen çakışan görselleri düzeltin.");
+      return;
+    }
+
+    if (belowMinimum) {
+      toast.error("Minimum sipariş uzunluğu 1 metredir. Lütfen daha fazla tasarım ekleyin.");
       return;
     }
 
@@ -429,10 +435,16 @@ export function PriceBar() {
               <span className="text-xs font-medium">Çakışma var</span>
             </div>
           )}
+          {belowMinimum && (
+            <div className="flex items-center gap-1 text-amber-400">
+              <Ruler className="h-4 w-4" />
+              <span className="text-xs font-medium">Min. 1 metre</span>
+            </div>
+          )}
           <Button
             size="lg"
             className="h-10 px-6 editor-glow-btn"
-            disabled={placements.length === 0 || hasOverlap}
+            disabled={placements.length === 0 || hasOverlap || belowMinimum}
             onClick={handleAddToCart}
           >
             {editingCartItemId ? (
