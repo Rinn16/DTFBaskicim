@@ -25,6 +25,15 @@ import { useCartStore } from "@/stores/cart-store";
 import { useDraftStore } from "@/stores/draft-store";
 import type { GangSheetLayout, GangSheetItem } from "@/types/canvas";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 function buildDesignData() {
   const { uploadedImages, placements, totalHeightCm } = useCanvasStore.getState();
@@ -102,6 +111,7 @@ export function PriceBar() {
   const [discountInput, setDiscountInput] = useState("");
   const [discountError, setDiscountError] = useState("");
   const [discountApplied, setDiscountApplied] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   // Fetch pricing tiers on mount (public endpoint — works for guests too)
   useEffect(() => {
@@ -159,13 +169,16 @@ export function PriceBar() {
   const belowMinimum = totalHeightCm > 0 && totalHeightCm < 100;
 
   const handleAddToCart = async () => {
+    // Collect validation errors and show dialog if any
+    const errors: string[] = [];
     if (hasOverlap) {
-      toast.error("Üst üste binen tasarımlar var! Lütfen çakışan görselleri düzeltin.");
-      return;
+      errors.push("Üst üste binen tasarımlar var. Lütfen çakışan görselleri düzeltin.");
     }
-
     if (belowMinimum) {
-      toast.error("Minimum sipariş uzunluğu 1 metredir. Lütfen daha fazla tasarım ekleyin.");
+      errors.push("Minimum sipariş uzunluğu 1 metredir. Lütfen daha fazla tasarım ekleyin.");
+    }
+    if (errors.length > 0) {
+      setValidationErrors(errors);
       return;
     }
 
@@ -444,7 +457,7 @@ export function PriceBar() {
           <Button
             size="lg"
             className="h-10 px-6 editor-glow-btn"
-            disabled={placements.length === 0 || hasOverlap || belowMinimum}
+            disabled={placements.length === 0}
             onClick={handleAddToCart}
           >
             {editingCartItemId ? (
@@ -461,6 +474,30 @@ export function PriceBar() {
           </Button>
         </div>
       </div>
+
+      {/* Validation error dialog */}
+      <AlertDialog open={validationErrors.length > 0} onOpenChange={() => setValidationErrors([])}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-500">
+              <AlertTriangle className="h-5 w-5" />
+              Sepete eklenemiyor
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <ul className="list-disc pl-5 space-y-1 text-sm">
+                {validationErrors.map((err, i) => (
+                  <li key={i}>{err}</li>
+                ))}
+              </ul>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setValidationErrors([])}>
+              Tamam
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
