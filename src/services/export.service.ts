@@ -12,6 +12,7 @@ sharp.concurrency(1);
 
 interface ProcessExportParams {
   orderId: string;
+  gangSheetId?: string;
   gangSheetLayout: GangSheetLayout;
   gangSheetWidth: number;  // pixels
   gangSheetHeight: number; // pixels
@@ -113,7 +114,9 @@ export async function processExport(
   );
 
   // 6. Upload all to S3
-  const prefix = `${EXPORT.S3_PREFIX}/${orderId}`;
+  const prefix = params.gangSheetId
+    ? `${EXPORT.S3_PREFIX}/${orderId}/${params.gangSheetId}`
+    : `${EXPORT.S3_PREFIX}/${orderId}`;
   const pngKey = `${prefix}/gangsheet.png`;
   const tiffKey = `${prefix}/gangsheet.tiff`;
   const pdfKey = `${prefix}/gangsheet.pdf`;

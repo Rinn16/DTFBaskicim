@@ -105,6 +105,11 @@ export type OrderItem = Prisma.OrderItemModel
  */
 export type OrderStatusHistory = Prisma.OrderStatusHistoryModel
 /**
+ * Model OrderGangSheet
+ * 
+ */
+export type OrderGangSheet = Prisma.OrderGangSheetModel
+/**
  * Model DesignDraft
  * 
  */

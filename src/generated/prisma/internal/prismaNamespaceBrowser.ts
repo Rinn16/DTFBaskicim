@@ -64,6 +64,7 @@ export const ModelName = {
   Order: 'Order',
   OrderItem: 'OrderItem',
   OrderStatusHistory: 'OrderStatusHistory',
+  OrderGangSheet: 'OrderGangSheet',
   DesignDraft: 'DesignDraft',
   CartItem: 'CartItem'
 } as const
@@ -307,6 +308,22 @@ export const OrderStatusHistoryScalarFieldEnum = {
 } as const
 
 export type OrderStatusHistoryScalarFieldEnum = (typeof OrderStatusHistoryScalarFieldEnum)[keyof typeof OrderStatusHistoryScalarFieldEnum]
+
+
+export const OrderGangSheetScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  gangSheetLayout: 'gangSheetLayout',
+  gangSheetWidth: 'gangSheetWidth',
+  gangSheetHeight: 'gangSheetHeight',
+  totalMeters: 'totalMeters',
+  exportPng: 'exportPng',
+  exportTiff: 'exportTiff',
+  exportPdf: 'exportPdf',
+  createdAt: 'createdAt'
+} as const
+
+export type OrderGangSheetScalarFieldEnum = (typeof OrderGangSheetScalarFieldEnum)[keyof typeof OrderGangSheetScalarFieldEnum]
 
 
 export const DesignDraftScalarFieldEnum = {

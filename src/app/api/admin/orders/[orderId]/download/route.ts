@@ -23,6 +23,7 @@ export async function GET(
     const { orderId } = await params;
     const { searchParams } = new URL(request.url);
     const format = searchParams.get("format");
+    const gangSheetId = searchParams.get("gangSheetId");
 
     if (!format || !["png", "tiff", "pdf"].includes(format)) {
       return NextResponse.json(
@@ -31,6 +32,53 @@ export async function GET(
       );
     }
 
+    // Gang sheet bazlı download
+    if (gangSheetId) {
+      const gangSheet = await db.orderGangSheet.findFirst({
+        where: { id: gangSheetId, orderId },
+        select: {
+          exportPng: true,
+          exportTiff: true,
+          exportPdf: true,
+          order: { select: { orderNumber: true } },
+        },
+      });
+
+      if (!gangSheet) {
+        return NextResponse.json({ error: "Gang sheet bulunamadı" }, { status: 404 });
+      }
+
+      const keyMap: Record<string, string | null> = {
+        png: gangSheet.exportPng,
+        tiff: gangSheet.exportTiff,
+        pdf: gangSheet.exportPdf,
+      };
+
+      const s3Key = keyMap[format];
+      if (!s3Key) {
+        return NextResponse.json(
+          { error: "Bu format için export bulunamadı" },
+          { status: 404 }
+        );
+      }
+
+      const response = await s3Client.send(
+        new GetObjectCommand({ Bucket: S3_BUCKET, Key: s3Key })
+      );
+
+      const stream = response.Body as ReadableStream;
+      const fileName = `${gangSheet.order.orderNumber}-gangsheet-${gangSheetId.slice(-6)}.${format}`;
+
+      return new Response(stream, {
+        headers: {
+          "Content-Type": CONTENT_TYPES[format] || "application/octet-stream",
+          "Content-Disposition": `attachment; filename="${fileName}"`,
+          ...(response.ContentLength && { "Content-Length": String(response.ContentLength) }),
+        },
+      });
+    }
+
+    // Eski akış: Order bazlı download
     const order = await db.order.findUnique({
       where: { id: orderId },
       select: {

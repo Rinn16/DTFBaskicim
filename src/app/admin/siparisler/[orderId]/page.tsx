@@ -47,6 +47,22 @@ import { STATUS_COLORS, statusLabel } from "@/lib/order-utils";
 import { StatusTimeline } from "@/components/order/status-timeline";
 import { toast } from "sonner";
 
+interface GangSheetDetail {
+  id: string;
+  gangSheetWidth: number;
+  gangSheetHeight: number;
+  totalMeters: number;
+  exportPng: string | null;
+  exportTiff: string | null;
+  exportPdf: string | null;
+  gangSheetLayout: {
+    items: { imageName: string; placements: unknown[] }[];
+    totalHeightCm: number;
+    totalWidthCm: number;
+  };
+  createdAt: string;
+}
+
 interface OrderDetail {
   id: string;
   orderNumber: string;
@@ -68,6 +84,7 @@ interface OrderDetail {
   exportPng: string | null;
   exportTiff: string | null;
   exportPdf: string | null;
+  gangSheets: GangSheetDetail[];
   address: {
     title: string;
     fullName: string;
@@ -121,6 +138,7 @@ export default function AdminOrderDetailPage() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isSavingNote, setIsSavingNote] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [exportingSheetIds, setExportingSheetIds] = useState<Set<string>>(new Set());
 
   const fetchOrder = async () => {
     try {
@@ -193,15 +211,52 @@ export default function AdminOrderDetailPage() {
     }
   };
 
-  const handleExport = async () => {
+  const handleExport = async (gangSheetId?: string) => {
     if (!order) return;
-    setIsExporting(true);
+    if (gangSheetId) {
+      setExportingSheetIds((prev) => new Set(prev).add(gangSheetId));
+    } else {
+      setIsExporting(true);
+    }
     try {
       const res = await fetch(`/api/admin/orders/${order.id}/export`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(gangSheetId ? { gangSheetId } : {}),
       });
       if (res.ok) {
         toast.success("Export kuyruğa eklendi");
+        setTimeout(fetchOrder, 5000);
+      } else {
+        toast.error("Export başlatılamadı");
+      }
+    } catch {
+      toast.error("Bir hata oluştu");
+    } finally {
+      if (gangSheetId) {
+        setExportingSheetIds((prev) => {
+          const next = new Set(prev);
+          next.delete(gangSheetId);
+          return next;
+        });
+      } else {
+        setIsExporting(false);
+      }
+    }
+  };
+
+  const handleExportAll = async () => {
+    if (!order || !order.gangSheets.length) return;
+    setIsExporting(true);
+    try {
+      // Her gang sheet için ayrı export kuyruğa ekle
+      const res = await fetch(`/api/admin/orders/${order.id}/export`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      if (res.ok) {
+        toast.success("Tüm gang sheet'ler kuyruğa eklendi");
         setTimeout(fetchOrder, 5000);
       } else {
         toast.error("Export başlatılamadı");
@@ -213,9 +268,11 @@ export default function AdminOrderDetailPage() {
     }
   };
 
-  const handleDownload = (format: string) => {
+  const handleDownload = (format: string, gangSheetId?: string) => {
     if (!order) return;
-    window.open(`/api/admin/orders/${order.id}/download?format=${format}`, "_blank");
+    const params = new URLSearchParams({ format });
+    if (gangSheetId) params.set("gangSheetId", gangSheetId);
+    window.open(`/api/admin/orders/${order.id}/download?${params.toString()}`, "_blank");
   };
 
   if (isLoading) {
@@ -234,7 +291,10 @@ export default function AdminOrderDetailPage() {
     );
   }
 
-  const hasExport = !!(order.exportPng && order.exportTiff && order.exportPdf);
+  const hasGangSheets = order.gangSheets && order.gangSheets.length > 0;
+  const hasExport = hasGangSheets
+    ? order.gangSheets.every((gs) => !!(gs.exportPng && gs.exportTiff && gs.exportPdf))
+    : !!(order.exportPng && order.exportTiff && order.exportPdf);
   const customerName = order.user
     ? `${order.user.name} ${order.user.surname}`
     : order.guestName || "Misafir";
@@ -376,91 +436,232 @@ export default function AdminOrderDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* ── Left Column (2/3) ── */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Gang Sheet Product Card — cart-item-card style */}
-          <Card className="p-4">
-            <div className="flex gap-4">
-              {/* Gang sheet preview */}
-              <div className="flex-shrink-0 w-20 h-24 bg-muted rounded-md flex items-center justify-center border border-dashed">
-                <div className="text-center">
-                  <Ruler className="h-5 w-5 mx-auto text-muted-foreground mb-1" />
-                  <span className="text-[10px] text-muted-foreground font-medium">
-                    57x{(order.gangSheetHeight / (300 / 2.54)).toFixed(0)}cm
-                  </span>
+          {/* Gang Sheet Cards */}
+          {hasGangSheets ? (
+            <div className="space-y-3">
+              {/* Tümünü Export Et butonu */}
+              {!hasExport && (
+                <div className="flex justify-end">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleExportAll}
+                    disabled={isExporting}
+                    className="gap-1.5"
+                  >
+                    {isExporting ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Play className="h-3.5 w-3.5" />
+                    )}
+                    Tümünü Export Et
+                  </Button>
                 </div>
-              </div>
+              )}
 
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h3 className="font-medium text-sm">Gang Sheet</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {order.totalMeters.toFixed(2)} metre
-                    </p>
+              {order.gangSheets.map((gs, idx) => {
+                const gsHasExport = !!(gs.exportPng && gs.exportTiff && gs.exportPdf);
+                const gsIsExporting = exportingSheetIds.has(gs.id);
+                const gsLayout = gs.gangSheetLayout;
+                const gsItemCount = gsLayout.items?.length ?? 0;
+                const gsPlacementCount = gsLayout.items?.reduce(
+                  (sum: number, item: { placements: unknown[] }) => sum + (item.placements?.length ?? 0),
+                  0
+                ) ?? 0;
+
+                return (
+                  <Card key={gs.id} className="p-4">
+                    <div className="flex gap-4">
+                      {/* Gang sheet preview */}
+                      <div className="flex-shrink-0 w-20 h-24 bg-muted rounded-md flex items-center justify-center border border-dashed">
+                        <div className="text-center">
+                          <Ruler className="h-5 w-5 mx-auto text-muted-foreground mb-1" />
+                          <span className="text-[10px] text-muted-foreground font-medium">
+                            57x{(gs.gangSheetHeight / (300 / 2.54)).toFixed(0)}cm
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <h3 className="font-medium text-sm">
+                              Gang Sheet {idx + 1}
+                            </h3>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {gs.totalMeters.toFixed(2)} metre
+                            </p>
+                          </div>
+
+                          {/* Download dropdown */}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="sm" variant="outline" className="h-8 gap-1.5">
+                                <Download className="h-3.5 w-3.5" />
+                                İndir
+                                <ChevronDown className="h-3.5 w-3.5" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {gsHasExport ? (
+                                <>
+                                  <DropdownMenuItem onClick={() => handleDownload("png", gs.id)} className="cursor-pointer">
+                                    PNG
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleDownload("tiff", gs.id)} className="cursor-pointer">
+                                    TIFF
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleDownload("pdf", gs.id)} className="cursor-pointer">
+                                    PDF
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => handleExport(gs.id)}
+                                    disabled={gsIsExporting}
+                                    className="cursor-pointer"
+                                  >
+                                    {gsIsExporting ? (
+                                      <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+                                    ) : (
+                                      <RotateCcw className="h-4 w-4 mr-1.5" />
+                                    )}
+                                    Yeniden export et
+                                  </DropdownMenuItem>
+                                </>
+                              ) : (
+                                <DropdownMenuItem
+                                  onClick={() => handleExport(gs.id)}
+                                  disabled={gsIsExporting}
+                                  className="cursor-pointer"
+                                >
+                                  {gsIsExporting ? (
+                                    <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+                                  ) : (
+                                    <Play className="h-4 w-4 mr-1.5" />
+                                  )}
+                                  Export oluştur
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+
+                        {/* Items list */}
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {gsLayout.items?.map((item: { imageName: string; placements: unknown[] }, itemIdx: number) => (
+                            <Badge
+                              key={itemIdx}
+                              variant="secondary"
+                              className="text-[11px] h-5 gap-1 font-normal"
+                            >
+                              <ImageIcon className="h-3 w-3" />
+                              {item.imageName.length > 20
+                                ? item.imageName.slice(0, 20) + "..."
+                                : item.imageName}
+                              <span className="text-muted-foreground">x{item.placements?.length ?? 0}</span>
+                            </Badge>
+                          ))}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="mt-3">
+                          <span className="text-xs text-muted-foreground">
+                            {gsItemCount} görsel, {gsPlacementCount} yerleşim
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            /* Eski tek gang sheet card (backward compat) */
+            <Card className="p-4">
+              <div className="flex gap-4">
+                {/* Gang sheet preview */}
+                <div className="flex-shrink-0 w-20 h-24 bg-muted rounded-md flex items-center justify-center border border-dashed">
+                  <div className="text-center">
+                    <Ruler className="h-5 w-5 mx-auto text-muted-foreground mb-1" />
+                    <span className="text-[10px] text-muted-foreground font-medium">
+                      57x{(order.gangSheetHeight / (300 / 2.54)).toFixed(0)}cm
+                    </span>
+                  </div>
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h3 className="font-medium text-sm">Gang Sheet</h3>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {order.totalMeters.toFixed(2)} metre
+                      </p>
+                    </div>
+
+                    {/* Inline download dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="sm" variant="outline" className="h-8 gap-1.5">
+                          <Download className="h-3.5 w-3.5" />
+                          İndir
+                          <ChevronDown className="h-3.5 w-3.5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        {hasExport ? (
+                          <>
+                            <DropdownMenuItem onClick={() => handleDownload("png")} className="cursor-pointer">
+                              PNG
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDownload("tiff")} className="cursor-pointer">
+                              TIFF
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDownload("pdf")} className="cursor-pointer">
+                              PDF
+                            </DropdownMenuItem>
+                          </>
+                        ) : (
+                          <DropdownMenuItem onClick={() => handleExport()} disabled={isExporting} className="cursor-pointer">
+                            {isExporting ? (
+                              <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+                            ) : (
+                              <Play className="h-4 w-4 mr-1.5" />
+                            )}
+                            Export oluştur
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
 
-                  {/* Inline download dropdown */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button size="sm" variant="outline" className="h-8 gap-1.5">
-                        <Download className="h-3.5 w-3.5" />
-                        İndir
-                        <ChevronDown className="h-3.5 w-3.5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {hasExport ? (
-                        <>
-                          <DropdownMenuItem onClick={() => handleDownload("png")} className="cursor-pointer">
-                            PNG
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDownload("tiff")} className="cursor-pointer">
-                            TIFF
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDownload("pdf")} className="cursor-pointer">
-                            PDF
-                          </DropdownMenuItem>
-                        </>
-                      ) : (
-                        <DropdownMenuItem onClick={handleExport} disabled={isExporting} className="cursor-pointer">
-                          {isExporting ? (
-                            <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
-                          ) : (
-                            <Play className="h-4 w-4 mr-1.5" />
-                          )}
-                          Export oluştur
-                        </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                  {/* Items list */}
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {order.items.map((item) => (
+                      <Badge
+                        key={item.id}
+                        variant="secondary"
+                        className="text-[11px] h-5 gap-1 font-normal"
+                      >
+                        <ImageIcon className="h-3 w-3" />
+                        {item.imageName.length > 20
+                          ? item.imageName.slice(0, 20) + "..."
+                          : item.imageName}
+                        <span className="text-muted-foreground">x{item.quantity}</span>
+                      </Badge>
+                    ))}
+                  </div>
 
-                {/* Items list */}
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {order.items.map((item) => (
-                    <Badge
-                      key={item.id}
-                      variant="secondary"
-                      className="text-[11px] h-5 gap-1 font-normal"
-                    >
-                      <ImageIcon className="h-3 w-3" />
-                      {item.imageName.length > 20
-                        ? item.imageName.slice(0, 20) + "..."
-                        : item.imageName}
-                      <span className="text-muted-foreground">x{item.quantity}</span>
-                    </Badge>
-                  ))}
-                </div>
-
-                {/* Footer */}
-                <div className="mt-3">
-                  <span className="text-xs text-muted-foreground">
-                    {order.items.length} görsel, {totalPlacements} yerleşim
-                  </span>
+                  {/* Footer */}
+                  <div className="mt-3">
+                    <span className="text-xs text-muted-foreground">
+                      {order.items.length} görsel, {totalPlacements} yerleşim
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          )}
 
           {/* Price Breakdown + Payment + Timeline */}
           <Card>

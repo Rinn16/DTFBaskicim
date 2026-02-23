@@ -21,6 +21,20 @@ export async function GET(
         address: true,
         statusHistory: { orderBy: { createdAt: "asc" } },
         user: { select: { id: true, name: true, surname: true, email: true, phone: true } },
+        gangSheets: {
+          select: {
+            id: true,
+            gangSheetWidth: true,
+            gangSheetHeight: true,
+            totalMeters: true,
+            exportPng: true,
+            exportTiff: true,
+            exportPdf: true,
+            gangSheetLayout: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: "asc" },
+        },
       },
     });
 
@@ -38,6 +52,10 @@ export async function GET(
         taxAmount: Number(order.taxAmount),
         totalAmount: Number(order.totalAmount),
         shippingCost: Number(order.shippingCost),
+        gangSheets: order.gangSheets.map((gs) => ({
+          ...gs,
+          totalMeters: Number(gs.totalMeters),
+        })),
       },
     });
   } catch (error) {

@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { calculatePrice } from "@/services/pricing.service";
 import { sendOrderConfirmation } from "@/services/email.service";
+import { ROLL_CONFIG } from "@/lib/constants";
 import type { PricingTierData, CustomerPricingData, ShippingConfigData } from "@/types/pricing";
 import type { GangSheetLayout, GangSheetItem } from "@/types/canvas";
 import type { PaymentMethod, BillingType, Prisma } from "@/generated/prisma/client";
@@ -117,7 +118,7 @@ export async function createOrder(params: CreateOrderParams) {
     totalHeightCm, pricingTiers, customerPricing, discountPercent, discountAmount, shippingConfig
   );
 
-  // Tüm items'i birleştir
+  // Tüm items'i birleştir (backward compat için Order.gangSheetLayout alanı)
   const allItems = cartItems.flatMap((ci) => ci.items);
   const gangSheetLayout: GangSheetLayout = {
     items: allItems,
@@ -157,8 +158,8 @@ export async function createOrder(params: CreateOrderParams) {
         paymentMethod,
         paymentStatus: "PENDING",
         gangSheetLayout: gangSheetLayout as unknown as Prisma.InputJsonValue,
-        gangSheetWidth: 6732,
-        gangSheetHeight: Math.round(totalHeightCm * 118.11),
+        gangSheetWidth: ROLL_CONFIG.CANVAS_WIDTH_PX,
+        gangSheetHeight: Math.round(totalHeightCm * ROLL_CONFIG.PX_PER_CM),
         customerNote: customerNote || null,
         billingType: billingInfo?.billingType ?? "INDIVIDUAL",
         billingSameAddress: billingSameAddress ?? true,
@@ -172,6 +173,24 @@ export async function createOrder(params: CreateOrderParams) {
         billingZipCode: billingInfo?.billingZipCode || null,
       },
     });
+
+    // Her cart item için ayrı OrderGangSheet oluştur
+    for (const cartItem of cartItems) {
+      const itemLayout: GangSheetLayout = {
+        items: cartItem.items,
+        totalHeightCm: cartItem.layout.totalHeightCm,
+        totalWidthCm: cartItem.layout.totalWidthCm ?? 57,
+      };
+      await tx.orderGangSheet.create({
+        data: {
+          orderId: newOrder.id,
+          gangSheetLayout: itemLayout as unknown as Prisma.InputJsonValue,
+          gangSheetWidth: ROLL_CONFIG.CANVAS_WIDTH_PX,
+          gangSheetHeight: Math.round(cartItem.layout.totalHeightCm * ROLL_CONFIG.PX_PER_CM),
+          totalMeters: cartItem.totalMeters,
+        },
+      });
+    }
 
     // OrderItem'lar oluştur
     for (const item of allItems) {

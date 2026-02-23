@@ -30,8 +30,8 @@ async function main() {
   const worker = new Worker<ExportJobData, ExportJobResult>(
     EXPORT.QUEUE_NAME,
     async (job) => {
-      const { orderId, orderNumber } = job.data;
-      console.log(`[Export] Processing order ${orderNumber} (${orderId})`);
+      const { orderId, orderNumber, gangSheetId } = job.data;
+      console.log(`[Export] Processing order ${orderNumber} (${orderId})${gangSheetId ? ` gangSheet=${gangSheetId}` : ""}`);
 
       // Fetch order
       const order = await db.order.findUnique({
@@ -43,6 +43,7 @@ async function main() {
           gangSheetLayout: true,
           gangSheetWidth: true,
           gangSheetHeight: true,
+          gangSheets: true,
         },
       });
 
@@ -50,46 +51,120 @@ async function main() {
         throw new Error(`Order not found: ${orderId}`);
       }
 
-      // Update status to PROCESSING
-      await db.$transaction([
-        db.order.update({
-          where: { id: orderId },
-          data: { status: "PROCESSING" },
-        }),
-        db.orderStatusHistory.create({
-          data: {
-            orderId,
-            fromStatus: order.status,
-            toStatus: "PROCESSING",
-            note: "Gang sheet export baslatildi",
-          },
-        }),
-      ]);
-
-      // Process export
-      const result = await processExport({
-        orderId,
-        gangSheetLayout: order.gangSheetLayout as unknown as GangSheetLayout,
-        gangSheetWidth: order.gangSheetWidth,
-        gangSheetHeight: order.gangSheetHeight,
-      });
-
-      // Update order with export keys
-      await db.order.update({
-        where: { id: orderId },
-        data: {
-          exportPng: result.pngKey,
-          exportTiff: result.tiffKey,
-          exportPdf: result.pdfKey,
-        },
-      });
-
-      console.log(`[Export] Order ${orderNumber} completed in ${(result.durationMs / 1000).toFixed(1)}s`);
-      if (result.skippedItems.length > 0) {
-        console.warn(`[Export] Skipped items: ${result.skippedItems.join(", ")}`);
+      // Update status to PROCESSING only if not already past that state
+      if (order.status === "PENDING_PAYMENT" || order.status === "PROCESSING") {
+        if (order.status !== "PROCESSING") {
+          await db.$transaction([
+            db.order.update({
+              where: { id: orderId },
+              data: { status: "PROCESSING" },
+            }),
+            db.orderStatusHistory.create({
+              data: {
+                orderId,
+                fromStatus: order.status,
+                toStatus: "PROCESSING",
+                note: "Gang sheet export baslatildi",
+              },
+            }),
+          ]);
+        }
       }
 
-      return result;
+      // Belirli bir gang sheet mi yoksa tümü mü?
+      if (gangSheetId) {
+        // Tek bir gang sheet export et
+        const gangSheet = order.gangSheets.find((gs) => gs.id === gangSheetId);
+        if (!gangSheet) {
+          throw new Error(`GangSheet not found: ${gangSheetId}`);
+        }
+
+        const result = await processExport({
+          orderId,
+          gangSheetId: gangSheet.id,
+          gangSheetLayout: gangSheet.gangSheetLayout as unknown as GangSheetLayout,
+          gangSheetWidth: gangSheet.gangSheetWidth,
+          gangSheetHeight: gangSheet.gangSheetHeight,
+        });
+
+        await db.orderGangSheet.update({
+          where: { id: gangSheet.id },
+          data: {
+            exportPng: result.pngKey,
+            exportTiff: result.tiffKey,
+            exportPdf: result.pdfKey,
+          },
+        });
+
+        console.log(`[Export] GangSheet ${gangSheet.id} completed in ${(result.durationMs / 1000).toFixed(1)}s`);
+        if (result.skippedItems.length > 0) {
+          console.warn(`[Export] Skipped items: ${result.skippedItems.join(", ")}`);
+        }
+
+        return result;
+      } else if (order.gangSheets.length > 0) {
+        // Tüm gang sheet'leri ayrı ayrı export et
+        let totalDuration = 0;
+        const allSkipped: string[] = [];
+        let lastResult: ExportJobResult | null = null;
+
+        for (const gangSheet of order.gangSheets) {
+          const result = await processExport({
+            orderId,
+            gangSheetId: gangSheet.id,
+            gangSheetLayout: gangSheet.gangSheetLayout as unknown as GangSheetLayout,
+            gangSheetWidth: gangSheet.gangSheetWidth,
+            gangSheetHeight: gangSheet.gangSheetHeight,
+          });
+
+          await db.orderGangSheet.update({
+            where: { id: gangSheet.id },
+            data: {
+              exportPng: result.pngKey,
+              exportTiff: result.tiffKey,
+              exportPdf: result.pdfKey,
+            },
+          });
+
+          totalDuration += result.durationMs;
+          allSkipped.push(...result.skippedItems);
+          lastResult = result;
+
+          console.log(`[Export] GangSheet ${gangSheet.id} completed in ${(result.durationMs / 1000).toFixed(1)}s`);
+        }
+
+        if (allSkipped.length > 0) {
+          console.warn(`[Export] Skipped items: ${allSkipped.join(", ")}`);
+        }
+
+        console.log(`[Export] Order ${orderNumber} all ${order.gangSheets.length} gang sheets completed in ${(totalDuration / 1000).toFixed(1)}s`);
+        return lastResult!;
+      } else {
+        // Geriye uyumluluk: eski tek gangSheetLayout akışı
+        const result = await processExport({
+          orderId,
+          gangSheetLayout: order.gangSheetLayout as unknown as GangSheetLayout,
+          gangSheetWidth: order.gangSheetWidth,
+          gangSheetHeight: order.gangSheetHeight,
+        });
+
+        // Eski alanları güncelle
+        await db.order.update({
+          where: { id: orderId },
+          data: {
+            exportPng: result.pngKey,
+            exportTiff: result.tiffKey,
+            exportPdf: result.pdfKey,
+          },
+        });
+
+        console.log(`[Export] Order ${orderNumber} (legacy) completed in ${(result.durationMs / 1000).toFixed(1)}s`);
+        if (result.skippedItems.length > 0) {
+          console.warn(`[Export] Skipped items: ${result.skippedItems.join(", ")}`);
+        }
+
+        return result;
+      }
     },
     {
       connection: getRedisConnection(),

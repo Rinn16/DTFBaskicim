@@ -397,6 +397,7 @@ export const ModelName = {
   Order: 'Order',
   OrderItem: 'OrderItem',
   OrderStatusHistory: 'OrderStatusHistory',
+  OrderGangSheet: 'OrderGangSheet',
   DesignDraft: 'DesignDraft',
   CartItem: 'CartItem'
 } as const
@@ -414,7 +415,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "otpCode" | "address" | "pricingTier" | "customerPricing" | "discountCode" | "shippingConfig" | "order" | "orderItem" | "orderStatusHistory" | "designDraft" | "cartItem"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "otpCode" | "address" | "pricingTier" | "customerPricing" | "discountCode" | "shippingConfig" | "order" | "orderItem" | "orderStatusHistory" | "orderGangSheet" | "designDraft" | "cartItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1380,6 +1381,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    OrderGangSheet: {
+      payload: Prisma.$OrderGangSheetPayload<ExtArgs>
+      fields: Prisma.OrderGangSheetFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OrderGangSheetFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderGangSheetPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OrderGangSheetFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderGangSheetPayload>
+        }
+        findFirst: {
+          args: Prisma.OrderGangSheetFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderGangSheetPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OrderGangSheetFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderGangSheetPayload>
+        }
+        findMany: {
+          args: Prisma.OrderGangSheetFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderGangSheetPayload>[]
+        }
+        create: {
+          args: Prisma.OrderGangSheetCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderGangSheetPayload>
+        }
+        createMany: {
+          args: Prisma.OrderGangSheetCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OrderGangSheetCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderGangSheetPayload>[]
+        }
+        delete: {
+          args: Prisma.OrderGangSheetDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderGangSheetPayload>
+        }
+        update: {
+          args: Prisma.OrderGangSheetUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderGangSheetPayload>
+        }
+        deleteMany: {
+          args: Prisma.OrderGangSheetDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OrderGangSheetUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OrderGangSheetUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderGangSheetPayload>[]
+        }
+        upsert: {
+          args: Prisma.OrderGangSheetUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderGangSheetPayload>
+        }
+        aggregate: {
+          args: Prisma.OrderGangSheetAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOrderGangSheet>
+        }
+        groupBy: {
+          args: Prisma.OrderGangSheetGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrderGangSheetGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OrderGangSheetCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrderGangSheetCountAggregateOutputType> | number
+        }
+      }
+    }
     DesignDraft: {
       payload: Prisma.$DesignDraftPayload<ExtArgs>
       fields: Prisma.DesignDraftFieldRefs
@@ -1792,6 +1867,22 @@ export const OrderStatusHistoryScalarFieldEnum = {
 export type OrderStatusHistoryScalarFieldEnum = (typeof OrderStatusHistoryScalarFieldEnum)[keyof typeof OrderStatusHistoryScalarFieldEnum]
 
 
+export const OrderGangSheetScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  gangSheetLayout: 'gangSheetLayout',
+  gangSheetWidth: 'gangSheetWidth',
+  gangSheetHeight: 'gangSheetHeight',
+  totalMeters: 'totalMeters',
+  exportPng: 'exportPng',
+  exportTiff: 'exportTiff',
+  exportPdf: 'exportPdf',
+  createdAt: 'createdAt'
+} as const
+
+export type OrderGangSheetScalarFieldEnum = (typeof OrderGangSheetScalarFieldEnum)[keyof typeof OrderGangSheetScalarFieldEnum]
+
+
 export const DesignDraftScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -2145,6 +2236,7 @@ export type GlobalOmitConfig = {
   order?: Prisma.OrderOmit
   orderItem?: Prisma.OrderItemOmit
   orderStatusHistory?: Prisma.OrderStatusHistoryOmit
+  orderGangSheet?: Prisma.OrderGangSheetOmit
   designDraft?: Prisma.DesignDraftOmit
   cartItem?: Prisma.CartItemOmit
 }
