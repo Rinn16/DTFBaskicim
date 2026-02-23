@@ -32,7 +32,18 @@ export default async function middleware(request: NextRequest) {
   }
 
   // Check JWT token for protected pages (edge-compatible, no Prisma needed)
-  const token = await getToken({ req: request });
+  // NextAuth v5 uses __Secure- prefix on HTTPS and "authjs" salt
+  const isSecure = request.nextUrl.protocol === "https:";
+  const cookieName = isSecure
+    ? "__Secure-authjs.session-token"
+    : "authjs.session-token";
+
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+    cookieName,
+    salt: cookieName,
+  });
   const isLoggedIn = !!token;
   const isAdminPath = pathname.startsWith("/admin");
 
