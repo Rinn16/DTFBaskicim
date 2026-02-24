@@ -1,4 +1,4 @@
-const NETGSM_API_URL = "https://api.netgsm.com.tr/sms/send/get";
+const VATANSMS_API_URL = "https://api.vatansms.net/api/v1/1toN";
 
 interface SendSmsResult {
   success: boolean;
@@ -6,39 +6,41 @@ interface SendSmsResult {
 }
 
 export async function sendSms(phone: string, message: string): Promise<SendSmsResult> {
-  const usercode = process.env.SMS_API_KEY;
-  const password = process.env.SMS_API_SECRET;
-  const msgheader = process.env.SMS_SENDER;
+  const api_id = process.env.SMS_API_KEY;
+  const api_key = process.env.SMS_API_SECRET;
+  const sender = process.env.SMS_SENDER;
 
-  if (!usercode || !password || !msgheader) {
+  if (!api_id || !api_key || !sender) {
     console.error("SMS credentials not configured");
     return { success: false, error: "SMS yapılandırması eksik" };
   }
 
-  // Netgsm expects 10-digit number without country code
-  const gsmno = phone.replace(/^\+90/, "");
-
-  const params = new URLSearchParams({
-    usercode,
-    password,
-    gsmno,
-    message,
-    msgheader,
-    dil: "TR",
-  });
+  // VatanSMS expects 10-digit number without +90 or leading 0
+  const cleanPhone = phone.replace(/^\+90/, "").replace(/^0/, "");
 
   try {
-    const response = await fetch(`${NETGSM_API_URL}?${params.toString()}`);
-    const body = await response.text();
+    const response = await fetch(VATANSMS_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        api_id,
+        api_key,
+        sender,
+        message_type: "turkce",
+        message,
+        message_content_type: "bilgi",
+        phones: [cleanPhone],
+      }),
+    });
 
-    // Netgsm returns codes like "00" for success, "30" for invalid credentials, etc.
-    const code = body.split(" ")[0];
-    if (code === "00" || code === "01" || code === "02") {
+    const body = await response.json();
+
+    if (body.status === "success") {
       return { success: true };
     }
 
-    console.error(`Netgsm error code: ${code}, response: ${body}`);
-    return { success: false, error: `SMS gönderilemedi (kod: ${code})` };
+    console.error(`VatanSMS error: ${body.message}`);
+    return { success: false, error: `SMS gönderilemedi: ${body.message}` };
   } catch (error) {
     console.error("SMS send error:", error);
     return { success: false, error: "SMS servisi ile bağlantı kurulamadı" };
