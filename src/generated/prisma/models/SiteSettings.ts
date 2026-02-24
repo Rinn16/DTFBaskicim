@@ -27,18 +27,33 @@ export type AggregateSiteSettings = {
 export type SiteSettingsMinAggregateOutputType = {
   id: string | null
   smsEnabled: boolean | null
+  emailEnabled: boolean | null
+  emailOrderConfirm: boolean | null
+  emailStatusUpdate: boolean | null
+  emailWelcome: boolean | null
+  emailOtp: boolean | null
   updatedAt: Date | null
 }
 
 export type SiteSettingsMaxAggregateOutputType = {
   id: string | null
   smsEnabled: boolean | null
+  emailEnabled: boolean | null
+  emailOrderConfirm: boolean | null
+  emailStatusUpdate: boolean | null
+  emailWelcome: boolean | null
+  emailOtp: boolean | null
   updatedAt: Date | null
 }
 
 export type SiteSettingsCountAggregateOutputType = {
   id: number
   smsEnabled: number
+  emailEnabled: number
+  emailOrderConfirm: number
+  emailStatusUpdate: number
+  emailWelcome: number
+  emailOtp: number
   updatedAt: number
   _all: number
 }
@@ -47,18 +62,33 @@ export type SiteSettingsCountAggregateOutputType = {
 export type SiteSettingsMinAggregateInputType = {
   id?: true
   smsEnabled?: true
+  emailEnabled?: true
+  emailOrderConfirm?: true
+  emailStatusUpdate?: true
+  emailWelcome?: true
+  emailOtp?: true
   updatedAt?: true
 }
 
 export type SiteSettingsMaxAggregateInputType = {
   id?: true
   smsEnabled?: true
+  emailEnabled?: true
+  emailOrderConfirm?: true
+  emailStatusUpdate?: true
+  emailWelcome?: true
+  emailOtp?: true
   updatedAt?: true
 }
 
 export type SiteSettingsCountAggregateInputType = {
   id?: true
   smsEnabled?: true
+  emailEnabled?: true
+  emailOrderConfirm?: true
+  emailStatusUpdate?: true
+  emailWelcome?: true
+  emailOtp?: true
   updatedAt?: true
   _all?: true
 }
@@ -138,6 +168,11 @@ export type SiteSettingsGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 export type SiteSettingsGroupByOutputType = {
   id: string
   smsEnabled: boolean
+  emailEnabled: boolean
+  emailOrderConfirm: boolean
+  emailStatusUpdate: boolean
+  emailWelcome: boolean
+  emailOtp: boolean
   updatedAt: Date
   _count: SiteSettingsCountAggregateOutputType | null
   _min: SiteSettingsMinAggregateOutputType | null
@@ -165,12 +200,22 @@ export type SiteSettingsWhereInput = {
   NOT?: Prisma.SiteSettingsWhereInput | Prisma.SiteSettingsWhereInput[]
   id?: Prisma.StringFilter<"SiteSettings"> | string
   smsEnabled?: Prisma.BoolFilter<"SiteSettings"> | boolean
+  emailEnabled?: Prisma.BoolFilter<"SiteSettings"> | boolean
+  emailOrderConfirm?: Prisma.BoolFilter<"SiteSettings"> | boolean
+  emailStatusUpdate?: Prisma.BoolFilter<"SiteSettings"> | boolean
+  emailWelcome?: Prisma.BoolFilter<"SiteSettings"> | boolean
+  emailOtp?: Prisma.BoolFilter<"SiteSettings"> | boolean
   updatedAt?: Prisma.DateTimeFilter<"SiteSettings"> | Date | string
 }
 
 export type SiteSettingsOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   smsEnabled?: Prisma.SortOrder
+  emailEnabled?: Prisma.SortOrder
+  emailOrderConfirm?: Prisma.SortOrder
+  emailStatusUpdate?: Prisma.SortOrder
+  emailWelcome?: Prisma.SortOrder
+  emailOtp?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -180,12 +225,22 @@ export type SiteSettingsWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.SiteSettingsWhereInput[]
   NOT?: Prisma.SiteSettingsWhereInput | Prisma.SiteSettingsWhereInput[]
   smsEnabled?: Prisma.BoolFilter<"SiteSettings"> | boolean
+  emailEnabled?: Prisma.BoolFilter<"SiteSettings"> | boolean
+  emailOrderConfirm?: Prisma.BoolFilter<"SiteSettings"> | boolean
+  emailStatusUpdate?: Prisma.BoolFilter<"SiteSettings"> | boolean
+  emailWelcome?: Prisma.BoolFilter<"SiteSettings"> | boolean
+  emailOtp?: Prisma.BoolFilter<"SiteSettings"> | boolean
   updatedAt?: Prisma.DateTimeFilter<"SiteSettings"> | Date | string
 }, "id">
 
 export type SiteSettingsOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   smsEnabled?: Prisma.SortOrder
+  emailEnabled?: Prisma.SortOrder
+  emailOrderConfirm?: Prisma.SortOrder
+  emailStatusUpdate?: Prisma.SortOrder
+  emailWelcome?: Prisma.SortOrder
+  emailOtp?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SiteSettingsCountOrderByAggregateInput
   _max?: Prisma.SiteSettingsMaxOrderByAggregateInput
@@ -198,66 +253,121 @@ export type SiteSettingsScalarWhereWithAggregatesInput = {
   NOT?: Prisma.SiteSettingsScalarWhereWithAggregatesInput | Prisma.SiteSettingsScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"SiteSettings"> | string
   smsEnabled?: Prisma.BoolWithAggregatesFilter<"SiteSettings"> | boolean
+  emailEnabled?: Prisma.BoolWithAggregatesFilter<"SiteSettings"> | boolean
+  emailOrderConfirm?: Prisma.BoolWithAggregatesFilter<"SiteSettings"> | boolean
+  emailStatusUpdate?: Prisma.BoolWithAggregatesFilter<"SiteSettings"> | boolean
+  emailWelcome?: Prisma.BoolWithAggregatesFilter<"SiteSettings"> | boolean
+  emailOtp?: Prisma.BoolWithAggregatesFilter<"SiteSettings"> | boolean
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"SiteSettings"> | Date | string
 }
 
 export type SiteSettingsCreateInput = {
   id?: string
   smsEnabled?: boolean
+  emailEnabled?: boolean
+  emailOrderConfirm?: boolean
+  emailStatusUpdate?: boolean
+  emailWelcome?: boolean
+  emailOtp?: boolean
   updatedAt?: Date | string
 }
 
 export type SiteSettingsUncheckedCreateInput = {
   id?: string
   smsEnabled?: boolean
+  emailEnabled?: boolean
+  emailOrderConfirm?: boolean
+  emailStatusUpdate?: boolean
+  emailWelcome?: boolean
+  emailOtp?: boolean
   updatedAt?: Date | string
 }
 
 export type SiteSettingsUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   smsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailOrderConfirm?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailStatusUpdate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailWelcome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailOtp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SiteSettingsUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   smsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailOrderConfirm?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailStatusUpdate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailWelcome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailOtp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SiteSettingsCreateManyInput = {
   id?: string
   smsEnabled?: boolean
+  emailEnabled?: boolean
+  emailOrderConfirm?: boolean
+  emailStatusUpdate?: boolean
+  emailWelcome?: boolean
+  emailOtp?: boolean
   updatedAt?: Date | string
 }
 
 export type SiteSettingsUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   smsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailOrderConfirm?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailStatusUpdate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailWelcome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailOtp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SiteSettingsUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   smsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailOrderConfirm?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailStatusUpdate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailWelcome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailOtp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SiteSettingsCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   smsEnabled?: Prisma.SortOrder
+  emailEnabled?: Prisma.SortOrder
+  emailOrderConfirm?: Prisma.SortOrder
+  emailStatusUpdate?: Prisma.SortOrder
+  emailWelcome?: Prisma.SortOrder
+  emailOtp?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type SiteSettingsMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   smsEnabled?: Prisma.SortOrder
+  emailEnabled?: Prisma.SortOrder
+  emailOrderConfirm?: Prisma.SortOrder
+  emailStatusUpdate?: Prisma.SortOrder
+  emailWelcome?: Prisma.SortOrder
+  emailOtp?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type SiteSettingsMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   smsEnabled?: Prisma.SortOrder
+  emailEnabled?: Prisma.SortOrder
+  emailOrderConfirm?: Prisma.SortOrder
+  emailStatusUpdate?: Prisma.SortOrder
+  emailWelcome?: Prisma.SortOrder
+  emailOtp?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -266,28 +376,48 @@ export type SiteSettingsMinOrderByAggregateInput = {
 export type SiteSettingsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   smsEnabled?: boolean
+  emailEnabled?: boolean
+  emailOrderConfirm?: boolean
+  emailStatusUpdate?: boolean
+  emailWelcome?: boolean
+  emailOtp?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["siteSettings"]>
 
 export type SiteSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   smsEnabled?: boolean
+  emailEnabled?: boolean
+  emailOrderConfirm?: boolean
+  emailStatusUpdate?: boolean
+  emailWelcome?: boolean
+  emailOtp?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["siteSettings"]>
 
 export type SiteSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   smsEnabled?: boolean
+  emailEnabled?: boolean
+  emailOrderConfirm?: boolean
+  emailStatusUpdate?: boolean
+  emailWelcome?: boolean
+  emailOtp?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["siteSettings"]>
 
 export type SiteSettingsSelectScalar = {
   id?: boolean
   smsEnabled?: boolean
+  emailEnabled?: boolean
+  emailOrderConfirm?: boolean
+  emailStatusUpdate?: boolean
+  emailWelcome?: boolean
+  emailOtp?: boolean
   updatedAt?: boolean
 }
 
-export type SiteSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "smsEnabled" | "updatedAt", ExtArgs["result"]["siteSettings"]>
+export type SiteSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "smsEnabled" | "emailEnabled" | "emailOrderConfirm" | "emailStatusUpdate" | "emailWelcome" | "emailOtp" | "updatedAt", ExtArgs["result"]["siteSettings"]>
 
 export type $SiteSettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SiteSettings"
@@ -295,6 +425,11 @@ export type $SiteSettingsPayload<ExtArgs extends runtime.Types.Extensions.Intern
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     smsEnabled: boolean
+    emailEnabled: boolean
+    emailOrderConfirm: boolean
+    emailStatusUpdate: boolean
+    emailWelcome: boolean
+    emailOtp: boolean
     updatedAt: Date
   }, ExtArgs["result"]["siteSettings"]>
   composites: {}
@@ -721,6 +856,11 @@ export interface Prisma__SiteSettingsClient<T, Null = never, ExtArgs extends run
 export interface SiteSettingsFieldRefs {
   readonly id: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly smsEnabled: Prisma.FieldRef<"SiteSettings", 'Boolean'>
+  readonly emailEnabled: Prisma.FieldRef<"SiteSettings", 'Boolean'>
+  readonly emailOrderConfirm: Prisma.FieldRef<"SiteSettings", 'Boolean'>
+  readonly emailStatusUpdate: Prisma.FieldRef<"SiteSettings", 'Boolean'>
+  readonly emailWelcome: Prisma.FieldRef<"SiteSettings", 'Boolean'>
+  readonly emailOtp: Prisma.FieldRef<"SiteSettings", 'Boolean'>
   readonly updatedAt: Prisma.FieldRef<"SiteSettings", 'DateTime'>
 }
     

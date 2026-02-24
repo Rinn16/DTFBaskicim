@@ -218,9 +218,14 @@ model ShippingConfig {
 }
 
 model SiteSettings {
-  id         String   @id @default("default")
-  smsEnabled Boolean  @default(false)
-  updatedAt  DateTime @updatedAt
+  id                String   @id @default("default")
+  smsEnabled        Boolean  @default(false)
+  emailEnabled      Boolean  @default(false)
+  emailOrderConfirm Boolean  @default(true)
+  emailStatusUpdate Boolean  @default(true)
+  emailWelcome      Boolean  @default(true)
+  emailOtp          Boolean  @default(true)
+  updatedAt         DateTime @updatedAt
 }
 
 // ==================== ORDERS ====================

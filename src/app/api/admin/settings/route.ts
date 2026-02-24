@@ -33,6 +33,11 @@ export async function GET() {
 
 const updateSchema = z.object({
   smsEnabled: z.boolean().optional(),
+  emailEnabled: z.boolean().optional(),
+  emailOrderConfirm: z.boolean().optional(),
+  emailStatusUpdate: z.boolean().optional(),
+  emailWelcome: z.boolean().optional(),
+  emailOtp: z.boolean().optional(),
 });
 
 export async function PATCH(request: Request) {

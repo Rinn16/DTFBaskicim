@@ -2022,6 +2022,11 @@ export type ShippingConfigScalarFieldEnum = (typeof ShippingConfigScalarFieldEnu
 export const SiteSettingsScalarFieldEnum = {
   id: 'id',
   smsEnabled: 'smsEnabled',
+  emailEnabled: 'emailEnabled',
+  emailOrderConfirm: 'emailOrderConfirm',
+  emailStatusUpdate: 'emailStatusUpdate',
+  emailWelcome: 'emailWelcome',
+  emailOtp: 'emailOtp',
   updatedAt: 'updatedAt'
 } as const
 

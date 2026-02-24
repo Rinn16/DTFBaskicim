@@ -4,6 +4,15 @@ import {
   orderConfirmationHtml,
   orderStatusUpdateHtml,
 } from "@/lib/email-templates";
+import { db } from "@/lib/db";
+
+type EmailType = "emailOrderConfirm" | "emailStatusUpdate" | "emailWelcome" | "emailOtp";
+
+async function isEmailTypeEnabled(type: EmailType): Promise<boolean> {
+  const settings = await db.siteSettings.findUnique({ where: { id: "default" } });
+  if (!settings?.emailEnabled) return false;
+  return settings[type] ?? false;
+}
 
 const transporter = process.env.SMTP_HOST
   ? nodemailer.createTransport({
@@ -43,6 +52,7 @@ export async function sendOrderConfirmation(
   to: string,
   data: OrderEmailData,
 ) {
+  if (!(await isEmailTypeEnabled("emailOrderConfirm"))) return;
   await sendEmail({
     to,
     subject: `Sipariş Onay - ${data.orderNumber}`,
@@ -55,6 +65,7 @@ export async function sendOrderStatusUpdate(
   data: OrderEmailData,
   newStatus: string,
 ) {
+  if (!(await isEmailTypeEnabled("emailStatusUpdate"))) return;
   await sendEmail({
     to,
     subject: `Sipariş Durumu Güncellendi - ${data.orderNumber}`,
