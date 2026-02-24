@@ -118,6 +118,7 @@ export async function PATCH(
             orderDate: "",
             deliveryAddress: "",
             orderUrl: `${siteUrl}/hesabim/siparisler`,
+            trackingCode: trackingCode || undefined,
           }).catch((err) => console.error("[email] Shipped email failed:", err));
         }
       } catch (err) {

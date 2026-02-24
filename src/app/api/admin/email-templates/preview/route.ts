@@ -64,6 +64,7 @@ export async function POST(request: Request) {
       teslimatAdresi: "Teknoloji Mah. Sanayi Cad. No: 42<br/>Şişli / İstanbul",
       siparisDetayUrl: "https://dtfbaskicim.ercanakcan.online/hesabim/siparisler",
       kargoUcreti: "49,90",
+      takipKodu: "TR12345678901",
     };
 
     const processedContent = replaceVariables(content, sampleData);

@@ -54,6 +54,7 @@ const TYPE_VARIABLES: Record<EmailTemplateType, { key: string; label: string }[]
     { key: "{urunSayisi}", label: "Ürün sayısı" },
     { key: "{odemeTuru}", label: "Ödeme yöntemi" },
     { key: "{siparisDetayUrl}", label: "Sipariş detay URL" },
+    { key: "{takipKodu}", label: "Kargo takip kodu" },
   ],
 };
 

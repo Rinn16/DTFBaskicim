@@ -20,6 +20,7 @@ export interface OrderEmailData {
   orderDate: string;
   deliveryAddress: string;
   orderUrl: string;
+  trackingCode?: string;
 }
 
 export function baseLayout(content: string): string {
@@ -106,6 +107,7 @@ function orderEmailDataToVars(data: OrderEmailData): Record<string, string> {
     teslimatAdresi: data.deliveryAddress,
     siparisDetayUrl: data.orderUrl,
     kargoUcreti: data.shippingCost.toFixed(2),
+    takipKodu: data.trackingCode || "",
   };
 }
 
