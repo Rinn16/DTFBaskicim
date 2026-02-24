@@ -259,6 +259,21 @@ export default function OdemePage() {
         }).catch(() => {/* ignore - billing save is optional */});
       }
 
+      // Store order data for success page (works for both guest & member)
+      try {
+        sessionStorage.setItem(
+          "lastOrder",
+          JSON.stringify({
+            orderNumber: order.orderNumber,
+            totalAmount: order.totalAmount,
+            totalMeters: totalMeters,
+            createdAt: new Date().toISOString(),
+          })
+        );
+      } catch {
+        // sessionStorage unavailable
+      }
+
       if (paymentMethod === "CREDIT_CARD") {
         // PayTR token al
         const tokenRes = await fetch("/api/payment/paytr/token", {

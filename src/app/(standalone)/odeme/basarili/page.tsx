@@ -8,7 +8,6 @@ import {
   Loader2,
   User,
   Truck,
-  Receipt,
   SearchCheck,
   Printer,
   PackageCheck,
@@ -46,6 +45,24 @@ function OdemeBasariliContent() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // 1) Try sessionStorage first (works for both guest & member)
+    try {
+      const stored = sessionStorage.getItem("lastOrder");
+      if (stored) {
+        const parsed = JSON.parse(stored) as OrderInfo;
+        // Match by orderNumber if we have oid, otherwise use whatever is stored
+        if (!orderNumber || parsed.orderNumber === orderNumber) {
+          setOrder(parsed);
+          sessionStorage.removeItem("lastOrder");
+          setIsLoading(false);
+          return;
+        }
+      }
+    } catch {
+      // sessionStorage unavailable
+    }
+
+    // 2) Fallback: fetch from API (works for logged-in users)
     if (!orderNumber) {
       setIsLoading(false);
       return;
@@ -243,21 +260,14 @@ function OdemeBasariliContent() {
                 </div>
               </div>
 
-              {/* Action buttons */}
-              <div className="mt-6 pt-6 border-t border-slate-700/50 flex flex-col sm:flex-row gap-4">
+              {/* Action button */}
+              <div className="mt-6 pt-6 border-t border-slate-700/50">
                 <Link
                   href={trackHref}
-                  className="flex-1 bg-[#137fec] hover:bg-[#137fec]/90 text-white px-6 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(19,127,236,0.3)] hover:shadow-[0_0_30px_rgba(19,127,236,0.5)] flex items-center justify-center gap-2 group/btn"
+                  className="w-full bg-[#137fec] hover:bg-[#137fec]/90 text-white px-6 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(19,127,236,0.3)] hover:shadow-[0_0_30px_rgba(19,127,236,0.5)] flex items-center justify-center gap-2 group/btn"
                 >
                   <Truck className="size-5 group-hover/btn:animate-bounce" />
                   Siparişi Takip Et
-                </Link>
-                <Link
-                  href="/hesabim/siparislerim"
-                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 hover:border-slate-600 px-6 py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
-                >
-                  <Receipt className="size-5" />
-                  Faturayı Görüntüle
                 </Link>
               </div>
             </div>
