@@ -401,6 +401,7 @@ export const ModelName = {
   OrderGangSheet: 'OrderGangSheet',
   DesignDraft: 'DesignDraft',
   CartItem: 'CartItem',
+  EmailTemplate: 'EmailTemplate',
   SmsTemplate: 'SmsTemplate',
   SmsLog: 'SmsLog'
 } as const
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "otpCode" | "address" | "pricingTier" | "customerPricing" | "discountCode" | "shippingConfig" | "siteSettings" | "order" | "orderItem" | "orderStatusHistory" | "orderGangSheet" | "designDraft" | "cartItem" | "smsTemplate" | "smsLog"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "otpCode" | "address" | "pricingTier" | "customerPricing" | "discountCode" | "shippingConfig" | "siteSettings" | "order" | "orderItem" | "orderStatusHistory" | "orderGangSheet" | "designDraft" | "cartItem" | "emailTemplate" | "smsTemplate" | "smsLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1680,6 +1681,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    EmailTemplate: {
+      payload: Prisma.$EmailTemplatePayload<ExtArgs>
+      fields: Prisma.EmailTemplateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmailTemplateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailTemplatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmailTemplateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailTemplatePayload>
+        }
+        findFirst: {
+          args: Prisma.EmailTemplateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailTemplatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmailTemplateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailTemplatePayload>
+        }
+        findMany: {
+          args: Prisma.EmailTemplateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailTemplatePayload>[]
+        }
+        create: {
+          args: Prisma.EmailTemplateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailTemplatePayload>
+        }
+        createMany: {
+          args: Prisma.EmailTemplateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EmailTemplateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailTemplatePayload>[]
+        }
+        delete: {
+          args: Prisma.EmailTemplateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailTemplatePayload>
+        }
+        update: {
+          args: Prisma.EmailTemplateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailTemplatePayload>
+        }
+        deleteMany: {
+          args: Prisma.EmailTemplateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmailTemplateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EmailTemplateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailTemplatePayload>[]
+        }
+        upsert: {
+          args: Prisma.EmailTemplateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailTemplatePayload>
+        }
+        aggregate: {
+          args: Prisma.EmailTemplateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmailTemplate>
+        }
+        groupBy: {
+          args: Prisma.EmailTemplateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmailTemplateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmailTemplateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmailTemplateCountAggregateOutputType> | number
+        }
+      }
+    }
     SmsTemplate: {
       payload: Prisma.$SmsTemplatePayload<ExtArgs>
       fields: Prisma.SmsTemplateFieldRefs
@@ -2148,6 +2223,20 @@ export const CartItemScalarFieldEnum = {
 export type CartItemScalarFieldEnum = (typeof CartItemScalarFieldEnum)[keyof typeof CartItemScalarFieldEnum]
 
 
+export const EmailTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  subject: 'subject',
+  content: 'content',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EmailTemplateScalarFieldEnum = (typeof EmailTemplateScalarFieldEnum)[keyof typeof EmailTemplateScalarFieldEnum]
+
+
 export const SmsTemplateScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -2383,6 +2472,20 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'EmailTemplateType'
+ */
+export type EnumEmailTemplateTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmailTemplateType'>
+    
+
+
+/**
+ * Reference to a field of type 'EmailTemplateType[]'
+ */
+export type ListEnumEmailTemplateTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmailTemplateType[]'>
+    
+
+
+/**
  * Reference to a field of type 'SmsTemplateType'
  */
 export type EnumSmsTemplateTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SmsTemplateType'>
@@ -2521,6 +2624,7 @@ export type GlobalOmitConfig = {
   orderGangSheet?: Prisma.OrderGangSheetOmit
   designDraft?: Prisma.DesignDraftOmit
   cartItem?: Prisma.CartItemOmit
+  emailTemplate?: Prisma.EmailTemplateOmit
   smsTemplate?: Prisma.SmsTemplateOmit
   smsLog?: Prisma.SmsLogOmit
 }

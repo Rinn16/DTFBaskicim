@@ -64,6 +64,16 @@ export const BillingType = {
 export type BillingType = (typeof BillingType)[keyof typeof BillingType]
 
 
+export const EmailTemplateType = {
+  ORDER_CONFIRMATION: 'ORDER_CONFIRMATION',
+  STATUS_UPDATE: 'STATUS_UPDATE',
+  WELCOME: 'WELCOME',
+  OTP: 'OTP'
+} as const
+
+export type EmailTemplateType = (typeof EmailTemplateType)[keyof typeof EmailTemplateType]
+
+
 export const SmsTemplateType = {
   SIPARIS_ONAYLANDI: 'SIPARIS_ONAYLANDI',
   KARGOYA_VERILDI: 'KARGOYA_VERILDI',

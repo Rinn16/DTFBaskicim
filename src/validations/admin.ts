@@ -25,6 +25,13 @@ export const smsTemplateSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
+export const emailTemplateSchema = z.object({
+  name: z.string().min(1, "Şablon adı zorunlu").max(100),
+  subject: z.string().min(1, "Konu zorunlu").max(200),
+  content: z.string().min(1, "İçerik zorunlu"),
+  isActive: z.boolean().optional(),
+});
+
 export const smsSendSchema = z.object({
   message: z.string().min(1, "Mesaj içeriği zorunlu").max(918),
   phones: z.array(z.string()).min(1, "En az bir telefon numarası gerekli"),

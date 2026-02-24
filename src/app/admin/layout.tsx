@@ -11,6 +11,7 @@ import {
   Users,
   Banknote,
   MessageSquare,
+  Mail,
   Settings,
   ArrowLeft,
   Menu,
@@ -24,6 +25,7 @@ interface NavItem {
   icon: LucideIcon;
   exact?: boolean;
   requireSms?: boolean;
+  requireEmail?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -32,16 +34,21 @@ const navItems: NavItem[] = [
   { href: "/admin/musteriler", label: "Müşteriler", icon: Users },
   { href: "/admin/fiyatlandirma", label: "Fiyatlandırma", icon: Banknote },
   { href: "/admin/sms", label: "SMS Yönetimi", icon: MessageSquare, requireSms: true },
+  { href: "/admin/email", label: "E-posta", icon: Mail, requireEmail: true },
   { href: "/admin/ayarlar", label: "Ayarlar", icon: Settings },
 ];
 
-function SidebarContent({ pathname, smsEnabled }: { pathname: string; smsEnabled: boolean }) {
+function SidebarContent({ pathname, smsEnabled, emailEnabled }: { pathname: string; smsEnabled: boolean; emailEnabled: boolean }) {
   const isActive = (href: string, exact?: boolean) => {
     if (exact) return pathname === href;
     return pathname.startsWith(href);
   };
 
-  const visibleItems = navItems.filter((item) => !item.requireSms || smsEnabled);
+  const visibleItems = navItems.filter((item) => {
+    if (item.requireSms && !smsEnabled) return false;
+    if (item.requireEmail && !emailEnabled) return false;
+    return true;
+  });
 
   return (
     <div className="flex h-full flex-col">
@@ -85,6 +92,7 @@ function SidebarContent({ pathname, smsEnabled }: { pathname: string; smsEnabled
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [smsEnabled, setSmsEnabled] = useState(false);
+  const [emailEnabled, setEmailEnabled] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/settings")
@@ -92,6 +100,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       .then((data) => {
         if (data?.settings) {
           setSmsEnabled(data.settings.smsEnabled);
+          setEmailEnabled(data.settings.emailEnabled);
         }
       })
       .catch(() => {});
@@ -101,7 +110,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex h-screen">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-60 flex-col border-r bg-background">
-        <SidebarContent pathname={pathname} smsEnabled={smsEnabled} />
+        <SidebarContent pathname={pathname} smsEnabled={smsEnabled} emailEnabled={emailEnabled} />
       </aside>
 
       {/* Main content */}
@@ -115,7 +124,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-60 p-0">
-              <SidebarContent pathname={pathname} smsEnabled={smsEnabled} />
+              <SidebarContent pathname={pathname} smsEnabled={smsEnabled} emailEnabled={emailEnabled} />
             </SheetContent>
           </Sheet>
           <span className="text-lg font-bold text-primary">DTF Admin</span>

@@ -379,6 +379,26 @@ model CartItem {
   @@index([userId])
 }
 
+// ==================== EMAIL TEMPLATES ====================
+
+enum EmailTemplateType {
+  ORDER_CONFIRMATION
+  STATUS_UPDATE
+  WELCOME
+  OTP
+}
+
+model EmailTemplate {
+  id        String            @id @default(cuid())
+  name      String
+  type      EmailTemplateType @unique
+  subject   String
+  content   String            @db.Text
+  isActive  Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
 // ==================== SMS ====================
 
 enum SmsTemplateType {

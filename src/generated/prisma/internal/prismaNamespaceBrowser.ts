@@ -68,6 +68,7 @@ export const ModelName = {
   OrderGangSheet: 'OrderGangSheet',
   DesignDraft: 'DesignDraft',
   CartItem: 'CartItem',
+  EmailTemplate: 'EmailTemplate',
   SmsTemplate: 'SmsTemplate',
   SmsLog: 'SmsLog'
 } as const
@@ -367,6 +368,20 @@ export const CartItemScalarFieldEnum = {
 } as const
 
 export type CartItemScalarFieldEnum = (typeof CartItemScalarFieldEnum)[keyof typeof CartItemScalarFieldEnum]
+
+
+export const EmailTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  subject: 'subject',
+  content: 'content',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EmailTemplateScalarFieldEnum = (typeof EmailTemplateScalarFieldEnum)[keyof typeof EmailTemplateScalarFieldEnum]
 
 
 export const SmsTemplateScalarFieldEnum = {

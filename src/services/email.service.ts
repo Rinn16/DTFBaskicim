@@ -53,11 +53,8 @@ export async function sendOrderConfirmation(
   data: OrderEmailData,
 ) {
   if (!(await isEmailTypeEnabled("emailOrderConfirm"))) return;
-  await sendEmail({
-    to,
-    subject: `Sipariş Onay - ${data.orderNumber}`,
-    html: orderConfirmationHtml(data),
-  });
+  const { subject, html } = await orderConfirmationHtml(data);
+  await sendEmail({ to, subject, html });
 }
 
 export async function sendOrderStatusUpdate(
@@ -66,9 +63,6 @@ export async function sendOrderStatusUpdate(
   newStatus: string,
 ) {
   if (!(await isEmailTypeEnabled("emailStatusUpdate"))) return;
-  await sendEmail({
-    to,
-    subject: `Sipariş Durumu Güncellendi - ${data.orderNumber}`,
-    html: orderStatusUpdateHtml(data, newStatus),
-  });
+  const { subject, html } = await orderStatusUpdateHtml(data, newStatus);
+  await sendEmail({ to, subject, html });
 }

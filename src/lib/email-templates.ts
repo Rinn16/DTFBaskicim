@@ -1,3 +1,7 @@
+import { ORDER_STATUSES } from "@/lib/constants";
+import { db } from "@/lib/db";
+import type { EmailTemplateType } from "@/generated/prisma/client";
+
 export interface OrderEmailData {
   orderNumber: string;
   customerName: string;
@@ -8,7 +12,7 @@ export interface OrderEmailData {
   itemCount: number;
 }
 
-function baseLayout(content: string): string {
+export function baseLayout(content: string): string {
   return `<!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -49,10 +53,41 @@ function baseLayout(content: string): string {
 </html>`;
 }
 
+export function replaceVariables(template: string, data: Record<string, string>): string {
+  let result = template;
+  for (const [key, value] of Object.entries(data)) {
+    result = result.replace(new RegExp(`\\{${key}\\}`, "g"), value);
+  }
+  return result;
+}
+
 const paymentMethodLabel = (method: string) =>
   method === "CREDIT_CARD" ? "Kredi Kartı" : "Banka Havalesi";
 
-export function orderConfirmationHtml(data: OrderEmailData): string {
+function orderEmailDataToVars(data: OrderEmailData): Record<string, string> {
+  return {
+    musteriAdi: data.customerName,
+    siparisNo: data.orderNumber,
+    toplamTutar: data.totalAmount.toFixed(2),
+    toplamMetre: data.totalMeters.toFixed(2),
+    urunSayisi: String(data.itemCount),
+    odemeTuru: paymentMethodLabel(data.paymentMethod),
+  };
+}
+
+async function getDbTemplate(type: EmailTemplateType) {
+  try {
+    const tpl = await db.emailTemplate.findUnique({ where: { type } });
+    if (tpl && tpl.isActive) return tpl;
+  } catch {
+    // DB not ready or table doesn't exist yet — fall through to hardcoded
+  }
+  return null;
+}
+
+// ========== Hardcoded fallbacks ==========
+
+function orderConfirmationHtmlFallback(data: OrderEmailData): string {
   const content = `
     <h2 style="margin:0 0 8px;font-size:18px;color:#18181b;">Siparişiniz Alındı!</h2>
     <p style="margin:0 0 24px;font-size:14px;color:#52525b;">
@@ -105,9 +140,7 @@ export function orderConfirmationHtml(data: OrderEmailData): string {
   return baseLayout(content);
 }
 
-import { ORDER_STATUSES } from "@/lib/constants";
-
-export function orderStatusUpdateHtml(data: OrderEmailData, newStatus: string): string {
+function orderStatusUpdateHtmlFallback(data: OrderEmailData, newStatus: string): string {
   const statusLabel = ORDER_STATUSES[newStatus as keyof typeof ORDER_STATUSES] || newStatus;
 
   const content = `
@@ -140,4 +173,40 @@ export function orderStatusUpdateHtml(data: OrderEmailData, newStatus: string): 
     </p>`;
 
   return baseLayout(content);
+}
+
+// ========== Public API (DB-first, fallback to hardcoded) ==========
+
+export async function orderConfirmationHtml(data: OrderEmailData): Promise<{ subject: string; html: string }> {
+  const tpl = await getDbTemplate("ORDER_CONFIRMATION");
+  if (tpl) {
+    const vars = orderEmailDataToVars(data);
+    return {
+      subject: replaceVariables(tpl.subject, vars),
+      html: baseLayout(replaceVariables(tpl.content, vars)),
+    };
+  }
+  return {
+    subject: `Sipariş Onay - ${data.orderNumber}`,
+    html: orderConfirmationHtmlFallback(data),
+  };
+}
+
+export async function orderStatusUpdateHtml(
+  data: OrderEmailData,
+  newStatus: string,
+): Promise<{ subject: string; html: string }> {
+  const statusLabel = ORDER_STATUSES[newStatus as keyof typeof ORDER_STATUSES] || newStatus;
+  const tpl = await getDbTemplate("STATUS_UPDATE");
+  if (tpl) {
+    const vars = { ...orderEmailDataToVars(data), yeniDurum: statusLabel };
+    return {
+      subject: replaceVariables(tpl.subject, vars),
+      html: baseLayout(replaceVariables(tpl.content, vars)),
+    };
+  }
+  return {
+    subject: `Sipariş Durumu Güncellendi - ${data.orderNumber}`,
+    html: orderStatusUpdateHtmlFallback(data, newStatus),
+  };
 }
