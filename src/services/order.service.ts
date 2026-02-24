@@ -237,14 +237,36 @@ export async function createOrder(params: CreateOrderParams) {
     }
 
     if (email) {
+      // Fetch address for email
+      let deliveryAddress = "";
+      if (addressId) {
+        const addr = await db.address.findUnique({ where: { id: addressId } });
+        if (addr) {
+          deliveryAddress = [addr.address, addr.district, addr.city, addr.zipCode].filter(Boolean).join(", ");
+        }
+      } else if (params.guestAddress) {
+        const ga = params.guestAddress;
+        deliveryAddress = [ga.address, ga.district, ga.city, ga.zipCode].filter(Boolean).join(", ");
+      }
+
+      const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://dtfbaskicim.ercanakcan.online";
+
       sendOrderConfirmation(email, {
         orderNumber: order.orderNumber,
         customerName,
         totalMeters: Number(order.totalMeters),
         totalAmount: Number(order.totalAmount),
+        shippingCost: Number(order.shippingCost),
         paymentMethod: order.paymentMethod,
         status: order.status,
         itemCount: allItems.length,
+        items: allItems.map((item) => ({
+          imageName: item.imageName,
+          quantity: item.placements.length,
+        })),
+        orderDate: new Date().toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" }),
+        deliveryAddress,
+        orderUrl: `${siteUrl}/hesabim/siparisler`,
       }).catch((err) => console.error("[email] Order confirmation failed:", err));
     }
   } catch (err) {

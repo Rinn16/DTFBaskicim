@@ -104,14 +104,20 @@ export async function PATCH(
         const customerName = order.user?.name || order.guestName || "Müşterimiz";
 
         if (email) {
+          const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://dtfbaskicim.ercanakcan.online";
           sendOrderShipped(email, {
             orderNumber: order.orderNumber,
             customerName,
             totalMeters: Number(order.totalMeters),
             totalAmount: Number(order.totalAmount),
+            shippingCost: 0,
             paymentMethod: order.paymentMethod,
             status,
             itemCount: order.items.length,
+            items: [],
+            orderDate: "",
+            deliveryAddress: "",
+            orderUrl: `${siteUrl}/hesabim/siparisler`,
           }).catch((err) => console.error("[email] Shipped email failed:", err));
         }
       } catch (err) {

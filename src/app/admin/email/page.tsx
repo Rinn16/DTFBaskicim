@@ -36,10 +36,15 @@ const TYPE_VARIABLES: Record<EmailTemplateType, { key: string; label: string }[]
   ORDER_CONFIRMATION: [
     { key: "{musteriAdi}", label: "Müşteri adı" },
     { key: "{siparisNo}", label: "Sipariş numarası" },
+    { key: "{siparisTarihi}", label: "Sipariş tarihi" },
     { key: "{toplamTutar}", label: "Toplam tutar" },
     { key: "{toplamMetre}", label: "Toplam metre" },
     { key: "{urunSayisi}", label: "Ürün sayısı" },
     { key: "{odemeTuru}", label: "Ödeme yöntemi" },
+    { key: "{kargoUcreti}", label: "Kargo ücreti" },
+    { key: "{urunListesi}", label: "Ürün listesi (HTML)" },
+    { key: "{teslimatAdresi}", label: "Teslimat adresi" },
+    { key: "{siparisDetayUrl}", label: "Sipariş detay URL" },
   ],
   SHIPPED: [
     { key: "{musteriAdi}", label: "Müşteri adı" },
@@ -48,6 +53,7 @@ const TYPE_VARIABLES: Record<EmailTemplateType, { key: string; label: string }[]
     { key: "{toplamMetre}", label: "Toplam metre" },
     { key: "{urunSayisi}", label: "Ürün sayısı" },
     { key: "{odemeTuru}", label: "Ödeme yöntemi" },
+    { key: "{siparisDetayUrl}", label: "Sipariş detay URL" },
   ],
 };
 

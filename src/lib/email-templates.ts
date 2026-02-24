@@ -2,14 +2,24 @@ import { ORDER_STATUSES } from "@/lib/constants";
 import { db } from "@/lib/db";
 import type { EmailTemplateType } from "@/generated/prisma/client";
 
+export interface OrderEmailItem {
+  imageName: string;
+  quantity: number;
+}
+
 export interface OrderEmailData {
   orderNumber: string;
   customerName: string;
   totalMeters: number;
   totalAmount: number;
+  shippingCost: number;
   paymentMethod: string;
   status: string;
   itemCount: number;
+  items: OrderEmailItem[];
+  orderDate: string;
+  deliveryAddress: string;
+  orderUrl: string;
 }
 
 export function baseLayout(content: string): string {
@@ -64,6 +74,25 @@ export function replaceVariables(template: string, data: Record<string, string>)
 const paymentMethodLabel = (method: string) =>
   method === "CREDIT_CARD" ? "Kredi Kartı" : "Banka Havalesi";
 
+function buildItemsHtml(items: OrderEmailItem[]): string {
+  return items.map((item) => `<tr>
+  <td style="padding:12px 16px;border-bottom:1px solid #f1f5f9;">
+    <table width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td width="48" valign="top">
+        <div style="width:44px;height:44px;background-color:#e2e8f0;border-radius:8px;text-align:center;line-height:44px;font-size:18px;color:#94a3b8;">&#9113;</div>
+      </td>
+      <td style="padding-left:12px;" valign="middle">
+        <p style="margin:0;font-weight:700;color:#1e293b;font-size:14px;font-family:'Manrope',Arial,sans-serif;">DTF Metraj Baskı (56cm)</p>
+        <p style="margin:2px 0 0;font-size:11px;color:#64748b;font-family:'Courier New',monospace;">Dosya: ${item.imageName}</p>
+      </td>
+      <td width="80" align="right" valign="middle">
+        <span style="font-size:13px;font-weight:500;color:#475569;background-color:#f1f5f9;padding:4px 8px;border-radius:4px;font-family:'Manrope',Arial,sans-serif;">${item.quantity} Adet</span>
+      </td>
+    </tr></table>
+  </td>
+</tr>`).join("\n");
+}
+
 function orderEmailDataToVars(data: OrderEmailData): Record<string, string> {
   return {
     musteriAdi: data.customerName,
@@ -72,6 +101,11 @@ function orderEmailDataToVars(data: OrderEmailData): Record<string, string> {
     toplamMetre: data.totalMeters.toFixed(2),
     urunSayisi: String(data.itemCount),
     odemeTuru: paymentMethodLabel(data.paymentMethod),
+    siparisTarihi: data.orderDate,
+    urunListesi: buildItemsHtml(data.items),
+    teslimatAdresi: data.deliveryAddress,
+    siparisDetayUrl: data.orderUrl,
+    kargoUcreti: data.shippingCost.toFixed(2),
   };
 }
 
@@ -83,6 +117,13 @@ async function getDbTemplate(type: EmailTemplateType) {
     // DB not ready or table doesn't exist yet — fall through to hardcoded
   }
   return null;
+}
+
+function renderTemplate(content: string, vars: Record<string, string>): string {
+  const processed = replaceVariables(content, vars);
+  // If template contains full HTML document, use as-is; otherwise wrap in baseLayout
+  if (processed.includes("</html>")) return processed;
+  return baseLayout(processed);
 }
 
 // ========== Hardcoded fallbacks ==========
@@ -99,7 +140,6 @@ function welcomeHtmlFallback(customerName: string): string {
     <p style="margin:0;font-size:13px;color:#71717a;">
       Herhangi bir sorunuz olursa bizimle iletişime geçmekten çekinmeyin.
     </p>`;
-
   return baseLayout(content);
 }
 
@@ -110,49 +150,18 @@ function orderConfirmationHtmlFallback(data: OrderEmailData): string {
       Merhaba ${data.customerName}, siparişiniz başarıyla oluşturuldu.
     </p>
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#fafafa;border-radius:6px;padding:16px;margin-bottom:24px;">
-      <tr>
-        <td style="padding:8px 16px;">
-          <p style="margin:0;font-size:12px;color:#71717a;">Sipariş Numarası</p>
-          <p style="margin:4px 0 0;font-size:16px;font-weight:700;color:#18181b;font-family:monospace;">${data.orderNumber}</p>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:8px 16px;">
-          <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td style="width:50%;">
-                <p style="margin:0;font-size:12px;color:#71717a;">Toplam Metre</p>
-                <p style="margin:4px 0 0;font-size:14px;font-weight:600;color:#18181b;">${data.totalMeters.toFixed(2)} m</p>
-              </td>
-              <td style="width:50%;">
-                <p style="margin:0;font-size:12px;color:#71717a;">Ürün Sayısı</p>
-                <p style="margin:4px 0 0;font-size:14px;font-weight:600;color:#18181b;">${data.itemCount} adet</p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:8px 16px;">
-          <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td style="width:50%;">
-                <p style="margin:0;font-size:12px;color:#71717a;">Ödeme Yöntemi</p>
-                <p style="margin:4px 0 0;font-size:14px;font-weight:600;color:#18181b;">${paymentMethodLabel(data.paymentMethod)}</p>
-              </td>
-              <td style="width:50%;">
-                <p style="margin:0;font-size:12px;color:#71717a;">Toplam Tutar</p>
-                <p style="margin:4px 0 0;font-size:18px;font-weight:700;color:#18181b;">${data.totalAmount.toFixed(2)} TL</p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
+      <tr><td style="padding:8px 16px;">
+        <p style="margin:0;font-size:12px;color:#71717a;">Sipariş No</p>
+        <p style="margin:4px 0 0;font-size:16px;font-weight:700;color:#18181b;font-family:monospace;">${data.orderNumber}</p>
+      </td></tr>
+      <tr><td style="padding:8px 16px;">
+        <p style="margin:0;font-size:12px;color:#71717a;">Toplam</p>
+        <p style="margin:4px 0 0;font-size:18px;font-weight:700;color:#18181b;">${data.totalAmount.toFixed(2)} TL</p>
+      </td></tr>
     </table>
     <p style="margin:0;font-size:13px;color:#71717a;">
-      Siparişinizin durumunu hesabınızdan veya sipariş takip sayfasından takip edebilirsiniz.
+      Siparişinizin durumunu hesabınızdan takip edebilirsiniz.
     </p>`;
-
   return baseLayout(content);
 }
 
@@ -163,29 +172,14 @@ function orderShippedHtmlFallback(data: OrderEmailData): string {
       Merhaba ${data.customerName}, <strong>${data.orderNumber}</strong> numaralı siparişiniz kargoya verildi.
     </p>
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#fafafa;border-radius:6px;margin-bottom:24px;">
-      <tr>
-        <td style="padding:20px;text-align:center;">
-          <p style="margin:0 0 4px;font-size:12px;color:#71717a;">Durum</p>
-          <p style="margin:0;font-size:20px;font-weight:700;color:#18181b;">Kargoya Verildi</p>
-        </td>
-      </tr>
-    </table>
-    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-      <tr>
-        <td style="width:50%;padding:8px 0;">
-          <p style="margin:0;font-size:12px;color:#71717a;">Sipariş Numarası</p>
-          <p style="margin:4px 0 0;font-size:14px;font-weight:600;color:#18181b;font-family:monospace;">${data.orderNumber}</p>
-        </td>
-        <td style="width:50%;padding:8px 0;">
-          <p style="margin:0;font-size:12px;color:#71717a;">Toplam Tutar</p>
-          <p style="margin:4px 0 0;font-size:14px;font-weight:600;color:#18181b;">${data.totalAmount.toFixed(2)} TL</p>
-        </td>
-      </tr>
+      <tr><td style="padding:20px;text-align:center;">
+        <p style="margin:0 0 4px;font-size:12px;color:#71717a;">Durum</p>
+        <p style="margin:0;font-size:20px;font-weight:700;color:#18181b;">Kargoya Verildi</p>
+      </td></tr>
     </table>
     <p style="margin:0;font-size:13px;color:#71717a;">
       Siparişinizin detaylarını hesabınızdan görüntüleyebilirsiniz.
     </p>`;
-
   return baseLayout(content);
 }
 
@@ -197,7 +191,7 @@ export async function welcomeHtml(customerName: string): Promise<{ subject: stri
     const vars = { musteriAdi: customerName };
     return {
       subject: replaceVariables(tpl.subject, vars),
-      html: baseLayout(replaceVariables(tpl.content, vars)),
+      html: renderTemplate(tpl.content, vars),
     };
   }
   return {
@@ -212,7 +206,7 @@ export async function orderConfirmationHtml(data: OrderEmailData): Promise<{ sub
     const vars = orderEmailDataToVars(data);
     return {
       subject: replaceVariables(tpl.subject, vars),
-      html: baseLayout(replaceVariables(tpl.content, vars)),
+      html: renderTemplate(tpl.content, vars),
     };
   }
   return {
@@ -227,7 +221,7 @@ export async function orderShippedHtml(data: OrderEmailData): Promise<{ subject:
     const vars = orderEmailDataToVars(data);
     return {
       subject: replaceVariables(tpl.subject, vars),
-      html: baseLayout(replaceVariables(tpl.content, vars)),
+      html: renderTemplate(tpl.content, vars),
     };
   }
   return {
