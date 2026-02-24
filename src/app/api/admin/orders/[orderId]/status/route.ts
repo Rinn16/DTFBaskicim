@@ -53,8 +53,12 @@ export async function PATCH(
         totalMeters: true,
         totalAmount: true,
         paymentMethod: true,
-        items: { select: { id: true } },
+        createdAt: true,
+        items: { select: { id: true, imageName: true, quantity: true } },
         user: { select: { email: true, name: true } },
+        address: {
+          select: { address: true, district: true, city: true, zipCode: true },
+        },
       },
     });
 
@@ -105,6 +109,10 @@ export async function PATCH(
 
         if (email) {
           const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://dtfbaskicim.ercanakcan.online";
+          const addr = order.address;
+          const deliveryAddress = addr
+            ? [addr.address, addr.district, addr.city, addr.zipCode].filter(Boolean).join(", ")
+            : "";
           sendOrderShipped(email, {
             orderNumber: order.orderNumber,
             customerName,
@@ -114,9 +122,12 @@ export async function PATCH(
             paymentMethod: order.paymentMethod,
             status,
             itemCount: order.items.length,
-            items: [],
-            orderDate: "",
-            deliveryAddress: "",
+            items: order.items.map((item) => ({
+              imageName: item.imageName,
+              quantity: item.quantity,
+            })),
+            orderDate: order.createdAt.toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" }),
+            deliveryAddress,
             orderUrl: `${siteUrl}/hesabim/siparisler`,
             trackingCode: trackingCode || undefined,
           }).catch((err) => console.error("[email] Shipped email failed:", err));

@@ -146,7 +146,7 @@ const SHIPPED_HTML = `<!DOCTYPE html>
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Kargoya Verildi - DTF Baskıcım</title>
+<title>Sipariş Kargoya Verildi - DTF Baskıcım</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
 </style>
@@ -180,84 +180,58 @@ const SHIPPED_HTML = `<!DOCTYPE html>
 <!-- Content -->
 <tr><td style="padding:32px 32px 40px;">
 
-<!-- Truck icon -->
+<!-- Shipping icon -->
 <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding-bottom:24px;">
-<div style="width:64px;height:64px;background-color:#eff6ff;border-radius:50%;text-align:center;line-height:64px;">
-<span style="font-size:30px;">&#128666;</span>
+<div style="width:80px;height:80px;background-color:#eff6ff;border-radius:50%;text-align:center;line-height:80px;box-shadow:0 0 15px rgba(19,127,236,0.4);">
+<span style="font-size:40px;">&#128666;</span>
 </div>
 </td></tr></table>
 
 <!-- Heading -->
-<table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding-bottom:32px;">
-<h2 style="margin:0 0 8px;font-size:28px;font-weight:800;color:#1e293b;letter-spacing:-0.025em;font-family:'Manrope',Arial,sans-serif;">Siparişiniz Yola Çıktı!</h2>
-<p style="margin:0 0 8px;font-size:14px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">Sipariş No: <span style="font-family:'Courier New',monospace;color:#137fec;font-weight:700;">#{siparisNo}</span></p>
-<p style="margin:0;font-size:13px;color:#64748b;max-width:420px;font-family:'Manrope',Arial,sans-serif;">Merhaba {musteriAdi}, siparişiniz kargoya verildi ve tahmini 1-3 iş günü içinde teslim edilecektir.</p>
+<table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding-bottom:40px;">
+<h2 style="margin:0 0 8px;font-size:30px;font-weight:800;color:#1e293b;letter-spacing:-0.025em;font-family:'Manrope',Arial,sans-serif;">Kargonuz Yola &#199;&#305;kt&#305;!</h2>
+<p style="margin:0 0 8px;font-size:14px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">Takip No: <span style="font-family:'Courier New',monospace;color:#137fec;font-weight:700;font-size:18px;">#{takipKodu}</span></p>
+<p style="margin:0;font-size:13px;color:#64748b;max-width:420px;font-family:'Manrope',Arial,sans-serif;">Sipari&#351;iniz paketlendi ve kargo firmas&#305;na teslim edildi. A&#351;a&#287;&#305;daki butona t&#305;klayarak kargonuzun nerede oldu&#287;unu anl&#305;k olarak takip edebilirsiniz.</p>
 </td></tr></table>
 
-<!-- Tracking code card -->
-<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc;border-radius:12px;border:1px solid #f1f5f9;overflow:hidden;margin-bottom:32px;">
-<tr><td style="padding:24px;text-align:center;">
-<p style="margin:0 0 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;font-family:'Manrope',Arial,sans-serif;">Kargo Takip Kodu</p>
-<p style="margin:0;font-size:24px;font-weight:800;color:#1e293b;font-family:'Courier New',monospace;letter-spacing:0.05em;">{takipKodu}</p>
-</td></tr>
-</table>
-
-<!-- Order details -->
-<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc;border-radius:12px;border:1px solid #f1f5f9;overflow:hidden;margin-bottom:32px;">
-<tr><td style="padding:12px 16px;background-color:rgba(241,245,249,0.5);border-bottom:1px solid #e2e8f0;">
-<span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;font-family:'Manrope',Arial,sans-serif;">Sipariş Detayları</span>
-</td></tr>
-<tr><td style="padding:16px;">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-<td style="padding:8px 0;border-bottom:1px solid #f1f5f9;">
-<table width="100%" cellpadding="0" cellspacing="0"><tr>
-<td style="font-size:13px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">Sipariş Numarası</td>
-<td align="right" style="font-size:13px;font-weight:700;color:#1e293b;font-family:'Courier New',monospace;">{siparisNo}</td>
-</tr></table>
-</td>
-</tr>
-<tr>
-<td style="padding:8px 0;border-bottom:1px solid #f1f5f9;">
-<table width="100%" cellpadding="0" cellspacing="0"><tr>
-<td style="font-size:13px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">Toplam Metre</td>
-<td align="right" style="font-size:13px;font-weight:700;color:#1e293b;font-family:'Manrope',Arial,sans-serif;">{toplamMetre} m</td>
-</tr></table>
-</td>
-</tr>
-<tr>
-<td style="padding:8px 0;border-bottom:1px solid #f1f5f9;">
-<table width="100%" cellpadding="0" cellspacing="0"><tr>
-<td style="font-size:13px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">Ödeme Yöntemi</td>
-<td align="right" style="font-size:13px;font-weight:700;color:#1e293b;font-family:'Manrope',Arial,sans-serif;">{odemeTuru}</td>
-</tr></table>
-</td>
-</tr>
-<tr>
-<td style="padding:8px 0;">
-<table width="100%" cellpadding="0" cellspacing="0"><tr>
-<td style="font-size:13px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">Toplam Tutar</td>
-<td align="right" style="font-size:16px;font-weight:800;color:#137fec;font-family:'Manrope',Arial,sans-serif;">\\u20BA{toplamTutar}</td>
-</tr></table>
-</td>
-</tr>
-</table>
-</td></tr>
-</table>
-
 <!-- CTA Button -->
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:40px;"><tr><td align="center">
+<a href="{siparisDetayUrl}" style="display:inline-block;background-color:#137fec;color:#ffffff;font-weight:700;font-size:17px;padding:16px 40px;border-radius:50px;text-decoration:none;box-shadow:0 0 15px rgba(19,127,236,0.4);font-family:'Manrope',Arial,sans-serif;" target="_blank">&#128225; Kargomu Takip Et &#8594;</a>
+</td></tr></table>
+
+<!-- Package contents -->
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc;border-radius:12px;border:1px solid #f1f5f9;overflow:hidden;margin-bottom:32px;">
+<!-- Header -->
+<tr><td style="padding:12px 16px;background-color:rgba(241,245,249,0.5);border-bottom:1px solid #e2e8f0;">
+<table width="100%" cellpadding="0" cellspacing="0"><tr>
+<td style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;font-family:'Manrope',Arial,sans-serif;">Paket &#304;&#231;eri&#287;i</td>
+<td align="right" style="font-size:11px;font-family:'Courier New',monospace;color:#94a3b8;">{siparisTarihi}</td>
+</tr></table>
+</td></tr>
+<!-- Items -->
+{urunListesi}
+</table>
+
+<!-- Delivery address -->
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:rgba(239,246,255,0.5);border-radius:12px;border:1px solid #dbeafe;overflow:hidden;margin-bottom:32px;">
+<tr><td style="padding:24px;">
+<p style="margin:0 0 12px;font-weight:700;color:#1e293b;font-size:14px;font-family:'Manrope',Arial,sans-serif;">&#128205; Teslimat Adresi</p>
+<p style="margin:0;font-size:13px;color:#475569;line-height:1.6;font-family:'Manrope',Arial,sans-serif;">{teslimatAdresi}</p>
+</td></tr>
+</table>
+
+<!-- Estimated delivery note -->
 <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
-<a href="{siparisDetayUrl}" style="display:inline-block;background-color:#137fec;color:#ffffff;font-weight:700;font-size:15px;padding:16px 32px;border-radius:50px;text-decoration:none;box-shadow:0 0 15px rgba(19,127,236,0.4);font-family:'Manrope',Arial,sans-serif;" target="_blank">Siparişi Takip Et &#8594;</a>
-<p style="margin:12px 0 0;font-size:12px;color:#94a3b8;font-family:'Manrope',Arial,sans-serif;">Kargo takip bilgilerinizi panel üzerinden görüntüleyebilirsiniz.</p>
+<p style="margin:0;font-size:12px;color:#94a3b8;font-family:'Manrope',Arial,sans-serif;">Tahmini teslimat s&#252;resi: 1-3 i&#351; g&#252;n&#252;.</p>
 </td></tr></table>
 
 </td></tr>
 
 <!-- Card footer -->
 <tr><td style="padding:20px 32px;background-color:#f8fafc;border-top:1px solid #f1f5f9;text-align:center;">
-<p style="margin:0 0 12px;font-size:13px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">Bir sorunuz mu var? Destek ekibimiz 7/24 hazır.</p>
+<p style="margin:0 0 12px;font-size:13px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">Bir sorunuz mu var? Destek ekibimiz 7/24 haz&#305;r.</p>
 <p style="margin:0;font-size:13px;font-family:'Manrope',Arial,sans-serif;">
-<a href="https://dtfbaskicim.ercanakcan.online" style="color:#137fec;text-decoration:none;font-weight:500;">Yardım Merkezi</a>
+<a href="https://dtfbaskicim.ercanakcan.online" style="color:#137fec;text-decoration:none;font-weight:500;">Yard&#305;m Merkezi</a>
 <span style="color:#cbd5e1;margin:0 8px;">|</span>
 <a href="https://dtfbaskicim.ercanakcan.online" style="color:#137fec;text-decoration:none;font-weight:500;">Whatsapp Destek</a>
 </p>
@@ -269,13 +243,13 @@ const SHIPPED_HTML = `<!DOCTYPE html>
 <!-- OUTER FOOTER -->
 <tr><td style="padding:32px 0;text-align:center;">
 <p style="margin:0 0 4px;font-size:11px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">
-<span style="display:inline-block;width:6px;height:6px;background-color:#22c55e;border-radius:50%;margin-right:6px;vertical-align:middle;"></span>
-Shipped
+<span style="display:inline-block;width:6px;height:6px;background-color:#137fec;border-radius:50%;margin-right:6px;vertical-align:middle;"></span>
+In Transit
 <span style="color:#334155;margin:0 8px;">&bull;</span>
 <span style="font-family:'Courier New',monospace;">SYS_MSG_ID: {siparisNo}_SHIP</span>
 </p>
-<p style="margin:8px 0;font-size:11px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">&copy; 2025 DTF Baskıcım. Tüm hakları saklıdır.</p>
-<p style="margin:0;font-size:11px;color:#475569;max-width:480px;display:inline-block;font-family:'Manrope',Arial,sans-serif;">Bu e-posta otomasyon sistemimiz tarafından oluşturulmuştur. Lütfen bu e-postayı yanıtlamayınız.</p>
+<p style="margin:8px 0;font-size:11px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">&copy; 2025 DTF Bask&#305;c&#305;m. T&#252;m haklar&#305; sakl&#305;d&#305;r.</p>
+<p style="margin:0;font-size:11px;color:#475569;max-width:480px;display:inline-block;font-family:'Manrope',Arial,sans-serif;">Bu e-posta otomasyon sistemimiz taraf&#305;ndan olu&#351;turulmu&#351;tur. L&#252;tfen bu e-postay&#305; yan&#305;tlamay&#305;n&#305;z.</p>
 </td></tr>
 
 </table>

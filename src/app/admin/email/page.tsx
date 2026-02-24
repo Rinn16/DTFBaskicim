@@ -49,12 +49,15 @@ const TYPE_VARIABLES: Record<EmailTemplateType, { key: string; label: string }[]
   SHIPPED: [
     { key: "{musteriAdi}", label: "Müşteri adı" },
     { key: "{siparisNo}", label: "Sipariş numarası" },
+    { key: "{takipKodu}", label: "Kargo takip kodu" },
+    { key: "{siparisTarihi}", label: "Sipariş tarihi" },
+    { key: "{urunListesi}", label: "Ürün listesi (HTML)" },
+    { key: "{teslimatAdresi}", label: "Teslimat adresi" },
+    { key: "{siparisDetayUrl}", label: "Sipariş detay URL" },
     { key: "{toplamTutar}", label: "Toplam tutar" },
     { key: "{toplamMetre}", label: "Toplam metre" },
     { key: "{urunSayisi}", label: "Ürün sayısı" },
     { key: "{odemeTuru}", label: "Ödeme yöntemi" },
-    { key: "{siparisDetayUrl}", label: "Sipariş detay URL" },
-    { key: "{takipKodu}", label: "Kargo takip kodu" },
   ],
 };
 
