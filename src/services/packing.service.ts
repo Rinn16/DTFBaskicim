@@ -276,48 +276,21 @@ function mergeSkyline(skyline: SkylineNode[]): SkylineNode[] {
   return merged;
 }
 
-// ─── Web Worker async wrapper ────────────────────────────────────
+// ─── Async wrapper ───────────────────────────────────────────────
 
 /**
- * Run packing in a Web Worker so the main thread stays completely
- * unblocked. Uses the same sync `autoPack` (all 4 sort strategies)
- * inside the worker — results are identical.
- *
- * Falls back to sync `autoPack` on the main thread if workers are
- * unavailable (SSR, worker creation failure, etc.).
+ * Async version of autoPack. Defers to next macrotask so the browser
+ * can paint a loading state before the heavy computation starts.
+ * Results are identical to sync autoPack (all 4 sort strategies).
  */
-export async function autoPackAsync(
+export function autoPackAsync(
   designs: DesignInput[],
   rollWidthCm: number = ROLL_CONFIG.PRINT_WIDTH_CM,
   gapCm: number = ROLL_CONFIG.GAP_CM
 ): Promise<PackResult> {
-  if (typeof window !== "undefined") {
-    try {
-      return await runPackingInWorker(designs, rollWidthCm, gapCm);
-    } catch {
-      // Worker failed — fall back to sync on main thread
-    }
-  }
-  return autoPack(designs, rollWidthCm, gapCm);
-}
-
-function runPackingInWorker(
-  designs: DesignInput[],
-  rollWidthCm: number,
-  gapCm: number
-): Promise<PackResult> {
-  return new Promise((resolve, reject) => {
-    const worker = new Worker(
-      new URL("../workers/packing.worker.ts", import.meta.url)
-    );
-    worker.onmessage = (e: MessageEvent<PackResult>) => {
-      resolve(e.data);
-      worker.terminate();
-    };
-    worker.onerror = (err) => {
-      reject(err);
-      worker.terminate();
-    };
-    worker.postMessage({ designs, rollWidthCm, gapCm });
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(autoPack(designs, rollWidthCm, gapCm));
+    }, 0);
   });
 }
