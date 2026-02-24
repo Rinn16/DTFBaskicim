@@ -25,7 +25,7 @@ interface CanvasState {
 
   // Placements on canvas
   placements: Placement[];
-  setPlacements: (placements: Placement[], opts?: { skipOverlaps?: boolean }) => void;
+  setPlacements: (placements: Placement[], opts?: { skipOverlaps?: boolean; skipHistory?: boolean }) => void;
   addPlacement: (placement: Placement) => void;
   removePlacement: (id: string) => void;
   updatePlacement: (id: string, updates: Partial<Placement>) => void;
@@ -166,7 +166,9 @@ export const useCanvasStore = create<CanvasState>()(
 
       placements: [],
       setPlacements: (placements, opts) => {
-        useHistoryStore.getState().pushState(get().placements);
+        if (!opts?.skipHistory) {
+          useHistoryStore.getState().pushState(get().placements);
+        }
         set({ placements });
         get().recalculateHeight(opts?.skipOverlaps);
       },

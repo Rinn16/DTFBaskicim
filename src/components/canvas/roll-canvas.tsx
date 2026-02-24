@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback, useState, useMemo } from "react";
 import * as fabric from "fabric";
 import { useCanvasStore } from "@/stores/canvas-store";
 import { useHistoryStore } from "@/stores/history-store";
@@ -905,11 +905,14 @@ function PlacementSummary() {
   const totalHeightCm = useCanvasStore((s) => s.totalHeightCm);
   const priceBreakdown = useCanvasStore((s) => s.priceBreakdown);
 
-  // Group placements by imageId and count
-  const groups = new Map<string, number>();
-  for (const p of placements) {
-    groups.set(p.imageId, (groups.get(p.imageId) || 0) + 1);
-  }
+  // Group placements by imageId and count (memoized for large sets)
+  const groups = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const p of placements) {
+      map.set(p.imageId, (map.get(p.imageId) || 0) + 1);
+    }
+    return map;
+  }, [placements]);
 
   return (
     <div className="h-full overflow-auto">

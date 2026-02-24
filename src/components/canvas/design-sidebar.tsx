@@ -207,11 +207,7 @@ export function DesignSidebar() {
     const result = await autoPackAsync(designs, undefined, gapCm);
     setAutoPlaceProgress(10);
 
-    // 2. Clear existing designs from canvas
-    clearCanvasDesigns(canvas);
-    clearPlacements();
-
-    // 3. Build placements and set them (skip O(n²) overlap check — autoPack is overlap-free)
+    // 2. Build placements
     const newPlacements = result.placements.map((p) => ({
       id: p.id,
       imageId: p.imageId,
@@ -222,7 +218,16 @@ export function DesignSidebar() {
       rotation: p.rotation,
     }));
 
-    setPlacements(newPlacements, { skipOverlaps: true });
+    const isLargeSet = newPlacements.length > CANVAS_PLACEMENT_LIMIT;
+
+    // 3. Clear existing canvas objects + state
+    clearCanvasDesigns(canvas);
+    if (!isLargeSet) {
+      clearPlacements();
+    }
+
+    // 4. Set new placements — skip history clone for large sets (avoids O(n) block)
+    setPlacements(newPlacements, { skipOverlaps: true, skipHistory: isLargeSet });
 
     // 4. Batch image loading — skip canvas rendering for large placement counts
     if (newPlacements.length <= CANVAS_PLACEMENT_LIMIT) {
