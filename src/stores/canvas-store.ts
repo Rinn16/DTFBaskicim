@@ -1,7 +1,8 @@
 "use client";
 
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import type { PersistStorage, StorageValue } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import type { Canvas as FabricCanvas } from "fabric";
 import type { UploadedImage, Placement, GangSheetItem, DesignDraftData } from "@/types/canvas";
 import type { PricingTierData, PriceBreakdown, CustomerPricingData } from "@/types/pricing";
@@ -105,19 +106,38 @@ function resolveThumbnailUrl(img: UploadedImage): string {
   return img.thumbnailUrl;
 }
 
-// Debounced localStorage: batches writes to reduce I/O during rapid updates
-function createDebouncedLocalStorage(delay: number) {
+/**
+ * Custom PersistStorage that defers BOTH JSON.stringify and localStorage.setItem.
+ *
+ * Unlike createJSONStorage + debounced localStorage (which stringifies on
+ * every set() call — expensive for 5000+ placements), this stores only a
+ * reference and serializes once when the debounce timer fires.
+ */
+function createDebouncedPersistStorage<S>(delay: number): PersistStorage<S> {
   let timer: ReturnType<typeof setTimeout> | null = null;
-  let pending: { key: string; value: string } | null = null;
+  let pending: { key: string; value: StorageValue<S> } | null = null;
 
   return {
-    getItem: (name: string) => localStorage.getItem(name),
-    setItem: (name: string, value: string) => {
+    getItem: (name: string) => {
+      const raw = localStorage.getItem(name);
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw) as StorageValue<S>;
+      } catch {
+        return null;
+      }
+    },
+    setItem: (name: string, value: StorageValue<S>) => {
+      // Just store the reference — defer stringify + write
       pending = { key: name, value };
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => {
         if (pending) {
-          localStorage.setItem(pending.key, pending.value);
+          try {
+            localStorage.setItem(pending.key, JSON.stringify(pending.value));
+          } catch {
+            // localStorage full or unavailable — silently fail
+          }
         }
         pending = null;
         timer = null;
@@ -547,7 +567,7 @@ export const useCanvasStore = create<CanvasState>()(
     {
       name: "dtf-canvas-state",
       version: 1,
-      storage: createJSONStorage(() => createDebouncedLocalStorage(2000)),
+      storage: createDebouncedPersistStorage(2000),
 
       // v0→v1: old thumbnails were JPEG (lost transparency → black bg) at 200px (blurry).
       // Drop images that only have JPEG base64; keep those with S3 URLs or PNG thumbs.
@@ -601,10 +621,7 @@ export const useCanvasStore = create<CanvasState>()(
             // Clear dead blob originalUrl so it doesn't accumulate
             originalUrl: rest.originalUrl?.startsWith("blob:") ? "" : rest.originalUrl,
           })),
-        // Skip persisting large placement sets — serializing 5000+ items
-        // on every set() call blocks the main thread. Users re-run auto-place
-        // after refresh anyway, so no data loss.
-        placements: state.placements.length <= 200 ? state.placements : [],
+        placements: state.placements,
         autoPlaceQuantities: state.autoPlaceQuantities,
         gapCm: state.gapCm,
       }),
