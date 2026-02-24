@@ -25,7 +25,7 @@ interface CanvasState {
 
   // Placements on canvas
   placements: Placement[];
-  setPlacements: (placements: Placement[]) => void;
+  setPlacements: (placements: Placement[], opts?: { skipOverlaps?: boolean }) => void;
   addPlacement: (placement: Placement) => void;
   removePlacement: (id: string) => void;
   updatePlacement: (id: string, updates: Partial<Placement>) => void;
@@ -92,7 +92,7 @@ interface CanvasState {
 
   // Actions
   recalculatePrice: () => void;
-  recalculateHeight: () => void;
+  recalculateHeight: (skipOverlaps?: boolean) => void;
 }
 
 // Helper: pick the best available URL for an image (for persistence & restore)
@@ -165,10 +165,10 @@ export const useCanvasStore = create<CanvasState>()(
         }),
 
       placements: [],
-      setPlacements: (placements) => {
+      setPlacements: (placements, opts) => {
         useHistoryStore.getState().pushState(get().placements);
         set({ placements });
-        get().recalculateHeight();
+        get().recalculateHeight(opts?.skipOverlaps);
       },
       addPlacement: (placement) => {
         useHistoryStore.getState().pushState(get().placements);
@@ -487,7 +487,7 @@ export const useCanvasStore = create<CanvasState>()(
         set({ overlappingIds });
       },
 
-      recalculateHeight: () => {
+      recalculateHeight: (skipOverlaps = false) => {
         const { placements } = get();
         if (placements.length === 0) {
           set({ totalHeightCm: 0, overlappingIds: new Set<string>() });
@@ -504,7 +504,11 @@ export const useCanvasStore = create<CanvasState>()(
         const totalHeightCm = Math.round(maxY * 100) / 100;
         set({ totalHeightCm });
         get().recalculatePrice();
-        get().recalculateOverlaps();
+        if (!skipOverlaps) {
+          get().recalculateOverlaps();
+        } else {
+          set({ overlappingIds: new Set<string>() });
+        }
       },
     }),
     {

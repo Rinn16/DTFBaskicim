@@ -1,7 +1,7 @@
 import type { DesignInput, Placement } from "@/types/canvas";
 import { ROLL_CONFIG } from "@/lib/constants";
 
-interface PackResult {
+export interface PackResult {
   placements: Placement[];
   totalHeightCm: number;
   totalMeters: number;
@@ -274,4 +274,36 @@ function mergeSkyline(skyline: SkylineNode[]): SkylineNode[] {
     }
   }
   return merged;
+}
+
+// ─── Async Web Worker wrapper ────────────────────────────────────
+
+/**
+ * Run autoPack in a Web Worker so the main thread stays responsive.
+ * Falls back to sync autoPack if the Worker fails to start.
+ */
+export async function autoPackAsync(
+  designs: DesignInput[],
+  rollWidthCm?: number,
+  gapCm?: number
+): Promise<PackResult> {
+  try {
+    return await new Promise<PackResult>((resolve, reject) => {
+      const worker = new Worker(
+        new URL("../workers/packing.worker.ts", import.meta.url)
+      );
+      worker.onmessage = (e: MessageEvent<PackResult>) => {
+        resolve(e.data);
+        worker.terminate();
+      };
+      worker.onerror = (err) => {
+        reject(err);
+        worker.terminate();
+      };
+      worker.postMessage({ designs, rollWidthCm, gapCm });
+    });
+  } catch {
+    // Fallback to sync if Worker is unavailable (SSR, old browser, etc.)
+    return autoPack(designs, rollWidthCm, gapCm);
+  }
 }

@@ -948,6 +948,124 @@ export function addImageToCanvas(
   });
 }
 
+/** Yield to the main thread so the browser can paint / handle events */
+function yieldToMain(): Promise<void> {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
+interface BatchImageItem {
+  imageUrl: string;
+  placementId: string;
+  xCm: number;
+  yCm: number;
+  widthCm: number;
+  heightCm: number;
+  rotation: number;
+}
+
+const BATCH_CHUNK_SIZE = 20;
+
+/**
+ * Add many images to canvas in chunks to avoid blocking the main thread.
+ * - Disables renderOnAddRemove for the batch
+ * - Loads each chunk in parallel (FabricImage.fromURL)
+ * - Calls a single requestRenderAll per chunk
+ * - Yields to main thread between chunks for UI responsiveness
+ */
+export async function addImagesToCanvas(
+  canvas: fabric.Canvas,
+  items: BatchImageItem[],
+  onProgress?: (fraction: number) => void
+): Promise<void> {
+  if (items.length === 0) return;
+
+  const prevRenderOnAddRemove = canvas.renderOnAddRemove;
+  canvas.renderOnAddRemove = false;
+
+  let loaded = 0;
+
+  for (let i = 0; i < items.length; i += BATCH_CHUNK_SIZE) {
+    const chunk = items.slice(i, i + BATCH_CHUNK_SIZE);
+
+    // Load all images in this chunk in parallel
+    const images = await Promise.all(
+      chunk.map(async (item) => {
+        try {
+          const img = await fabric.FabricImage.fromURL(item.imageUrl, {
+            crossOrigin: "anonymous",
+          });
+          return { img, item };
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    // Add loaded images to canvas
+    for (const result of images) {
+      if (!result) continue;
+      const { img, item } = result;
+
+      const displayWidth = cmToDisplayPx(item.widthCm);
+      const displayHeight = cmToDisplayPx(item.heightCm);
+      const displayLeft = cmToDisplayPx(item.xCm);
+      const displayTop = cmToDisplayPx(item.yCm);
+      const scaleX = displayWidth / (img.width || 1);
+      const scaleY = displayHeight / (img.height || 1);
+
+      img.set({
+        originX: "left",
+        originY: "top",
+        left: displayLeft,
+        top: displayTop,
+        scaleX,
+        scaleY,
+        angle: item.rotation,
+        cornerColor: "#3b82f6",
+        cornerStyle: "circle",
+        cornerSize: 8,
+        transparentCorners: false,
+        borderColor: "#3b82f6",
+        borderScaleFactor: 2,
+        lockRotation: true,
+      });
+
+      delete img.controls.mtr;
+
+      (img as fabric.FabricObject & { _placementId?: string })._placementId =
+        item.placementId;
+
+      if (item.rotation === 90) {
+        img.set({
+          left: displayLeft + displayHeight,
+          top: displayTop,
+        });
+      } else if (item.rotation === 270) {
+        img.set({
+          left: displayLeft,
+          top: displayTop + displayWidth,
+        });
+      }
+
+      img.setCoords();
+      canvas.add(img);
+    }
+
+    // Single render for the entire chunk
+    canvas.requestRenderAll();
+
+    loaded += chunk.length;
+    onProgress?.(loaded / items.length);
+
+    // Yield to main thread between chunks so UI stays responsive
+    if (i + BATCH_CHUNK_SIZE < items.length) {
+      await yieldToMain();
+    }
+  }
+
+  canvas.renderOnAddRemove = prevRenderOnAddRemove;
+}
+
 // Clear all design objects from canvas (keep background)
 export function clearCanvasDesigns(canvas: fabric.Canvas) {
   const designObjects = canvas

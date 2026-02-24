@@ -22,8 +22,8 @@ import { DraftListSheet } from "./draft-list-sheet";
 import { useCanvasStore } from "@/stores/canvas-store";
 import { useUploadStore } from "@/stores/upload-store";
 import { useDraftStore } from "@/stores/draft-store";
-import { addImageToCanvas, clearCanvasDesigns } from "./roll-canvas";
-import { autoPack } from "@/services/packing.service";
+import { addImageToCanvas, addImagesToCanvas, clearCanvasDesigns } from "./roll-canvas";
+import { autoPackAsync } from "@/services/packing.service";
 import { getEffectiveDimensions } from "@/lib/placement-utils";
 import type { DesignInput } from "@/types/canvas";
 import { toast } from "sonner";
@@ -61,6 +61,7 @@ export function DesignSidebar() {
   const uploadingFiles = useUploadStore((s) => s.files);
 
   const [autoPlaceOpen, setAutoPlaceOpen] = useState(false);
+  const [autoPlaceProgress, setAutoPlaceProgress] = useState<number | null>(null);
   const [draftsOpen, setDraftsOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState("");
@@ -175,8 +176,8 @@ export function DesignSidebar() {
     );
   };
 
-  // Auto-place all designs
-  const handleAutoPlace = () => {
+  // Auto-place all designs (async with progress)
+  const handleAutoPlace = async () => {
     if (!canvas) return;
 
     const designs: DesignInput[] = uploadedImages
@@ -200,13 +201,17 @@ export function DesignSidebar() {
 
     if (designs.length === 0) return;
 
-    const result = autoPack(designs, undefined, gapCm);
+    setAutoPlaceProgress(0);
 
-    // Clear existing designs from canvas
+    // 1. Run packing in Web Worker (main thread stays responsive)
+    const result = await autoPackAsync(designs, undefined, gapCm);
+    setAutoPlaceProgress(10);
+
+    // 2. Clear existing designs from canvas
     clearCanvasDesigns(canvas);
     clearPlacements();
 
-    // Add all placements to canvas
+    // 3. Build placements and set them (skip O(n²) overlap check — autoPack is overlap-free)
     const newPlacements = result.placements.map((p) => ({
       id: p.id,
       imageId: p.imageId,
@@ -217,25 +222,27 @@ export function DesignSidebar() {
       rotation: p.rotation,
     }));
 
-    setPlacements(newPlacements);
+    setPlacements(newPlacements, { skipOverlaps: true });
 
-    // Add images to fabric canvas
-    newPlacements.forEach((placement) => {
+    // 4. Batch image loading with progress
+    const batchItems = newPlacements.map((placement) => {
       const image = uploadedImages.find((img) => img.id === placement.imageId);
-      if (!image) return;
+      return {
+        imageUrl: image?.thumbnailUrl ?? "",
+        placementId: placement.id,
+        xCm: placement.x,
+        yCm: placement.y,
+        widthCm: placement.widthCm,
+        heightCm: placement.heightCm,
+        rotation: placement.rotation,
+      };
+    }).filter((item) => item.imageUrl);
 
-      addImageToCanvas(
-        canvas,
-        image.thumbnailUrl,
-        placement.id,
-        placement.x,
-        placement.y,
-        placement.widthCm,
-        placement.heightCm,
-        placement.rotation
-      );
+    await addImagesToCanvas(canvas, batchItems, (fraction) => {
+      setAutoPlaceProgress(10 + fraction * 90);
     });
 
+    setAutoPlaceProgress(null);
     setAutoPlaceOpen(false);
   };
 
@@ -478,15 +485,34 @@ export function DesignSidebar() {
                     </div>
                   ))}
                 </div>
+                {autoPlaceProgress !== null && (
+                  <div className="w-full space-y-1">
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                      <span>Yerleştiriliyor...</span>
+                      <span>%{Math.round(autoPlaceProgress)}</span>
+                    </div>
+                    <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-cyan-400 transition-all duration-200"
+                        style={{ width: `${autoPlaceProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
                 <Button
                   className="w-full editor-glow-btn"
                   onClick={handleAutoPlace}
                   disabled={
+                    autoPlaceProgress !== null ||
                     !Object.values(autoPlaceQuantities).some((q) => q > 0)
                   }
                 >
-                  <Wand2 className="h-4 w-4 mr-2" />
-                  Yerleştir
+                  {autoPlaceProgress !== null ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Wand2 className="h-4 w-4 mr-2" />
+                  )}
+                  {autoPlaceProgress !== null ? "Yerleştiriliyor..." : "Yerleştir"}
                 </Button>
               </div>
             </DialogContent>
