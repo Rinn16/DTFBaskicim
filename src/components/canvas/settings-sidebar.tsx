@@ -19,6 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { toast } from "sonner";
 import { useCanvasStore } from "@/stores/canvas-store";
 import { autoPack, autoPackAsync } from "@/services/packing.service";
 import { addImageToCanvas, clearCanvasDesigns, displayPxToCm, CANVAS_PLACEMENT_LIMIT } from "./roll-canvas";
@@ -88,15 +89,17 @@ export function SettingsSidebar() {
   };
 
   const handleClearAll = () => {
-    if (!canvas) return;
-    if (
-      placements.length > 0 &&
-      !confirm("Tüm tasarımları silmek istediğinize emin misiniz?")
-    ) {
-      return;
-    }
-    clearCanvasDesigns(canvas);
-    clearPlacements();
+    if (!canvas || placements.length === 0) return;
+    toast("Tüm tasarımları silmek istediğinize emin misiniz?", {
+      action: {
+        label: "Evet, Sil",
+        onClick: () => {
+          clearCanvasDesigns(canvas);
+          clearPlacements();
+        },
+      },
+      cancel: { label: "İptal", onClick: () => {} },
+    });
   };
 
   const handleReplace = async () => {

@@ -226,19 +226,26 @@ export default function EmailTemplatesPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Bu şablonu silmek istediğinize emin misiniz?")) return;
-    try {
-      const res = await fetch(`/api/admin/email-templates/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        toast.success("Şablon silindi");
-        fetchTemplates();
-      } else {
-        toast.error("Şablon silinemedi");
-      }
-    } catch {
-      toast.error("Bir hata oluştu");
-    }
+  const handleDelete = (id: string) => {
+    toast("Bu şablonu silmek istediğinize emin misiniz?", {
+      action: {
+        label: "Evet, Sil",
+        onClick: async () => {
+          try {
+            const res = await fetch(`/api/admin/email-templates/${id}`, { method: "DELETE" });
+            if (res.ok) {
+              toast.success("Şablon silindi");
+              fetchTemplates();
+            } else {
+              toast.error("Şablon silinemedi");
+            }
+          } catch {
+            toast.error("Bir hata oluştu");
+          }
+        },
+      },
+      cancel: { label: "İptal", onClick: () => {} },
+    });
   };
 
   const insertVariable = (key: string) => {

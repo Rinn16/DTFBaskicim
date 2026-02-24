@@ -197,21 +197,28 @@ export default function PricingPage() {
     }
   };
 
-  const handleDeleteTier = async (id: string) => {
-    if (!confirm("Bu kademeyi silmek istediğinize emin misiniz?")) return;
-    try {
-      const res = await fetch(`/api/admin/pricing/tiers/${id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        toast.success("Kademe silindi");
-        fetchTiers();
-      } else {
-        toast.error("Kademe silinemedi");
-      }
-    } catch {
-      toast.error("Bir hata oluştu");
-    }
+  const handleDeleteTier = (id: string) => {
+    toast("Bu kademeyi silmek istediğinize emin misiniz?", {
+      action: {
+        label: "Evet, Sil",
+        onClick: async () => {
+          try {
+            const res = await fetch(`/api/admin/pricing/tiers/${id}`, {
+              method: "DELETE",
+            });
+            if (res.ok) {
+              toast.success("Kademe silindi");
+              fetchTiers();
+            } else {
+              toast.error("Kademe silinemedi");
+            }
+          } catch {
+            toast.error("Bir hata oluştu");
+          }
+        },
+      },
+      cancel: { label: "İptal", onClick: () => {} },
+    });
   };
 
   const handleToggleTier = async (tier: PricingTier) => {
@@ -327,21 +334,28 @@ export default function PricingPage() {
     }
   };
 
-  const handleDeleteDiscount = async (id: string) => {
-    if (!confirm("Bu indirim kodunu silmek istediğinize emin misiniz?")) return;
-    try {
-      const res = await fetch(`/api/admin/pricing/discounts/${id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        toast.success("İndirim kodu silindi");
-        fetchDiscounts();
-      } else {
-        toast.error("İndirim kodu silinemedi");
-      }
-    } catch {
-      toast.error("Bir hata oluştu");
-    }
+  const handleDeleteDiscount = (id: string) => {
+    toast("Bu indirim kodunu silmek istediğinize emin misiniz?", {
+      action: {
+        label: "Evet, Sil",
+        onClick: async () => {
+          try {
+            const res = await fetch(`/api/admin/pricing/discounts/${id}`, {
+              method: "DELETE",
+            });
+            if (res.ok) {
+              toast.success("İndirim kodu silindi");
+              fetchDiscounts();
+            } else {
+              toast.error("İndirim kodu silinemedi");
+            }
+          } catch {
+            toast.error("Bir hata oluştu");
+          }
+        },
+      },
+      cancel: { label: "İptal", onClick: () => {} },
+    });
   };
 
   const handleToggleDiscount = async (d: DiscountCode) => {

@@ -29,6 +29,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { toast } from "sonner";
 import { useCanvasStore } from "@/stores/canvas-store";
 import { useHistoryStore } from "@/stores/history-store";
 import { clearCanvasDesigns, addImageToCanvas, cmToDisplayPx, CANVAS_PLACEMENT_LIMIT } from "./roll-canvas";
@@ -117,15 +118,17 @@ export function CanvasToolbar() {
   };
 
   const handleClearAll = () => {
-    if (!canvas) return;
-    if (
-      placements.length > 0 &&
-      !confirm("Tüm tasarımları silmek istediğinize emin misiniz?")
-    ) {
-      return;
-    }
-    clearCanvasDesigns(canvas);
-    clearPlacements();
+    if (!canvas || placements.length === 0) return;
+    toast("Tüm tasarımları silmek istediğinize emin misiniz?", {
+      action: {
+        label: "Evet, Sil",
+        onClick: () => {
+          clearCanvasDesigns(canvas);
+          clearPlacements();
+        },
+      },
+      cancel: { label: "İptal", onClick: () => {} },
+    });
   };
 
   const handleZoomIn = () => {
