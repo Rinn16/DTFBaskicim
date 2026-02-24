@@ -51,6 +51,7 @@ const nextConfig: NextConfig = {
               "font-src 'self'",
               "connect-src 'self' " + s3PublicUrl + " https://www.paytr.com",
               "frame-src https://www.paytr.com",
+              "worker-src 'self'",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",

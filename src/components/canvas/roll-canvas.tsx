@@ -40,9 +40,11 @@ export function RollCanvas() {
   const clipboardRef = useRef<PlacementClipboard[]>([]);
   const [containerHeight, setContainerHeight] = useState(0);
 
-  const { setCanvas, placements, updatePlacement, removePlacement, addPlacement } =
-    useCanvasStore();
-
+  const setCanvas = useCanvasStore((s) => s.setCanvas);
+  const placementCount = useCanvasStore((s) => s.placements.length);
+  const updatePlacement = useCanvasStore((s) => s.updatePlacement);
+  const removePlacement = useCanvasStore((s) => s.removePlacement);
+  const addPlacement = useCanvasStore((s) => s.addPlacement);
   const showRuler = useCanvasStore((s) => s.showRuler);
   const zoom = useCanvasStore((s) => s.zoom);
   const totalHeightCm = useCanvasStore((s) => s.totalHeightCm);
@@ -829,7 +831,7 @@ export function RollCanvas() {
     [addPlacement]
   );
 
-  const showSummary = placements.length > CANVAS_PLACEMENT_LIMIT;
+  const showSummary = placementCount > CANVAS_PLACEMENT_LIMIT;
 
   return (
     <div ref={containerRef} className="flex-1 overflow-hidden relative">

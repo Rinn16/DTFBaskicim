@@ -81,25 +81,23 @@ export function PriceBar() {
   const { data: session } = useSession();
   const router = useRouter();
   const { addGuestItem, addMemberItem, updateGuestItem, updateMemberItem } = useCartStore();
-  const {
-    totalHeightCm,
-    pricingTiers,
-    setPricingTiers,
-    setCustomerPricing,
-    priceBreakdown,
-    discountCode,
-    setDiscountCode,
-    setDiscountPercent,
-    placements,
-    editingCartItemId,
-    setEditingCartItemId,
-    activeDraftId,
-    activeDraftName,
-    setActiveDraftId,
-    snapshotCurrentState,
-    resetCanvas,
-    overlappingIds,
-  } = useCanvasStore();
+  const totalHeightCm = useCanvasStore((s) => s.totalHeightCm);
+  const pricingTiers = useCanvasStore((s) => s.pricingTiers);
+  const setPricingTiers = useCanvasStore((s) => s.setPricingTiers);
+  const setCustomerPricing = useCanvasStore((s) => s.setCustomerPricing);
+  const priceBreakdown = useCanvasStore((s) => s.priceBreakdown);
+  const discountCode = useCanvasStore((s) => s.discountCode);
+  const setDiscountCode = useCanvasStore((s) => s.setDiscountCode);
+  const setDiscountPercent = useCanvasStore((s) => s.setDiscountPercent);
+  const placementCount = useCanvasStore((s) => s.placements.length);
+  const editingCartItemId = useCanvasStore((s) => s.editingCartItemId);
+  const setEditingCartItemId = useCanvasStore((s) => s.setEditingCartItemId);
+  const activeDraftId = useCanvasStore((s) => s.activeDraftId);
+  const activeDraftName = useCanvasStore((s) => s.activeDraftName);
+  const setActiveDraftId = useCanvasStore((s) => s.setActiveDraftId);
+  const snapshotCurrentState = useCanvasStore((s) => s.snapshotCurrentState);
+  const resetCanvas = useCanvasStore((s) => s.resetCanvas);
+  const overlappingIds = useCanvasStore((s) => s.overlappingIds);
 
   const {
     saveGuestDraft,
@@ -256,7 +254,7 @@ export function PriceBar() {
           <div className="flex items-center gap-1.5">
             <span className="text-slate-400 text-xs">Tasarım:</span>
             <span className="font-semibold tabular-nums text-white">
-              {placements.length}
+              {placementCount}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -457,7 +455,7 @@ export function PriceBar() {
           <Button
             size="lg"
             className="h-10 px-6 editor-glow-btn"
-            disabled={placements.length === 0}
+            disabled={placementCount === 0}
             onClick={handleAddToCart}
           >
             {editingCartItemId ? (

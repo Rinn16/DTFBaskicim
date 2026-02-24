@@ -297,6 +297,7 @@ export function autoPackAsync(
         const worker = new Worker("/workers/packing-worker.js");
 
         const timeout = setTimeout(() => {
+          console.warn("[packing] Worker timeout — falling back to sync");
           worker.terminate();
           resolve(autoPack(designs, rollWidthCm, gapCm));
         }, 30_000);
@@ -304,21 +305,25 @@ export function autoPackAsync(
         worker.onmessage = (e: MessageEvent<PackResult>) => {
           clearTimeout(timeout);
           worker.terminate();
+          console.log("[packing] Worker completed successfully");
           resolve(e.data);
         };
 
-        worker.onerror = () => {
+        worker.onerror = (err) => {
           clearTimeout(timeout);
           worker.terminate();
+          console.warn("[packing] Worker error — falling back to sync", err);
           resolve(autoPack(designs, rollWidthCm, gapCm));
         };
 
         worker.postMessage({ designs, rollWidthCm, gapCm });
-      } catch {
+      } catch (err) {
+        console.warn("[packing] Worker creation failed — falling back to sync", err);
         resolve(autoPack(designs, rollWidthCm, gapCm));
       }
     });
   }
 
+  console.warn("[packing] No window — running sync (SSR)");
   return Promise.resolve(autoPack(designs, rollWidthCm, gapCm));
 }
