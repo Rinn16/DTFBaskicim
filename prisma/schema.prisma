@@ -221,10 +221,9 @@ model SiteSettings {
   id                String   @id @default("default")
   smsEnabled        Boolean  @default(false)
   emailEnabled      Boolean  @default(false)
-  emailOrderConfirm Boolean  @default(true)
-  emailStatusUpdate Boolean  @default(true)
   emailWelcome      Boolean  @default(true)
-  emailOtp          Boolean  @default(true)
+  emailOrderConfirm Boolean  @default(true)
+  emailShipped      Boolean  @default(true)
   updatedAt         DateTime @updatedAt
 }
 
@@ -382,10 +381,9 @@ model CartItem {
 // ==================== EMAIL TEMPLATES ====================
 
 enum EmailTemplateType {
-  ORDER_CONFIRMATION
-  STATUS_UPDATE
   WELCOME
-  OTP
+  ORDER_CONFIRMATION
+  SHIPPED
 }
 
 model EmailTemplate {

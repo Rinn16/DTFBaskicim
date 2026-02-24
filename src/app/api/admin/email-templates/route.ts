@@ -11,6 +11,21 @@ const DEFAULT_TEMPLATES: {
   content: string;
 }[] = [
   {
+    name: "Hoş Geldiniz",
+    type: "WELCOME",
+    subject: "DTF Baskıcım'a Hoş Geldiniz!",
+    content: `<h2 style="margin:0 0 8px;font-size:18px;color:#18181b;">Hoş Geldiniz!</h2>
+    <p style="margin:0 0 24px;font-size:14px;color:#52525b;">
+      Merhaba {musteriAdi}, DTF Baskıcım ailesine hoş geldiniz!
+    </p>
+    <p style="margin:0 0 16px;font-size:14px;color:#52525b;">
+      Hesabınız başarıyla oluşturuldu. Artık kolayca sipariş verebilir, tasarımlarınızı yükleyebilir ve siparişlerinizi takip edebilirsiniz.
+    </p>
+    <p style="margin:0;font-size:13px;color:#71717a;">
+      Herhangi bir sorunuz olursa bizimle iletişime geçmekten çekinmeyin.
+    </p>`,
+  },
+  {
     name: "Sipariş Onayı",
     type: "ORDER_CONFIRMATION",
     subject: "Sipariş Onay - {siparisNo}",
@@ -63,18 +78,18 @@ const DEFAULT_TEMPLATES: {
     </p>`,
   },
   {
-    name: "Durum Güncelleme",
-    type: "STATUS_UPDATE",
-    subject: "Sipariş Durumu Güncellendi - {siparisNo}",
-    content: `<h2 style="margin:0 0 8px;font-size:18px;color:#18181b;">Sipariş Durumu Güncellendi</h2>
+    name: "Kargoya Verildi",
+    type: "SHIPPED",
+    subject: "Siparişiniz Kargoya Verildi - {siparisNo}",
+    content: `<h2 style="margin:0 0 8px;font-size:18px;color:#18181b;">Siparişiniz Kargoya Verildi!</h2>
     <p style="margin:0 0 24px;font-size:14px;color:#52525b;">
-      Merhaba {musteriAdi}, <strong>{siparisNo}</strong> numaralı siparişinizin durumu güncellendi.
+      Merhaba {musteriAdi}, <strong>{siparisNo}</strong> numaralı siparişiniz kargoya verildi.
     </p>
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#fafafa;border-radius:6px;margin-bottom:24px;">
       <tr>
         <td style="padding:20px;text-align:center;">
-          <p style="margin:0 0 4px;font-size:12px;color:#71717a;">Yeni Durum</p>
-          <p style="margin:0;font-size:20px;font-weight:700;color:#18181b;">{yeniDurum}</p>
+          <p style="margin:0 0 4px;font-size:12px;color:#71717a;">Durum</p>
+          <p style="margin:0;font-size:20px;font-weight:700;color:#18181b;">Kargoya Verildi</p>
         </td>
       </tr>
     </table>

@@ -10,10 +10,9 @@ import { toast } from "sonner";
 interface SiteSettings {
   smsEnabled: boolean;
   emailEnabled: boolean;
-  emailOrderConfirm: boolean;
-  emailStatusUpdate: boolean;
   emailWelcome: boolean;
-  emailOtp: boolean;
+  emailOrderConfirm: boolean;
+  emailShipped: boolean;
 }
 
 export default function SettingsPage() {
@@ -145,37 +144,9 @@ export default function SettingsPage() {
             <div className="space-y-3 border-t pt-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label className="text-sm font-medium">Sipariş Onayı</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Ödeme sonrası sipariş onay e-postası
-                  </p>
-                </div>
-                <Switch
-                  checked={settings.emailOrderConfirm}
-                  onCheckedChange={(v) => handleToggleEmail("emailOrderConfirm", v)}
-                  disabled={updating}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-sm font-medium">Durum Güncelleme</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Sipariş durumu değişiklik bildirimi
-                  </p>
-                </div>
-                <Switch
-                  checked={settings.emailStatusUpdate}
-                  onCheckedChange={(v) => handleToggleEmail("emailStatusUpdate", v)}
-                  disabled={updating}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
                   <Label className="text-sm font-medium">Hoşgeldiniz Maili</Label>
-                  <p className="text-sm text-muted-foreground text-amber-600">
-                    Henüz entegre edilmedi
+                  <p className="text-sm text-muted-foreground">
+                    Üye olunca gönderilen karşılama e-postası
                   </p>
                 </div>
                 <Switch
@@ -187,14 +158,28 @@ export default function SettingsPage() {
 
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label className="text-sm font-medium">OTP Doğrulama</Label>
-                  <p className="text-sm text-muted-foreground text-amber-600">
-                    Henüz entegre edilmedi
+                  <Label className="text-sm font-medium">Sipariş Onayı</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Sipariş alındığında gönderilen onay e-postası
                   </p>
                 </div>
                 <Switch
-                  checked={settings.emailOtp}
-                  onCheckedChange={(v) => handleToggleEmail("emailOtp", v)}
+                  checked={settings.emailOrderConfirm}
+                  onCheckedChange={(v) => handleToggleEmail("emailOrderConfirm", v)}
+                  disabled={updating}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium">Kargoya Verildi</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Sipariş kargoya verildiğinde gönderilen e-posta
+                  </p>
+                </div>
+                <Switch
+                  checked={settings.emailShipped}
+                  onCheckedChange={(v) => handleToggleEmail("emailShipped", v)}
                   disabled={updating}
                 />
               </div>

@@ -27,9 +27,7 @@ export async function POST(request: Request) {
       odemeTuru: "Kredi Kartı",
     };
 
-    if (type === "STATUS_UPDATE") {
-      sampleData.yeniDurum = "Kargoya Verildi";
-    }
+    // WELCOME şablonu sadece musteriAdi kullanır, diğer veriler zaten sampleData'da
 
     const processedContent = replaceVariables(content, sampleData);
     const processedSubject = subject ? replaceVariables(subject, sampleData) : "";

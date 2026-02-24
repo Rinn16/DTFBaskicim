@@ -1,12 +1,13 @@
 import nodemailer from "nodemailer";
 import type { OrderEmailData } from "@/lib/email-templates";
 import {
+  welcomeHtml,
   orderConfirmationHtml,
-  orderStatusUpdateHtml,
+  orderShippedHtml,
 } from "@/lib/email-templates";
 import { db } from "@/lib/db";
 
-type EmailType = "emailOrderConfirm" | "emailStatusUpdate" | "emailWelcome" | "emailOtp";
+type EmailType = "emailWelcome" | "emailOrderConfirm" | "emailShipped";
 
 async function isEmailTypeEnabled(type: EmailType): Promise<boolean> {
   const settings = await db.siteSettings.findUnique({ where: { id: "default" } });
@@ -48,21 +49,23 @@ async function sendEmail({
   });
 }
 
-export async function sendOrderConfirmation(
-  to: string,
-  data: OrderEmailData,
-) {
+/** Üyelik kaydı sonrası hoş geldiniz e-postası */
+export async function sendWelcomeEmail(to: string, customerName: string) {
+  if (!(await isEmailTypeEnabled("emailWelcome"))) return;
+  const { subject, html } = await welcomeHtml(customerName);
+  await sendEmail({ to, subject, html });
+}
+
+/** Sipariş alındıktan sonra onay e-postası */
+export async function sendOrderConfirmation(to: string, data: OrderEmailData) {
   if (!(await isEmailTypeEnabled("emailOrderConfirm"))) return;
   const { subject, html } = await orderConfirmationHtml(data);
   await sendEmail({ to, subject, html });
 }
 
-export async function sendOrderStatusUpdate(
-  to: string,
-  data: OrderEmailData,
-  newStatus: string,
-) {
-  if (!(await isEmailTypeEnabled("emailStatusUpdate"))) return;
-  const { subject, html } = await orderStatusUpdateHtml(data, newStatus);
+/** Kargoya verildiğinde gönderilen e-posta */
+export async function sendOrderShipped(to: string, data: OrderEmailData) {
+  if (!(await isEmailTypeEnabled("emailShipped"))) return;
+  const { subject, html } = await orderShippedHtml(data);
   await sendEmail({ to, subject, html });
 }

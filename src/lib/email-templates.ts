@@ -87,6 +87,22 @@ async function getDbTemplate(type: EmailTemplateType) {
 
 // ========== Hardcoded fallbacks ==========
 
+function welcomeHtmlFallback(customerName: string): string {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:18px;color:#18181b;">Hoş Geldiniz!</h2>
+    <p style="margin:0 0 24px;font-size:14px;color:#52525b;">
+      Merhaba ${customerName}, DTF Baskıcım ailesine hoş geldiniz!
+    </p>
+    <p style="margin:0 0 16px;font-size:14px;color:#52525b;">
+      Hesabınız başarıyla oluşturuldu. Artık kolayca sipariş verebilir, tasarımlarınızı yükleyebilir ve siparişlerinizi takip edebilirsiniz.
+    </p>
+    <p style="margin:0;font-size:13px;color:#71717a;">
+      Herhangi bir sorunuz olursa bizimle iletişime geçmekten çekinmeyin.
+    </p>`;
+
+  return baseLayout(content);
+}
+
 function orderConfirmationHtmlFallback(data: OrderEmailData): string {
   const content = `
     <h2 style="margin:0 0 8px;font-size:18px;color:#18181b;">Siparişiniz Alındı!</h2>
@@ -140,19 +156,17 @@ function orderConfirmationHtmlFallback(data: OrderEmailData): string {
   return baseLayout(content);
 }
 
-function orderStatusUpdateHtmlFallback(data: OrderEmailData, newStatus: string): string {
-  const statusLabel = ORDER_STATUSES[newStatus as keyof typeof ORDER_STATUSES] || newStatus;
-
+function orderShippedHtmlFallback(data: OrderEmailData): string {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:18px;color:#18181b;">Sipariş Durumu Güncellendi</h2>
+    <h2 style="margin:0 0 8px;font-size:18px;color:#18181b;">Siparişiniz Kargoya Verildi!</h2>
     <p style="margin:0 0 24px;font-size:14px;color:#52525b;">
-      Merhaba ${data.customerName}, <strong>${data.orderNumber}</strong> numaralı siparişinizin durumu güncellendi.
+      Merhaba ${data.customerName}, <strong>${data.orderNumber}</strong> numaralı siparişiniz kargoya verildi.
     </p>
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#fafafa;border-radius:6px;margin-bottom:24px;">
       <tr>
         <td style="padding:20px;text-align:center;">
-          <p style="margin:0 0 4px;font-size:12px;color:#71717a;">Yeni Durum</p>
-          <p style="margin:0;font-size:20px;font-weight:700;color:#18181b;">${statusLabel}</p>
+          <p style="margin:0 0 4px;font-size:12px;color:#71717a;">Durum</p>
+          <p style="margin:0;font-size:20px;font-weight:700;color:#18181b;">Kargoya Verildi</p>
         </td>
       </tr>
     </table>
@@ -177,6 +191,21 @@ function orderStatusUpdateHtmlFallback(data: OrderEmailData, newStatus: string):
 
 // ========== Public API (DB-first, fallback to hardcoded) ==========
 
+export async function welcomeHtml(customerName: string): Promise<{ subject: string; html: string }> {
+  const tpl = await getDbTemplate("WELCOME");
+  if (tpl) {
+    const vars = { musteriAdi: customerName };
+    return {
+      subject: replaceVariables(tpl.subject, vars),
+      html: baseLayout(replaceVariables(tpl.content, vars)),
+    };
+  }
+  return {
+    subject: "DTF Baskıcım'a Hoş Geldiniz!",
+    html: welcomeHtmlFallback(customerName),
+  };
+}
+
 export async function orderConfirmationHtml(data: OrderEmailData): Promise<{ subject: string; html: string }> {
   const tpl = await getDbTemplate("ORDER_CONFIRMATION");
   if (tpl) {
@@ -192,21 +221,17 @@ export async function orderConfirmationHtml(data: OrderEmailData): Promise<{ sub
   };
 }
 
-export async function orderStatusUpdateHtml(
-  data: OrderEmailData,
-  newStatus: string,
-): Promise<{ subject: string; html: string }> {
-  const statusLabel = ORDER_STATUSES[newStatus as keyof typeof ORDER_STATUSES] || newStatus;
-  const tpl = await getDbTemplate("STATUS_UPDATE");
+export async function orderShippedHtml(data: OrderEmailData): Promise<{ subject: string; html: string }> {
+  const tpl = await getDbTemplate("SHIPPED");
   if (tpl) {
-    const vars = { ...orderEmailDataToVars(data), yeniDurum: statusLabel };
+    const vars = orderEmailDataToVars(data);
     return {
       subject: replaceVariables(tpl.subject, vars),
       html: baseLayout(replaceVariables(tpl.content, vars)),
     };
   }
   return {
-    subject: `Sipariş Durumu Güncellendi - ${data.orderNumber}`,
-    html: orderStatusUpdateHtmlFallback(data, newStatus),
+    subject: `Siparişiniz Kargoya Verildi - ${data.orderNumber}`,
+    html: orderShippedHtmlFallback(data),
   };
 }

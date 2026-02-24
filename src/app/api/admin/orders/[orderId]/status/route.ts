@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { sendOrderStatusUpdate } from "@/services/email.service";
+import { sendOrderShipped } from "@/services/email.service";
 
 const statusUpdateSchema = z.object({
   status: z.enum([
@@ -97,15 +97,14 @@ export async function PATCH(
       }
     }
 
-    // Fire-and-forget status email
-    try {
-      const email = order.user?.email || order.guestEmail;
-      const customerName = order.user?.name || order.guestName || "Müşterimiz";
+    // Fire-and-forget: kargoya verildi e-postası
+    if (status === "SHIPPED") {
+      try {
+        const email = order.user?.email || order.guestEmail;
+        const customerName = order.user?.name || order.guestName || "Müşterimiz";
 
-      if (email) {
-        sendOrderStatusUpdate(
-          email,
-          {
+        if (email) {
+          sendOrderShipped(email, {
             orderNumber: order.orderNumber,
             customerName,
             totalMeters: Number(order.totalMeters),
@@ -113,12 +112,11 @@ export async function PATCH(
             paymentMethod: order.paymentMethod,
             status,
             itemCount: order.items.length,
-          },
-          status,
-        ).catch((err) => console.error("[email] Status update email failed:", err));
+          }).catch((err) => console.error("[email] Shipped email failed:", err));
+        }
+      } catch (err) {
+        console.error("[email] Shipped email setup failed:", err);
       }
-    } catch (err) {
-      console.error("[email] Status email setup failed:", err);
     }
 
     // Fire-and-forget: Kargoya verildi SMS

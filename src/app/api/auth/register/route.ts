@@ -5,6 +5,7 @@ import { ZodError } from "zod";
 import { db } from "@/lib/db";
 import { rateLimit } from "@/lib/rate-limit";
 import { registerSchema } from "@/validations/auth";
+import { sendWelcomeEmail } from "@/services/email.service";
 
 export async function POST(request: Request) {
   try {
@@ -52,6 +53,13 @@ export async function POST(request: Request) {
         authProvider: "EMAIL",
       },
     });
+
+    // Fire-and-forget welcome email
+    if (user.email) {
+      sendWelcomeEmail(user.email, user.name).catch((err) =>
+        console.error("[email] Welcome email failed:", err),
+      );
+    }
 
     return NextResponse.json(
       {

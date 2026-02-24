@@ -21,16 +21,18 @@ import { toast } from "sonner";
 
 /* ========== Types ========== */
 
-type EmailTemplateType = "ORDER_CONFIRMATION" | "STATUS_UPDATE" | "WELCOME" | "OTP";
+type EmailTemplateType = "WELCOME" | "ORDER_CONFIRMATION" | "SHIPPED";
 
 const TYPE_LABELS: Record<EmailTemplateType, string> = {
-  ORDER_CONFIRMATION: "Sipariş Onayı",
-  STATUS_UPDATE: "Durum Güncelleme",
   WELCOME: "Hoş Geldiniz",
-  OTP: "Doğrulama Kodu",
+  ORDER_CONFIRMATION: "Sipariş Onayı",
+  SHIPPED: "Kargoya Verildi",
 };
 
 const TYPE_VARIABLES: Record<EmailTemplateType, { key: string; label: string }[]> = {
+  WELCOME: [
+    { key: "{musteriAdi}", label: "Müşteri adı" },
+  ],
   ORDER_CONFIRMATION: [
     { key: "{musteriAdi}", label: "Müşteri adı" },
     { key: "{siparisNo}", label: "Sipariş numarası" },
@@ -39,20 +41,13 @@ const TYPE_VARIABLES: Record<EmailTemplateType, { key: string; label: string }[]
     { key: "{urunSayisi}", label: "Ürün sayısı" },
     { key: "{odemeTuru}", label: "Ödeme yöntemi" },
   ],
-  STATUS_UPDATE: [
+  SHIPPED: [
     { key: "{musteriAdi}", label: "Müşteri adı" },
     { key: "{siparisNo}", label: "Sipariş numarası" },
     { key: "{toplamTutar}", label: "Toplam tutar" },
     { key: "{toplamMetre}", label: "Toplam metre" },
     { key: "{urunSayisi}", label: "Ürün sayısı" },
     { key: "{odemeTuru}", label: "Ödeme yöntemi" },
-    { key: "{yeniDurum}", label: "Yeni durum" },
-  ],
-  WELCOME: [
-    { key: "{musteriAdi}", label: "Müşteri adı" },
-  ],
-  OTP: [
-    { key: "{musteriAdi}", label: "Müşteri adı" },
   ],
 };
 
