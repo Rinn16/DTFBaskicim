@@ -66,7 +66,9 @@ export const ModelName = {
   OrderStatusHistory: 'OrderStatusHistory',
   OrderGangSheet: 'OrderGangSheet',
   DesignDraft: 'DesignDraft',
-  CartItem: 'CartItem'
+  CartItem: 'CartItem',
+  SmsTemplate: 'SmsTemplate',
+  SmsLog: 'SmsLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -349,6 +351,33 @@ export const CartItemScalarFieldEnum = {
 } as const
 
 export type CartItemScalarFieldEnum = (typeof CartItemScalarFieldEnum)[keyof typeof CartItemScalarFieldEnum]
+
+
+export const SmsTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  content: 'content',
+  type: 'type',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SmsTemplateScalarFieldEnum = (typeof SmsTemplateScalarFieldEnum)[keyof typeof SmsTemplateScalarFieldEnum]
+
+
+export const SmsLogScalarFieldEnum = {
+  id: 'id',
+  templateId: 'templateId',
+  message: 'message',
+  recipientCount: 'recipientCount',
+  successCount: 'successCount',
+  failCount: 'failCount',
+  sentBy: 'sentBy',
+  createdAt: 'createdAt'
+} as const
+
+export type SmsLogScalarFieldEnum = (typeof SmsLogScalarFieldEnum)[keyof typeof SmsLogScalarFieldEnum]
 
 
 export const SortOrder = {

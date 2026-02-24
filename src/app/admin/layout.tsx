@@ -9,6 +9,8 @@ import {
   Package,
   Users,
   Banknote,
+  MessageSquare,
+  Send,
   ArrowLeft,
   Menu,
 } from "lucide-react";
@@ -19,6 +21,8 @@ const navItems = [
   { href: "/admin/siparisler", label: "Siparişler", icon: Package },
   { href: "/admin/musteriler", label: "Müşteriler", icon: Users },
   { href: "/admin/fiyatlandirma", label: "Fiyatlandırma", icon: Banknote },
+  { href: "/admin/sms-sablonlari", label: "SMS Şablonları", icon: MessageSquare },
+  { href: "/admin/sms-gonder", label: "SMS Gönder", icon: Send },
 ];
 
 function SidebarContent({ pathname }: { pathname: string }) {

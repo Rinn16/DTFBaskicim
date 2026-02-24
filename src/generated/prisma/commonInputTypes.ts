@@ -401,6 +401,23 @@ export type EnumOrderStatusNullableWithAggregatesFilter<$PrismaModel = never> = 
   _max?: Prisma.NestedEnumOrderStatusNullableFilter<$PrismaModel>
 }
 
+export type EnumSmsTemplateTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.SmsTemplateType | Prisma.EnumSmsTemplateTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.SmsTemplateType[] | Prisma.ListEnumSmsTemplateTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SmsTemplateType[] | Prisma.ListEnumSmsTemplateTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSmsTemplateTypeFilter<$PrismaModel> | $Enums.SmsTemplateType
+}
+
+export type EnumSmsTemplateTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SmsTemplateType | Prisma.EnumSmsTemplateTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.SmsTemplateType[] | Prisma.ListEnumSmsTemplateTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SmsTemplateType[] | Prisma.ListEnumSmsTemplateTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSmsTemplateTypeWithAggregatesFilter<$PrismaModel> | $Enums.SmsTemplateType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSmsTemplateTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSmsTemplateTypeFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -772,6 +789,23 @@ export type NestedEnumOrderStatusNullableWithAggregatesFilter<$PrismaModel = nev
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumOrderStatusNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumOrderStatusNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumSmsTemplateTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.SmsTemplateType | Prisma.EnumSmsTemplateTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.SmsTemplateType[] | Prisma.ListEnumSmsTemplateTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SmsTemplateType[] | Prisma.ListEnumSmsTemplateTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSmsTemplateTypeFilter<$PrismaModel> | $Enums.SmsTemplateType
+}
+
+export type NestedEnumSmsTemplateTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SmsTemplateType | Prisma.EnumSmsTemplateTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.SmsTemplateType[] | Prisma.ListEnumSmsTemplateTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SmsTemplateType[] | Prisma.ListEnumSmsTemplateTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSmsTemplateTypeWithAggregatesFilter<$PrismaModel> | $Enums.SmsTemplateType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSmsTemplateTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSmsTemplateTypeFilter<$PrismaModel>
 }
 
 

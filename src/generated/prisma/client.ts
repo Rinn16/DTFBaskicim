@@ -119,3 +119,13 @@ export type DesignDraft = Prisma.DesignDraftModel
  * 
  */
 export type CartItem = Prisma.CartItemModel
+/**
+ * Model SmsTemplate
+ * 
+ */
+export type SmsTemplate = Prisma.SmsTemplateModel
+/**
+ * Model SmsLog
+ * 
+ */
+export type SmsLog = Prisma.SmsLogModel

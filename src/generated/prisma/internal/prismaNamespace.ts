@@ -399,7 +399,9 @@ export const ModelName = {
   OrderStatusHistory: 'OrderStatusHistory',
   OrderGangSheet: 'OrderGangSheet',
   DesignDraft: 'DesignDraft',
-  CartItem: 'CartItem'
+  CartItem: 'CartItem',
+  SmsTemplate: 'SmsTemplate',
+  SmsLog: 'SmsLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -415,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "otpCode" | "address" | "pricingTier" | "customerPricing" | "discountCode" | "shippingConfig" | "order" | "orderItem" | "orderStatusHistory" | "orderGangSheet" | "designDraft" | "cartItem"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "otpCode" | "address" | "pricingTier" | "customerPricing" | "discountCode" | "shippingConfig" | "order" | "orderItem" | "orderStatusHistory" | "orderGangSheet" | "designDraft" | "cartItem" | "smsTemplate" | "smsLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1603,6 +1605,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SmsTemplate: {
+      payload: Prisma.$SmsTemplatePayload<ExtArgs>
+      fields: Prisma.SmsTemplateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SmsTemplateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsTemplatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SmsTemplateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsTemplatePayload>
+        }
+        findFirst: {
+          args: Prisma.SmsTemplateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsTemplatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SmsTemplateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsTemplatePayload>
+        }
+        findMany: {
+          args: Prisma.SmsTemplateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsTemplatePayload>[]
+        }
+        create: {
+          args: Prisma.SmsTemplateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsTemplatePayload>
+        }
+        createMany: {
+          args: Prisma.SmsTemplateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SmsTemplateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsTemplatePayload>[]
+        }
+        delete: {
+          args: Prisma.SmsTemplateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsTemplatePayload>
+        }
+        update: {
+          args: Prisma.SmsTemplateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsTemplatePayload>
+        }
+        deleteMany: {
+          args: Prisma.SmsTemplateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SmsTemplateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SmsTemplateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsTemplatePayload>[]
+        }
+        upsert: {
+          args: Prisma.SmsTemplateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsTemplatePayload>
+        }
+        aggregate: {
+          args: Prisma.SmsTemplateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSmsTemplate>
+        }
+        groupBy: {
+          args: Prisma.SmsTemplateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SmsTemplateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SmsTemplateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SmsTemplateCountAggregateOutputType> | number
+        }
+      }
+    }
+    SmsLog: {
+      payload: Prisma.$SmsLogPayload<ExtArgs>
+      fields: Prisma.SmsLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SmsLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SmsLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsLogPayload>
+        }
+        findFirst: {
+          args: Prisma.SmsLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SmsLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsLogPayload>
+        }
+        findMany: {
+          args: Prisma.SmsLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsLogPayload>[]
+        }
+        create: {
+          args: Prisma.SmsLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsLogPayload>
+        }
+        createMany: {
+          args: Prisma.SmsLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SmsLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsLogPayload>[]
+        }
+        delete: {
+          args: Prisma.SmsLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsLogPayload>
+        }
+        update: {
+          args: Prisma.SmsLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.SmsLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SmsLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SmsLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.SmsLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SmsLogPayload>
+        }
+        aggregate: {
+          args: Prisma.SmsLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSmsLog>
+        }
+        groupBy: {
+          args: Prisma.SmsLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SmsLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SmsLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SmsLogCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1908,6 +2058,33 @@ export const CartItemScalarFieldEnum = {
 export type CartItemScalarFieldEnum = (typeof CartItemScalarFieldEnum)[keyof typeof CartItemScalarFieldEnum]
 
 
+export const SmsTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  content: 'content',
+  type: 'type',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SmsTemplateScalarFieldEnum = (typeof SmsTemplateScalarFieldEnum)[keyof typeof SmsTemplateScalarFieldEnum]
+
+
+export const SmsLogScalarFieldEnum = {
+  id: 'id',
+  templateId: 'templateId',
+  message: 'message',
+  recipientCount: 'recipientCount',
+  successCount: 'successCount',
+  failCount: 'failCount',
+  sentBy: 'sentBy',
+  createdAt: 'createdAt'
+} as const
+
+export type SmsLogScalarFieldEnum = (typeof SmsLogScalarFieldEnum)[keyof typeof SmsLogScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2116,6 +2293,20 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'SmsTemplateType'
+ */
+export type EnumSmsTemplateTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SmsTemplateType'>
+    
+
+
+/**
+ * Reference to a field of type 'SmsTemplateType[]'
+ */
+export type ListEnumSmsTemplateTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SmsTemplateType[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -2239,6 +2430,8 @@ export type GlobalOmitConfig = {
   orderGangSheet?: Prisma.OrderGangSheetOmit
   designDraft?: Prisma.DesignDraftOmit
   cartItem?: Prisma.CartItemOmit
+  smsTemplate?: Prisma.SmsTemplateOmit
+  smsLog?: Prisma.SmsLogOmit
 }
 
 /* Types for Logging */

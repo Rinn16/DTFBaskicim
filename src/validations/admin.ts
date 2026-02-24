@@ -17,3 +17,16 @@ export const discountCodeSchema = z.object({
   validUntil: z.string().min(1, "Bitiş tarihi zorunlu"),
   isActive: z.boolean().optional(),
 });
+
+export const smsTemplateSchema = z.object({
+  name: z.string().min(1, "Şablon adı zorunlu").max(100),
+  content: z.string().min(1, "Mesaj içeriği zorunlu").max(918),
+  type: z.enum(["BILGILENDIRME", "KAMPANYA"]),
+  isActive: z.boolean().optional(),
+});
+
+export const smsSendSchema = z.object({
+  message: z.string().min(1, "Mesaj içeriği zorunlu").max(918),
+  phones: z.array(z.string()).min(1, "En az bir telefon numarası gerekli"),
+  templateId: z.string().optional(),
+});

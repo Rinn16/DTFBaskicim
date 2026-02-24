@@ -62,3 +62,11 @@ export const BillingType = {
 } as const
 
 export type BillingType = (typeof BillingType)[keyof typeof BillingType]
+
+
+export const SmsTemplateType = {
+  BILGILENDIRME: 'BILGILENDIRME',
+  KAMPANYA: 'KAMPANYA'
+} as const
+
+export type SmsTemplateType = (typeof SmsTemplateType)[keyof typeof SmsTemplateType]
