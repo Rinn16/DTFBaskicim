@@ -1,7 +1,7 @@
-import { autoPack } from "@/services/packing.service";
+import { autoPack } from "../services/packing.service";
 
 self.onmessage = (e: MessageEvent) => {
   const { designs, rollWidthCm, gapCm } = e.data;
   const result = autoPack(designs, rollWidthCm, gapCm);
-  self.postMessage(result);
+  (self as unknown as Worker).postMessage(result);
 };

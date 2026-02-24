@@ -13,6 +13,9 @@ const DISPLAY_WIDTH = 800;
 const DISPLAY_PX_PER_CM = DISPLAY_WIDTH / ROLL_CONFIG.PRINT_WIDTH_CM; // ~14.04 px/cm
 const FALLBACK_MIN_HEIGHT = 600;
 
+/** Above this many placements, hide the canvas and show a summary instead */
+export const CANVAS_PLACEMENT_LIMIT = 200;
+
 /** Convert cm to display pixels */
 export function cmToDisplayPx(cm: number): number {
   return cm * DISPLAY_PX_PER_CM;
@@ -826,29 +829,37 @@ export function RollCanvas() {
     [addPlacement]
   );
 
+  const showSummary = placements.length > CANVAS_PLACEMENT_LIMIT;
+
   return (
     <div ref={containerRef} className="flex-1 overflow-hidden relative">
-      {/* CM Ruler on left side */}
-      {showRuler && (
-        <div className="absolute left-0 top-0 w-8 h-full bg-muted/80 border-r z-10 overflow-hidden">
-          <RulerMarks />
-        </div>
-      )}
+      {showSummary ? (
+        <PlacementSummary />
+      ) : (
+        <>
+          {/* CM Ruler on left side */}
+          {showRuler && (
+            <div className="absolute left-0 top-0 w-8 h-full bg-muted/80 border-r z-10 overflow-hidden">
+              <RulerMarks />
+            </div>
+          )}
 
-      {/* Canvas container - scrollable */}
-      <div className={`h-full overflow-auto ${showRuler ? "pl-8" : ""}`}>
-        <div
-          className="flex justify-center py-4"
-          style={{
-            transform: `scale(${zoom})`,
-            transformOrigin: "top center",
-          }}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-        >
-          <canvas ref={canvasElRef} />
-        </div>
-      </div>
+          {/* Canvas container - scrollable */}
+          <div className={`h-full overflow-auto ${showRuler ? "pl-8" : ""}`}>
+            <div
+              className="flex justify-center py-4"
+              style={{
+                transform: `scale(${zoom})`,
+                transformOrigin: "top center",
+              }}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+            >
+              <canvas ref={canvasElRef} />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -885,6 +896,105 @@ function RulerMarks() {
   }
 
   return <div className="relative">{marks}</div>;
+}
+
+/** Summary view shown when placement count exceeds CANVAS_PLACEMENT_LIMIT */
+function PlacementSummary() {
+  const placements = useCanvasStore((s) => s.placements);
+  const uploadedImages = useCanvasStore((s) => s.uploadedImages);
+  const totalHeightCm = useCanvasStore((s) => s.totalHeightCm);
+  const priceBreakdown = useCanvasStore((s) => s.priceBreakdown);
+
+  // Group placements by imageId and count
+  const groups = new Map<string, number>();
+  for (const p of placements) {
+    groups.set(p.imageId, (groups.get(p.imageId) || 0) + 1);
+  }
+
+  return (
+    <div className="h-full overflow-auto">
+      <div className="max-w-lg mx-auto py-8 px-4">
+        {/* Header */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-cyan-500/10 mb-3">
+            <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
+            </svg>
+          </div>
+          <h3 className="text-base font-semibold text-white mb-1">Yerlesim Ozeti</h3>
+          <p className="text-sm text-slate-400 leading-relaxed">
+            {placements.length} adet tasarim yerlesti. Performans icin
+            canvas onizlemesi devre disi — yerlestirme sonucu asagida.
+          </p>
+        </div>
+
+        {/* Image list */}
+        <div className="space-y-2 mb-6">
+          {[...groups.entries()].map(([imageId, count]) => {
+            const image = uploadedImages.find((img) => img.id === imageId);
+            if (!image) return null;
+            return (
+              <div
+                key={imageId}
+                className="flex items-center gap-3 rounded-lg border border-white/5 bg-[#0a0f16] p-3"
+              >
+                <div className="w-12 h-12 flex-shrink-0 rounded overflow-hidden bg-black/40">
+                  <img
+                    src={image.persistedThumbnail || image.thumbnailUrl}
+                    alt={image.imageName}
+                    className="w-full h-full object-contain"
+                    crossOrigin="anonymous"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-100 truncate">
+                    {image.imageName}
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    {image.widthCm} x {image.heightCm} cm
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0 bg-cyan-500/10 rounded-full px-3 py-1">
+                  <span className="text-sm font-semibold text-cyan-400">{count}</span>
+                  <span className="text-xs text-cyan-400/70">adet</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Totals */}
+        <div className="rounded-lg border border-white/5 bg-[#0a0f16] p-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-xs text-slate-500 mb-0.5">Toplam Adet</p>
+              <p className="text-lg font-semibold text-white">{placements.length}</p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 mb-0.5">Rulo Uzunlugu</p>
+              <p className="text-lg font-semibold text-white">{totalHeightCm.toFixed(1)} cm</p>
+            </div>
+            {priceBreakdown && (
+              <>
+                <div>
+                  <p className="text-xs text-slate-500 mb-0.5">Birim Fiyat</p>
+                  <p className="text-lg font-semibold text-white">
+                    {priceBreakdown.pricePerMeter.toFixed(2)} TL/m
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 mb-0.5">Toplam Fiyat</p>
+                  <p className="text-lg font-semibold text-emerald-400">
+                    {priceBreakdown.totalAmount.toFixed(2)} TL
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // Add an image to the canvas at a specific position (all params in cm)

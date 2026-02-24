@@ -22,7 +22,7 @@ import { DraftListSheet } from "./draft-list-sheet";
 import { useCanvasStore } from "@/stores/canvas-store";
 import { useUploadStore } from "@/stores/upload-store";
 import { useDraftStore } from "@/stores/draft-store";
-import { addImageToCanvas, addImagesToCanvas, clearCanvasDesigns } from "./roll-canvas";
+import { addImageToCanvas, addImagesToCanvas, clearCanvasDesigns, CANVAS_PLACEMENT_LIMIT } from "./roll-canvas";
 import { autoPackAsync } from "@/services/packing.service";
 import { getEffectiveDimensions } from "@/lib/placement-utils";
 import type { DesignInput } from "@/types/canvas";
@@ -224,23 +224,25 @@ export function DesignSidebar() {
 
     setPlacements(newPlacements, { skipOverlaps: true });
 
-    // 4. Batch image loading with progress
-    const batchItems = newPlacements.map((placement) => {
-      const image = uploadedImages.find((img) => img.id === placement.imageId);
-      return {
-        imageUrl: image?.thumbnailUrl ?? "",
-        placementId: placement.id,
-        xCm: placement.x,
-        yCm: placement.y,
-        widthCm: placement.widthCm,
-        heightCm: placement.heightCm,
-        rotation: placement.rotation,
-      };
-    }).filter((item) => item.imageUrl);
+    // 4. Batch image loading — skip canvas rendering for large placement counts
+    if (newPlacements.length <= CANVAS_PLACEMENT_LIMIT) {
+      const batchItems = newPlacements.map((placement) => {
+        const image = uploadedImages.find((img) => img.id === placement.imageId);
+        return {
+          imageUrl: image?.thumbnailUrl ?? "",
+          placementId: placement.id,
+          xCm: placement.x,
+          yCm: placement.y,
+          widthCm: placement.widthCm,
+          heightCm: placement.heightCm,
+          rotation: placement.rotation,
+        };
+      }).filter((item) => item.imageUrl);
 
-    await addImagesToCanvas(canvas, batchItems, (fraction) => {
-      setAutoPlaceProgress(10 + fraction * 90);
-    });
+      await addImagesToCanvas(canvas, batchItems, (fraction) => {
+        setAutoPlaceProgress(10 + fraction * 90);
+      });
+    }
 
     setAutoPlaceProgress(null);
     setAutoPlaceOpen(false);

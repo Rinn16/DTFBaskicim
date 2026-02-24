@@ -276,34 +276,48 @@ function mergeSkyline(skyline: SkylineNode[]): SkylineNode[] {
   return merged;
 }
 
-// ─── Async Web Worker wrapper ────────────────────────────────────
+// ─── Web Worker async wrapper ────────────────────────────────────
 
 /**
- * Run autoPack in a Web Worker so the main thread stays responsive.
- * Falls back to sync autoPack if the Worker fails to start.
+ * Run packing in a Web Worker so the main thread stays completely
+ * unblocked. Uses the same sync `autoPack` (all 4 sort strategies)
+ * inside the worker — results are identical.
+ *
+ * Falls back to sync `autoPack` on the main thread if workers are
+ * unavailable (SSR, worker creation failure, etc.).
  */
 export async function autoPackAsync(
   designs: DesignInput[],
-  rollWidthCm?: number,
-  gapCm?: number
+  rollWidthCm: number = ROLL_CONFIG.PRINT_WIDTH_CM,
+  gapCm: number = ROLL_CONFIG.GAP_CM
 ): Promise<PackResult> {
-  try {
-    return await new Promise<PackResult>((resolve, reject) => {
-      const worker = new Worker(
-        new URL("../workers/packing.worker.ts", import.meta.url)
-      );
-      worker.onmessage = (e: MessageEvent<PackResult>) => {
-        resolve(e.data);
-        worker.terminate();
-      };
-      worker.onerror = (err) => {
-        reject(err);
-        worker.terminate();
-      };
-      worker.postMessage({ designs, rollWidthCm, gapCm });
-    });
-  } catch {
-    // Fallback to sync if Worker is unavailable (SSR, old browser, etc.)
-    return autoPack(designs, rollWidthCm, gapCm);
+  if (typeof window !== "undefined") {
+    try {
+      return await runPackingInWorker(designs, rollWidthCm, gapCm);
+    } catch {
+      // Worker failed — fall back to sync on main thread
+    }
   }
+  return autoPack(designs, rollWidthCm, gapCm);
+}
+
+function runPackingInWorker(
+  designs: DesignInput[],
+  rollWidthCm: number,
+  gapCm: number
+): Promise<PackResult> {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(
+      new URL("../workers/packing.worker.ts", import.meta.url)
+    );
+    worker.onmessage = (e: MessageEvent<PackResult>) => {
+      resolve(e.data);
+      worker.terminate();
+    };
+    worker.onerror = (err) => {
+      reject(err);
+      worker.terminate();
+    };
+    worker.postMessage({ designs, rollWidthCm, gapCm });
+  });
 }
