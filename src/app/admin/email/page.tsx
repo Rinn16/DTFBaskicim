@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { Loader2, Pencil, Trash2, Eye, Code2, Mail, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { confirm } from "@/components/ui/confirm-dialog";
 
 /* ========== Types ========== */
 
@@ -226,26 +227,22 @@ export default function EmailTemplatesPage() {
     }
   };
 
-  const handleDelete = (id: string) => {
-    toast("Bu şablonu silmek istediğinize emin misiniz?", {
-      action: {
-        label: "Evet, Sil",
-        onClick: async () => {
-          try {
-            const res = await fetch(`/api/admin/email-templates/${id}`, { method: "DELETE" });
-            if (res.ok) {
-              toast.success("Şablon silindi");
-              fetchTemplates();
-            } else {
-              toast.error("Şablon silinemedi");
-            }
-          } catch {
-            toast.error("Bir hata oluştu");
-          }
-        },
-      },
-      cancel: { label: "İptal", onClick: () => {} },
+  const handleDelete = async (id: string) => {
+    const ok = await confirm({
+      description: "Bu şablonu silmek istediğinize emin misiniz?",
     });
+    if (!ok) return;
+    try {
+      const res = await fetch(`/api/admin/email-templates/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        toast.success("Şablon silindi");
+        fetchTemplates();
+      } else {
+        toast.error("Şablon silinemedi");
+      }
+    } catch {
+      toast.error("Bir hata oluştu");
+    }
   };
 
   const insertVariable = (key: string) => {
