@@ -202,9 +202,12 @@ export function DesignSidebar() {
     if (designs.length === 0) return;
 
     setAutoPlaceProgress(0);
+    const perf: Record<string, number> = {};
+    let t = performance.now();
 
     // 1. Run packing in Web Worker (main thread stays responsive)
     const result = await autoPackAsync(designs, undefined, gapCm);
+    perf["1_worker"] = performance.now() - t; t = performance.now();
     setAutoPlaceProgress(10);
 
     // 2. Build placements
@@ -217,6 +220,7 @@ export function DesignSidebar() {
       heightCm: p.heightCm,
       rotation: p.rotation,
     }));
+    perf["2_mapPlacements"] = performance.now() - t; t = performance.now();
 
     const isLargeSet = newPlacements.length > CANVAS_PLACEMENT_LIMIT;
 
@@ -225,11 +229,13 @@ export function DesignSidebar() {
     if (!isLargeSet) {
       clearPlacements();
     }
+    perf["3_clearCanvas"] = performance.now() - t; t = performance.now();
 
     // 4. Set new placements — skip history clone for large sets (avoids O(n) block)
     setPlacements(newPlacements, { skipOverlaps: true, skipHistory: isLargeSet });
+    perf["4_setPlacements"] = performance.now() - t; t = performance.now();
 
-    // 4. Batch image loading — skip canvas rendering for large placement counts
+    // 5. Batch image loading — skip canvas rendering for large placement counts
     if (newPlacements.length <= CANVAS_PLACEMENT_LIMIT) {
       const batchItems = newPlacements.map((placement) => {
         const image = uploadedImages.find((img) => img.id === placement.imageId);
@@ -247,10 +253,21 @@ export function DesignSidebar() {
       await addImagesToCanvas(canvas, batchItems, (fraction) => {
         setAutoPlaceProgress(10 + fraction * 90);
       });
+      perf["5_addImages"] = performance.now() - t; t = performance.now();
     }
 
     setAutoPlaceProgress(null);
     setAutoPlaceOpen(false);
+    perf["6_cleanup"] = performance.now() - t;
+
+    console.table(perf);
+    console.log(`[perf] Total items: ${newPlacements.length}, isLargeSet: ${isLargeSet}`);
+
+    // Measure when browser actually becomes idle after React renders
+    requestAnimationFrame(() => {
+      const paintTime = performance.now();
+      console.log(`[perf] First paint after auto-place: ${(paintTime - t).toFixed(0)}ms after cleanup`);
+    });
   };
 
   const handleRemoveImage = (id: string) => {

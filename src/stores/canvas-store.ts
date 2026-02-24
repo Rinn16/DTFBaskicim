@@ -113,10 +113,15 @@ function createDebouncedLocalStorage(delay: number) {
   return {
     getItem: (name: string) => localStorage.getItem(name),
     setItem: (name: string, value: string) => {
+      console.log(`[perf:persist] setItem called, value size: ${(value.length / 1024).toFixed(0)}KB`);
       pending = { key: name, value };
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => {
-        if (pending) localStorage.setItem(pending.key, pending.value);
+        if (pending) {
+          const _pt = performance.now();
+          localStorage.setItem(pending.key, pending.value);
+          console.log(`[perf:persist] localStorage.setItem: ${(performance.now() - _pt).toFixed(0)}ms, size: ${(pending.value.length / 1024).toFixed(0)}KB`);
+        }
         pending = null;
         timer = null;
       }, delay);
@@ -173,6 +178,8 @@ export const useCanvasStore = create<CanvasState>()(
         // For large sets, batch all state into a single set() call
         // to avoid triggering persist serialize (JSON.stringify) multiple times.
         if (opts?.skipHistory && placements.length > 200) {
+          const _t0 = performance.now();
+
           let totalHeightCm = 0;
           for (const p of placements) {
             const { height } = getEffectiveDimensions(p);
@@ -180,15 +187,20 @@ export const useCanvasStore = create<CanvasState>()(
             if (bottom > totalHeightCm) totalHeightCm = bottom;
           }
           totalHeightCm = Math.round(totalHeightCm * 100) / 100;
+          const _t1 = performance.now();
 
           const { pricingTiers, customerPricing, discountPercent } = get();
           const priceBreakdown =
             totalHeightCm > 0 && pricingTiers.length > 0
               ? calculatePrice(totalHeightCm, pricingTiers, customerPricing, discountPercent, 0)
               : null;
+          const _t2 = performance.now();
 
           // Single set() → single persist trigger
           set({ placements, totalHeightCm, priceBreakdown, overlappingIds: new Set<string>() });
+          const _t3 = performance.now();
+
+          console.log(`[perf:setPlacements] height: ${(_t1-_t0).toFixed(0)}ms, price: ${(_t2-_t1).toFixed(0)}ms, set(): ${(_t3-_t2).toFixed(0)}ms`);
           return;
         }
 
