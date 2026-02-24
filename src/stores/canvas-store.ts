@@ -107,15 +107,27 @@ function resolveThumbnailUrl(img: UploadedImage): string {
 }
 
 /**
- * Custom PersistStorage that defers BOTH JSON.stringify and localStorage.setItem.
+ * Custom PersistStorage that defers BOTH JSON.stringify and localStorage.setItem
+ * to the browser's next idle window via requestIdleCallback.
  *
- * Unlike createJSONStorage + debounced localStorage (which stringifies on
- * every set() call — expensive for 5000+ placements), this stores only a
- * reference and serializes once when the debounce timer fires.
+ * - Every set() just stores a reference (zero cost).
+ * - Rapid set() calls are coalesced — only the latest state is serialized.
+ * - Serialization runs as soon as the browser is idle (typically <16ms),
+ *   not after an arbitrary delay.
  */
-function createDebouncedPersistStorage<S>(delay: number): PersistStorage<S> {
-  let timer: ReturnType<typeof setTimeout> | null = null;
+function createIdlePersistStorage<S>(): PersistStorage<S> {
+  let pendingHandle: number | null = null;
   let pending: { key: string; value: StorageValue<S> } | null = null;
+
+  const schedule =
+    typeof requestIdleCallback !== "undefined"
+      ? (fn: () => void) => requestIdleCallback(fn, { timeout: 200 })
+      : (fn: () => void) => window.setTimeout(fn, 0);
+
+  const cancel =
+    typeof cancelIdleCallback !== "undefined"
+      ? (id: number) => cancelIdleCallback(id)
+      : (id: number) => clearTimeout(id);
 
   return {
     getItem: (name: string) => {
@@ -128,23 +140,22 @@ function createDebouncedPersistStorage<S>(delay: number): PersistStorage<S> {
       }
     },
     setItem: (name: string, value: StorageValue<S>) => {
-      // Just store the reference — defer stringify + write
       pending = { key: name, value };
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(() => {
+      if (pendingHandle !== null) cancel(pendingHandle);
+      pendingHandle = schedule(() => {
         if (pending) {
           try {
             localStorage.setItem(pending.key, JSON.stringify(pending.value));
           } catch {
-            // localStorage full or unavailable — silently fail
+            // localStorage full or unavailable
           }
         }
         pending = null;
-        timer = null;
-      }, delay);
+        pendingHandle = null;
+      }) as number;
     },
     removeItem: (name: string) => {
-      if (timer) clearTimeout(timer);
+      if (pendingHandle !== null) cancel(pendingHandle);
       pending = null;
       localStorage.removeItem(name);
     },
@@ -567,7 +578,7 @@ export const useCanvasStore = create<CanvasState>()(
     {
       name: "dtf-canvas-state",
       version: 1,
-      storage: createDebouncedPersistStorage(2000),
+      storage: createIdlePersistStorage(),
 
       // v0→v1: old thumbnails were JPEG (lost transparency → black bg) at 200px (blurry).
       // Drop images that only have JPEG base64; keep those with S3 URLs or PNG thumbs.
