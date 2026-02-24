@@ -862,33 +862,33 @@ export function RollCanvas() {
 
   return (
     <div ref={containerRef} className="flex-1 overflow-hidden relative">
-      {showSummary ? (
-        <PlacementSummary />
-      ) : (
-        <>
-          {/* CM Ruler on left side */}
-          {showRuler && (
-            <div className="absolute left-0 top-0 w-8 h-full bg-muted/80 border-r z-10 overflow-hidden">
-              <RulerMarks />
-            </div>
-          )}
+      {showSummary && <PlacementSummary />}
 
-          {/* Canvas container - scrollable */}
-          <div className={`h-full overflow-auto ${showRuler ? "pl-8" : ""}`}>
-            <div
-              className="flex justify-center py-4"
-              style={{
-                transform: `scale(${zoom})`,
-                transformOrigin: "top center",
-              }}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-            >
-              <canvas ref={canvasElRef} />
-            </div>
+      {/* Canvas is always in the DOM so fabric.Canvas initialises even when
+          summary mode is active. Hidden via CSS when summary is shown. */}
+      <div className={showSummary ? "hidden" : "contents"}>
+        {/* CM Ruler on left side */}
+        {showRuler && (
+          <div className="absolute left-0 top-0 w-8 h-full bg-muted/80 border-r z-10 overflow-hidden">
+            <RulerMarks />
           </div>
-        </>
-      )}
+        )}
+
+        {/* Canvas container - scrollable */}
+        <div className={`h-full overflow-auto ${showRuler ? "pl-8" : ""}`}>
+          <div
+            className="flex justify-center py-4"
+            style={{
+              transform: `scale(${zoom})`,
+              transformOrigin: "top center",
+            }}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          >
+            <canvas ref={canvasElRef} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
