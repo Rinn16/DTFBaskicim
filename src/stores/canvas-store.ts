@@ -169,6 +169,29 @@ export const useCanvasStore = create<CanvasState>()(
         if (!opts?.skipHistory) {
           useHistoryStore.getState().pushState(get().placements);
         }
+
+        // For large sets, batch all state into a single set() call
+        // to avoid triggering persist serialize (JSON.stringify) multiple times.
+        if (opts?.skipHistory && placements.length > 200) {
+          let totalHeightCm = 0;
+          for (const p of placements) {
+            const { height } = getEffectiveDimensions(p);
+            const bottom = p.y + height;
+            if (bottom > totalHeightCm) totalHeightCm = bottom;
+          }
+          totalHeightCm = Math.round(totalHeightCm * 100) / 100;
+
+          const { pricingTiers, customerPricing, discountPercent } = get();
+          const priceBreakdown =
+            totalHeightCm > 0 && pricingTiers.length > 0
+              ? calculatePrice(totalHeightCm, pricingTiers, customerPricing, discountPercent, 0)
+              : null;
+
+          // Single set() → single persist trigger
+          set({ placements, totalHeightCm, priceBreakdown, overlappingIds: new Set<string>() });
+          return;
+        }
+
         set({ placements });
         get().recalculateHeight(opts?.skipOverlaps);
       },
@@ -570,7 +593,10 @@ export const useCanvasStore = create<CanvasState>()(
             // Clear dead blob originalUrl so it doesn't accumulate
             originalUrl: rest.originalUrl?.startsWith("blob:") ? "" : rest.originalUrl,
           })),
-        placements: state.placements,
+        // Skip persisting large placement sets — serializing 5000+ items
+        // on every set() call blocks the main thread. Users re-run auto-place
+        // after refresh anyway, so no data loss.
+        placements: state.placements.length <= 200 ? state.placements : [],
         autoPlaceQuantities: state.autoPlaceQuantities,
         gapCm: state.gapCm,
       }),
