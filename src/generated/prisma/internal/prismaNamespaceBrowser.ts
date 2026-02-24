@@ -61,6 +61,7 @@ export const ModelName = {
   CustomerPricing: 'CustomerPricing',
   DiscountCode: 'DiscountCode',
   ShippingConfig: 'ShippingConfig',
+  SiteSettings: 'SiteSettings',
   Order: 'Order',
   OrderItem: 'OrderItem',
   OrderStatusHistory: 'OrderStatusHistory',
@@ -237,6 +238,15 @@ export const ShippingConfigScalarFieldEnum = {
 } as const
 
 export type ShippingConfigScalarFieldEnum = (typeof ShippingConfigScalarFieldEnum)[keyof typeof ShippingConfigScalarFieldEnum]
+
+
+export const SiteSettingsScalarFieldEnum = {
+  id: 'id',
+  smsEnabled: 'smsEnabled',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SiteSettingsScalarFieldEnum = (typeof SiteSettingsScalarFieldEnum)[keyof typeof SiteSettingsScalarFieldEnum]
 
 
 export const OrderScalarFieldEnum = {

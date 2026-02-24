@@ -68,6 +68,11 @@ export type DiscountCode = Prisma.DiscountCodeModel
  */
 export type ShippingConfig = Prisma.ShippingConfigModel
 /**
+ * Model SiteSettings
+ * 
+ */
+export type SiteSettings = Prisma.SiteSettingsModel
+/**
  * Model Order
  * 
  */
