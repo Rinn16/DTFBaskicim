@@ -15,6 +15,7 @@ const statusUpdateSchema = z.object({
   ]),
   note: z.string().optional(),
   adminNote: z.string().optional(),
+  trackingCode: z.string().optional(),
 });
 
 export async function PATCH(
@@ -38,7 +39,7 @@ export async function PATCH(
       );
     }
 
-    const { status, note, adminNote } = parsed.data;
+    const { status, note, adminNote, trackingCode } = parsed.data;
 
     const order = await db.order.findUnique({
       where: { id: orderId },
@@ -69,6 +70,7 @@ export async function PATCH(
         data: {
           status,
           ...(adminNote !== undefined && { adminNote }),
+          ...(status === "SHIPPED" && trackingCode && { trackingCode }),
         },
       }),
       db.orderStatusHistory.create({
@@ -117,6 +119,22 @@ export async function PATCH(
       }
     } catch (err) {
       console.error("[email] Status email setup failed:", err);
+    }
+
+    // Fire-and-forget: Kargoya verildi SMS
+    if (status === "SHIPPED") {
+      try {
+        const { sendOrderEventSms } = await import("@/services/sms.service");
+        const fullOrder = await db.order.findUnique({
+          where: { id: orderId },
+          include: { user: true, address: true },
+        });
+        if (fullOrder) {
+          sendOrderEventSms(fullOrder, "KARGOYA_VERILDI");
+        }
+      } catch (err) {
+        console.error("[sms] Shipped SMS failed:", err);
+      }
     }
 
     return NextResponse.json({

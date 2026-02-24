@@ -21,7 +21,7 @@ export const discountCodeSchema = z.object({
 export const smsTemplateSchema = z.object({
   name: z.string().min(1, "Şablon adı zorunlu").max(100),
   content: z.string().min(1, "Mesaj içeriği zorunlu").max(918),
-  type: z.enum(["BILGILENDIRME", "KAMPANYA"]),
+  type: z.enum(["SIPARIS_ONAYLANDI", "KARGOYA_VERILDI", "KAMPANYA"]),
   isActive: z.boolean().optional(),
 });
 

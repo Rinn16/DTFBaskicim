@@ -33,11 +33,19 @@ import {
 import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
+type TemplateType = "SIPARIS_ONAYLANDI" | "KARGOYA_VERILDI" | "KAMPANYA";
+
+const TYPE_LABELS: Record<TemplateType, string> = {
+  SIPARIS_ONAYLANDI: "Sipariş Onaylandı (Otomatik)",
+  KARGOYA_VERILDI: "Kargoya Verildi (Otomatik)",
+  KAMPANYA: "Kampanya (Manuel)",
+};
+
 interface SmsTemplate {
   id: string;
   name: string;
   content: string;
-  type: "BILGILENDIRME" | "KAMPANYA";
+  type: TemplateType;
   isActive: boolean;
   createdAt: string;
 }
@@ -45,14 +53,14 @@ interface SmsTemplate {
 interface TemplateForm {
   name: string;
   content: string;
-  type: "BILGILENDIRME" | "KAMPANYA";
+  type: TemplateType;
   isActive: boolean;
 }
 
 const emptyForm: TemplateForm = {
   name: "",
   content: "",
-  type: "BILGILENDIRME",
+  type: "SIPARIS_ONAYLANDI",
   isActive: true,
 };
 
@@ -213,9 +221,7 @@ export default function SmsTemplatesPage() {
                             t.type === "KAMPANYA" ? "default" : "secondary"
                           }
                         >
-                          {t.type === "KAMPANYA"
-                            ? "Kampanya"
-                            : "Bilgilendirme"}
+                          {TYPE_LABELS[t.type] || t.type}
                         </Badge>
                       </TableCell>
                       <TableCell className="max-w-[200px] truncate text-sm text-muted-foreground">
@@ -278,7 +284,7 @@ export default function SmsTemplatesPage() {
                 onValueChange={(v) =>
                   setForm({
                     ...form,
-                    type: v as "BILGILENDIRME" | "KAMPANYA",
+                    type: v as TemplateType,
                   })
                 }
               >
@@ -286,8 +292,9 @@ export default function SmsTemplatesPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="BILGILENDIRME">Bilgilendirme</SelectItem>
-                  <SelectItem value="KAMPANYA">Kampanya</SelectItem>
+                  <SelectItem value="SIPARIS_ONAYLANDI">Sipariş Onaylandı (Otomatik)</SelectItem>
+                  <SelectItem value="KARGOYA_VERILDI">Kargoya Verildi (Otomatik)</SelectItem>
+                  <SelectItem value="KAMPANYA">Kampanya (Manuel)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -303,6 +310,17 @@ export default function SmsTemplatesPage() {
               <p className="text-xs text-muted-foreground text-right">
                 {form.content.length} / 918
               </p>
+              {form.type !== "KAMPANYA" && (
+                <div className="bg-muted/50 rounded-md p-2.5 text-xs text-muted-foreground space-y-1">
+                  <p className="font-medium text-foreground">Kullanılabilir değişkenler:</p>
+                  <p><code className="bg-muted px-1 rounded">{"{musteriAdi}"}</code> — Müşteri adı</p>
+                  <p><code className="bg-muted px-1 rounded">{"{siparisNo}"}</code> — Sipariş numarası</p>
+                  <p><code className="bg-muted px-1 rounded">{"{toplamTutar}"}</code> — Toplam tutar</p>
+                  {form.type === "KARGOYA_VERILDI" && (
+                    <p><code className="bg-muted px-1 rounded">{"{takipKodu}"}</code> — Kargo takip kodu</p>
+                  )}
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <Switch

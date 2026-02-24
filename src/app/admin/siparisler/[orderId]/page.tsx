@@ -10,6 +10,14 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
   Menubar,
   MenubarContent,
   MenubarItem,
@@ -36,6 +44,7 @@ import {
   Ruler,
   Image as ImageIcon,
   Truck,
+  Package,
   RotateCcw,
   Printer,
   ChevronDown,
@@ -76,6 +85,7 @@ interface OrderDetail {
   taxAmount: number;
   shippingCost: number;
   totalAmount: number;
+  trackingCode: string | null;
   customerNote: string | null;
   adminNote: string | null;
   createdAt: string;
@@ -139,6 +149,8 @@ export default function AdminOrderDetailPage() {
   const [isSavingNote, setIsSavingNote] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportingSheetIds, setExportingSheetIds] = useState<Set<string>>(new Set());
+  const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
+  const [trackingCodeInput, setTrackingCodeInput] = useState("");
 
   const fetchOrder = async () => {
     try {
@@ -160,7 +172,7 @@ export default function AdminOrderDetailPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderId]);
 
-  const handleStatusUpdate = async (status: string, note?: string) => {
+  const handleStatusUpdate = async (status: string, note?: string, trackingCode?: string) => {
     if (!order || status === order.status) return;
     setIsUpdating(true);
     try {
@@ -171,6 +183,7 @@ export default function AdminOrderDetailPage() {
           status,
           note: note || undefined,
           adminNote: adminNote || undefined,
+          ...(trackingCode && { trackingCode }),
         }),
       });
       if (res.ok) {
@@ -378,7 +391,8 @@ export default function AdminOrderDetailPage() {
           <MenubarContent>
             <MenubarItem
               onClick={() => {
-                handleStatusUpdate("SHIPPED", "Kargoya verildi");
+                setTrackingCodeInput(order.trackingCode || "");
+                setShippingDialogOpen(true);
               }}
               disabled={order.status === "SHIPPED" || order.status === "COMPLETED" || isUpdating}
               className="cursor-pointer"
@@ -861,6 +875,23 @@ export default function AdminOrderDetailPage() {
                   )}
                 </div>
 
+                {/* Cargo Info */}
+                {order.trackingCode && (
+                  <>
+                    <Separator />
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium">Kargo Bilgisi</p>
+                      <div className="flex items-center gap-2">
+                        <Package className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">Takip Kodu:</span>
+                        <Badge variant="secondary" className="font-mono text-xs">
+                          {order.trackingCode}
+                        </Badge>
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 {/* Notes */}
                 <Separator />
                 <div className="space-y-3">
@@ -908,6 +939,47 @@ export default function AdminOrderDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Shipping Dialog */}
+      <Dialog open={shippingDialogOpen} onOpenChange={setShippingDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Kargoya Verildi Olarak İşaretle</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label>Kargo Takip Kodu</Label>
+              <Input
+                value={trackingCodeInput}
+                onChange={(e) => setTrackingCodeInput(e.target.value)}
+                placeholder="Takip kodunu girin (opsiyonel)"
+              />
+              <p className="text-xs text-muted-foreground">
+                Takip kodu girilirse müşteriye SMS ile gönderilir.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShippingDialogOpen(false)}>
+              İptal
+            </Button>
+            <Button
+              onClick={async () => {
+                setShippingDialogOpen(false);
+                await handleStatusUpdate(
+                  "SHIPPED",
+                  "Kargoya verildi",
+                  trackingCodeInput.trim() || undefined,
+                );
+              }}
+              disabled={isUpdating}
+            >
+              {isUpdating && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
+              Gönder
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

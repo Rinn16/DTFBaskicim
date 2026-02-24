@@ -1,3 +1,6 @@
+import { db } from "@/lib/db";
+import type { SmsTemplateType } from "@/generated/prisma/client";
+
 const VATANSMS_1TON_URL = "https://api.vatansms.net/api/v1/1toN";
 const VATANSMS_NTON_URL = "https://api.vatansms.net/api/v1/NtoN";
 
@@ -144,4 +147,67 @@ export async function sendNtoNSms(
 export async function sendOtpSms(phone: string, code: string): Promise<SendSmsResult> {
   const message = `DTF Baskıcım doğrulama kodunuz: ${code}\nBu kodu kimseyle paylaşmayınız.`;
   return sendSms(phone, message);
+}
+
+/**
+ * Sipariş olaylarında otomatik SMS gönderir (fire-and-forget).
+ * Şablon bulunamazsa veya telefon yoksa sessizce döner.
+ */
+export async function sendOrderEventSms(
+  order: {
+    id: string;
+    orderNumber: string;
+    totalAmount: unknown;
+    trackingCode?: string | null;
+    user?: { name: string; phone?: string | null } | null;
+    guestName?: string | null;
+    guestPhone?: string | null;
+    address?: { phone: string } | null;
+  },
+  trigger: SmsTemplateType,
+): Promise<void> {
+  try {
+    const template = await db.smsTemplate.findFirst({
+      where: { type: trigger, isActive: true },
+    });
+    if (!template) {
+      console.log(`[sms] No active template for ${trigger}, skipping`);
+      return;
+    }
+
+    const phone = order.user?.phone || order.guestPhone || order.address?.phone;
+    if (!phone) {
+      console.log(`[sms] No phone for order ${order.orderNumber}, skipping`);
+      return;
+    }
+
+    const customerName = order.user?.name || order.guestName || "Müşterimiz";
+    const totalAmount = Number(order.totalAmount).toFixed(2);
+
+    let message = template.content
+      .replace(/\{musteriAdi\}/g, customerName)
+      .replace(/\{siparisNo\}/g, order.orderNumber)
+      .replace(/\{toplamTutar\}/g, totalAmount);
+
+    if (order.trackingCode) {
+      message = message.replace(/\{takipKodu\}/g, order.trackingCode);
+    }
+
+    const result = await sendSms(phone, message);
+
+    await db.smsLog.create({
+      data: {
+        templateId: template.id,
+        message,
+        recipientCount: 1,
+        successCount: result.success ? 1 : 0,
+        failCount: result.success ? 0 : 1,
+        sentBy: "system",
+      },
+    });
+
+    console.log(`[sms] ${trigger} SMS for order ${order.orderNumber}: ${result.success ? "OK" : result.error}`);
+  } catch (err) {
+    console.error(`[sms] sendOrderEventSms failed for ${trigger}:`, err);
+  }
 }

@@ -74,6 +74,20 @@ export async function POST(request: Request) {
       } catch (queueErr) {
         console.error("Failed to enqueue export job:", queueErr);
       }
+
+      // Fire-and-forget: Sipariş onay SMS'i
+      try {
+        const { sendOrderEventSms } = await import("@/services/sms.service");
+        const fullOrder = await db.order.findUnique({
+          where: { orderNumber: merchantOid },
+          include: { user: true, address: true },
+        });
+        if (fullOrder) {
+          sendOrderEventSms(fullOrder, "SIPARIS_ONAYLANDI");
+        }
+      } catch (err) {
+        console.error("[sms] Order confirmed SMS failed:", err);
+      }
     } else {
       // Ödeme başarısız — siparişi tamamen sil
       await db.order.delete({ where: { id: order.id } });

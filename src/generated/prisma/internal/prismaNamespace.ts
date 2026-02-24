@@ -1970,6 +1970,7 @@ export const OrderScalarFieldEnum = {
   exportPng: 'exportPng',
   exportTiff: 'exportTiff',
   exportPdf: 'exportPdf',
+  trackingCode: 'trackingCode',
   customerNote: 'customerNote',
   adminNote: 'adminNote',
   billingType: 'billingType',

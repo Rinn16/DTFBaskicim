@@ -258,6 +258,8 @@ model Order {
   exportTiff String?
   exportPdf  String?
 
+  trackingCode String?
+
   customerNote String? @db.Text
   adminNote    String? @db.Text
 
@@ -369,7 +371,8 @@ model CartItem {
 // ==================== SMS ====================
 
 enum SmsTemplateType {
-  BILGILENDIRME
+  SIPARIS_ONAYLANDI
+  KARGOYA_VERILDI
   KAMPANYA
 }
 

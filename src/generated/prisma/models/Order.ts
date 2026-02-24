@@ -75,6 +75,7 @@ export type OrderMinAggregateOutputType = {
   exportPng: string | null
   exportTiff: string | null
   exportPdf: string | null
+  trackingCode: string | null
   customerNote: string | null
   adminNote: string | null
   billingType: $Enums.BillingType | null
@@ -116,6 +117,7 @@ export type OrderMaxAggregateOutputType = {
   exportPng: string | null
   exportTiff: string | null
   exportPdf: string | null
+  trackingCode: string | null
   customerNote: string | null
   adminNote: string | null
   billingType: $Enums.BillingType | null
@@ -158,6 +160,7 @@ export type OrderCountAggregateOutputType = {
   exportPng: number
   exportTiff: number
   exportPdf: number
+  trackingCode: number
   customerNote: number
   adminNote: number
   billingType: number
@@ -225,6 +228,7 @@ export type OrderMinAggregateInputType = {
   exportPng?: true
   exportTiff?: true
   exportPdf?: true
+  trackingCode?: true
   customerNote?: true
   adminNote?: true
   billingType?: true
@@ -266,6 +270,7 @@ export type OrderMaxAggregateInputType = {
   exportPng?: true
   exportTiff?: true
   exportPdf?: true
+  trackingCode?: true
   customerNote?: true
   adminNote?: true
   billingType?: true
@@ -308,6 +313,7 @@ export type OrderCountAggregateInputType = {
   exportPng?: true
   exportTiff?: true
   exportPdf?: true
+  trackingCode?: true
   customerNote?: true
   adminNote?: true
   billingType?: true
@@ -437,6 +443,7 @@ export type OrderGroupByOutputType = {
   exportPng: string | null
   exportTiff: string | null
   exportPdf: string | null
+  trackingCode: string | null
   customerNote: string | null
   adminNote: string | null
   billingType: $Enums.BillingType
@@ -502,6 +509,7 @@ export type OrderWhereInput = {
   exportPng?: Prisma.StringNullableFilter<"Order"> | string | null
   exportTiff?: Prisma.StringNullableFilter<"Order"> | string | null
   exportPdf?: Prisma.StringNullableFilter<"Order"> | string | null
+  trackingCode?: Prisma.StringNullableFilter<"Order"> | string | null
   customerNote?: Prisma.StringNullableFilter<"Order"> | string | null
   adminNote?: Prisma.StringNullableFilter<"Order"> | string | null
   billingType?: Prisma.EnumBillingTypeFilter<"Order"> | $Enums.BillingType
@@ -550,6 +558,7 @@ export type OrderOrderByWithRelationInput = {
   exportPng?: Prisma.SortOrderInput | Prisma.SortOrder
   exportTiff?: Prisma.SortOrderInput | Prisma.SortOrder
   exportPdf?: Prisma.SortOrderInput | Prisma.SortOrder
+  trackingCode?: Prisma.SortOrderInput | Prisma.SortOrder
   customerNote?: Prisma.SortOrderInput | Prisma.SortOrder
   adminNote?: Prisma.SortOrderInput | Prisma.SortOrder
   billingType?: Prisma.SortOrder
@@ -601,6 +610,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   exportPng?: Prisma.StringNullableFilter<"Order"> | string | null
   exportTiff?: Prisma.StringNullableFilter<"Order"> | string | null
   exportPdf?: Prisma.StringNullableFilter<"Order"> | string | null
+  trackingCode?: Prisma.StringNullableFilter<"Order"> | string | null
   customerNote?: Prisma.StringNullableFilter<"Order"> | string | null
   adminNote?: Prisma.StringNullableFilter<"Order"> | string | null
   billingType?: Prisma.EnumBillingTypeFilter<"Order"> | $Enums.BillingType
@@ -649,6 +659,7 @@ export type OrderOrderByWithAggregationInput = {
   exportPng?: Prisma.SortOrderInput | Prisma.SortOrder
   exportTiff?: Prisma.SortOrderInput | Prisma.SortOrder
   exportPdf?: Prisma.SortOrderInput | Prisma.SortOrder
+  trackingCode?: Prisma.SortOrderInput | Prisma.SortOrder
   customerNote?: Prisma.SortOrderInput | Prisma.SortOrder
   adminNote?: Prisma.SortOrderInput | Prisma.SortOrder
   billingType?: Prisma.SortOrder
@@ -699,6 +710,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   exportPng?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   exportTiff?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   exportPdf?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  trackingCode?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   customerNote?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   adminNote?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   billingType?: Prisma.EnumBillingTypeWithAggregatesFilter<"Order"> | $Enums.BillingType
@@ -738,6 +750,7 @@ export type OrderCreateInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -786,6 +799,7 @@ export type OrderUncheckedCreateInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -828,6 +842,7 @@ export type OrderUpdateInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -876,6 +891,7 @@ export type OrderUncheckedUpdateInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -921,6 +937,7 @@ export type OrderCreateManyInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -960,6 +977,7 @@ export type OrderUpdateManyMutationInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -1002,6 +1020,7 @@ export type OrderUncheckedUpdateManyInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -1054,6 +1073,7 @@ export type OrderCountOrderByAggregateInput = {
   exportPng?: Prisma.SortOrder
   exportTiff?: Prisma.SortOrder
   exportPdf?: Prisma.SortOrder
+  trackingCode?: Prisma.SortOrder
   customerNote?: Prisma.SortOrder
   adminNote?: Prisma.SortOrder
   billingType?: Prisma.SortOrder
@@ -1107,6 +1127,7 @@ export type OrderMaxOrderByAggregateInput = {
   exportPng?: Prisma.SortOrder
   exportTiff?: Prisma.SortOrder
   exportPdf?: Prisma.SortOrder
+  trackingCode?: Prisma.SortOrder
   customerNote?: Prisma.SortOrder
   adminNote?: Prisma.SortOrder
   billingType?: Prisma.SortOrder
@@ -1148,6 +1169,7 @@ export type OrderMinOrderByAggregateInput = {
   exportPng?: Prisma.SortOrder
   exportTiff?: Prisma.SortOrder
   exportPdf?: Prisma.SortOrder
+  trackingCode?: Prisma.SortOrder
   customerNote?: Prisma.SortOrder
   adminNote?: Prisma.SortOrder
   billingType?: Prisma.SortOrder
@@ -1384,6 +1406,7 @@ export type OrderCreateWithoutUserInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -1430,6 +1453,7 @@ export type OrderUncheckedCreateWithoutUserInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -1504,6 +1528,7 @@ export type OrderScalarWhereInput = {
   exportPng?: Prisma.StringNullableFilter<"Order"> | string | null
   exportTiff?: Prisma.StringNullableFilter<"Order"> | string | null
   exportPdf?: Prisma.StringNullableFilter<"Order"> | string | null
+  trackingCode?: Prisma.StringNullableFilter<"Order"> | string | null
   customerNote?: Prisma.StringNullableFilter<"Order"> | string | null
   adminNote?: Prisma.StringNullableFilter<"Order"> | string | null
   billingType?: Prisma.EnumBillingTypeFilter<"Order"> | $Enums.BillingType
@@ -1543,6 +1568,7 @@ export type OrderCreateWithoutAddressInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -1589,6 +1615,7 @@ export type OrderUncheckedCreateWithoutAddressInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -1657,6 +1684,7 @@ export type OrderCreateWithoutDiscountCodeInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -1703,6 +1731,7 @@ export type OrderUncheckedCreateWithoutDiscountCodeInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -1771,6 +1800,7 @@ export type OrderCreateWithoutItemsInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -1818,6 +1848,7 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -1875,6 +1906,7 @@ export type OrderUpdateWithoutItemsInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -1922,6 +1954,7 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -1963,6 +1996,7 @@ export type OrderCreateWithoutStatusHistoryInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -2010,6 +2044,7 @@ export type OrderUncheckedCreateWithoutStatusHistoryInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -2067,6 +2102,7 @@ export type OrderUpdateWithoutStatusHistoryInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -2114,6 +2150,7 @@ export type OrderUncheckedUpdateWithoutStatusHistoryInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -2155,6 +2192,7 @@ export type OrderCreateWithoutGangSheetsInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -2202,6 +2240,7 @@ export type OrderUncheckedCreateWithoutGangSheetsInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -2259,6 +2298,7 @@ export type OrderUpdateWithoutGangSheetsInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -2306,6 +2346,7 @@ export type OrderUncheckedUpdateWithoutGangSheetsInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -2349,6 +2390,7 @@ export type OrderCreateManyUserInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -2388,6 +2430,7 @@ export type OrderUpdateWithoutUserInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -2434,6 +2477,7 @@ export type OrderUncheckedUpdateWithoutUserInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -2478,6 +2522,7 @@ export type OrderUncheckedUpdateManyWithoutUserInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -2519,6 +2564,7 @@ export type OrderCreateManyAddressInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -2558,6 +2604,7 @@ export type OrderUpdateWithoutAddressInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -2604,6 +2651,7 @@ export type OrderUncheckedUpdateWithoutAddressInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -2648,6 +2696,7 @@ export type OrderUncheckedUpdateManyWithoutAddressInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -2689,6 +2738,7 @@ export type OrderCreateManyDiscountCodeInput = {
   exportPng?: string | null
   exportTiff?: string | null
   exportPdf?: string | null
+  trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
   billingType?: $Enums.BillingType
@@ -2728,6 +2778,7 @@ export type OrderUpdateWithoutDiscountCodeInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -2774,6 +2825,7 @@ export type OrderUncheckedUpdateWithoutDiscountCodeInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -2818,6 +2870,7 @@ export type OrderUncheckedUpdateManyWithoutDiscountCodeInput = {
   exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
@@ -2909,6 +2962,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   exportPng?: boolean
   exportTiff?: boolean
   exportPdf?: boolean
+  trackingCode?: boolean
   customerNote?: boolean
   adminNote?: boolean
   billingType?: boolean
@@ -2958,6 +3012,7 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   exportPng?: boolean
   exportTiff?: boolean
   exportPdf?: boolean
+  trackingCode?: boolean
   customerNote?: boolean
   adminNote?: boolean
   billingType?: boolean
@@ -3003,6 +3058,7 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   exportPng?: boolean
   exportTiff?: boolean
   exportPdf?: boolean
+  trackingCode?: boolean
   customerNote?: boolean
   adminNote?: boolean
   billingType?: boolean
@@ -3048,6 +3104,7 @@ export type OrderSelectScalar = {
   exportPng?: boolean
   exportTiff?: boolean
   exportPdf?: boolean
+  trackingCode?: boolean
   customerNote?: boolean
   adminNote?: boolean
   billingType?: boolean
@@ -3064,7 +3121,7 @@ export type OrderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "userId" | "addressId" | "guestEmail" | "guestName" | "guestPhone" | "totalMeters" | "pricePerMeter" | "subtotal" | "discountAmount" | "taxAmount" | "totalAmount" | "shippingCost" | "discountCodeId" | "status" | "paymentMethod" | "paymentStatus" | "paymentId" | "gangSheetLayout" | "gangSheetWidth" | "gangSheetHeight" | "exportPng" | "exportTiff" | "exportPdf" | "customerNote" | "adminNote" | "billingType" | "billingSameAddress" | "billingFullName" | "billingCompanyName" | "billingTaxOffice" | "billingTaxNumber" | "billingAddress" | "billingCity" | "billingDistrict" | "billingZipCode" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "userId" | "addressId" | "guestEmail" | "guestName" | "guestPhone" | "totalMeters" | "pricePerMeter" | "subtotal" | "discountAmount" | "taxAmount" | "totalAmount" | "shippingCost" | "discountCodeId" | "status" | "paymentMethod" | "paymentStatus" | "paymentId" | "gangSheetLayout" | "gangSheetWidth" | "gangSheetHeight" | "exportPng" | "exportTiff" | "exportPdf" | "trackingCode" | "customerNote" | "adminNote" | "billingType" | "billingSameAddress" | "billingFullName" | "billingCompanyName" | "billingTaxOffice" | "billingTaxNumber" | "billingAddress" | "billingCity" | "billingDistrict" | "billingZipCode" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Order$userArgs<ExtArgs>
   address?: boolean | Prisma.Order$addressArgs<ExtArgs>
@@ -3121,6 +3178,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     exportPng: string | null
     exportTiff: string | null
     exportPdf: string | null
+    trackingCode: string | null
     customerNote: string | null
     adminNote: string | null
     billingType: $Enums.BillingType
@@ -3589,6 +3647,7 @@ export interface OrderFieldRefs {
   readonly exportPng: Prisma.FieldRef<"Order", 'String'>
   readonly exportTiff: Prisma.FieldRef<"Order", 'String'>
   readonly exportPdf: Prisma.FieldRef<"Order", 'String'>
+  readonly trackingCode: Prisma.FieldRef<"Order", 'String'>
   readonly customerNote: Prisma.FieldRef<"Order", 'String'>
   readonly adminNote: Prisma.FieldRef<"Order", 'String'>
   readonly billingType: Prisma.FieldRef<"Order", 'BillingType'>
