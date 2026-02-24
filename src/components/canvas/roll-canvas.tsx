@@ -736,6 +736,9 @@ export function RollCanvas() {
 
   // Resize canvas and redraw background when height or container size change
   useEffect(() => {
+    // Skip when summary view is active — no canvas to draw
+    if (placementCount > CANVAS_PLACEMENT_LIMIT) return;
+
     const canvas = fabricRef.current;
     if (!canvas) return;
 
@@ -751,7 +754,7 @@ export function RollCanvas() {
     });
 
     drawRollBackground(canvas, canvasHeight, showGrid);
-  }, [totalHeightCm, containerHeight, drawRollBackground, getMinCanvasHeight]);
+  }, [totalHeightCm, containerHeight, drawRollBackground, getMinCanvasHeight, placementCount]);
 
   // Drag & Drop handlers
   const handleDragOver = useCallback((e: React.DragEvent) => {
