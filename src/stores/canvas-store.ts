@@ -1,8 +1,8 @@
 "use client";
 
 import { create } from "zustand";
-import type { PersistStorage, StorageValue } from "zustand/middleware";
 import { persist } from "zustand/middleware";
+import { createIdleIDBStorage } from "@/lib/idb-storage";
 import type { Canvas as FabricCanvas } from "fabric";
 import type { UploadedImage, Placement, GangSheetItem, DesignDraftData } from "@/types/canvas";
 import type { PricingTierData, PriceBreakdown, CustomerPricingData } from "@/types/pricing";
@@ -104,62 +104,6 @@ function resolveThumbnailUrl(img: UploadedImage): string {
   if (img.persistedThumbnail) return img.persistedThumbnail;
   // 3. Current thumbnailUrl (blob – only works in same session)
   return img.thumbnailUrl;
-}
-
-/**
- * Custom PersistStorage that defers BOTH JSON.stringify and localStorage.setItem
- * to the browser's next idle window via requestIdleCallback.
- *
- * - Every set() just stores a reference (zero cost).
- * - Rapid set() calls are coalesced — only the latest state is serialized.
- * - Serialization runs as soon as the browser is idle (typically <16ms),
- *   not after an arbitrary delay.
- */
-function createIdlePersistStorage<S>(): PersistStorage<S> {
-  let pendingHandle: number | null = null;
-  let pending: { key: string; value: StorageValue<S> } | null = null;
-
-  const schedule =
-    typeof requestIdleCallback !== "undefined"
-      ? (fn: () => void) => requestIdleCallback(fn, { timeout: 200 })
-      : (fn: () => void) => window.setTimeout(fn, 0);
-
-  const cancel =
-    typeof cancelIdleCallback !== "undefined"
-      ? (id: number) => cancelIdleCallback(id)
-      : (id: number) => clearTimeout(id);
-
-  return {
-    getItem: (name: string) => {
-      const raw = localStorage.getItem(name);
-      if (!raw) return null;
-      try {
-        return JSON.parse(raw) as StorageValue<S>;
-      } catch {
-        return null;
-      }
-    },
-    setItem: (name: string, value: StorageValue<S>) => {
-      pending = { key: name, value };
-      if (pendingHandle !== null) cancel(pendingHandle);
-      pendingHandle = schedule(() => {
-        if (pending) {
-          try {
-            localStorage.setItem(pending.key, JSON.stringify(pending.value));
-          } catch {
-            // localStorage full or unavailable
-          }
-        }
-        pending = null;
-        pendingHandle = null;
-      }) as number;
-    },
-    removeItem: (name: string) => {
-      if (pendingHandle !== null) cancel(pendingHandle);
-      pending = null;
-      localStorage.removeItem(name);
-    },
-  };
 }
 
 export const useCanvasStore = create<CanvasState>()(
@@ -578,7 +522,7 @@ export const useCanvasStore = create<CanvasState>()(
     {
       name: "dtf-canvas-state",
       version: 1,
-      storage: createIdlePersistStorage(),
+      storage: createIdleIDBStorage(),
 
       // v0→v1: old thumbnails were JPEG (lost transparency → black bg) at 200px (blurry).
       // Drop images that only have JPEG base64; keep those with S3 URLs or PNG thumbs.

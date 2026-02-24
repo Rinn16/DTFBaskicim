@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { createIDBStorage } from "@/lib/idb-storage";
 import type { GangSheetLayout, GangSheetItem } from "@/types/canvas";
 
 export interface CartItemData {
@@ -150,6 +151,7 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "dtf-guest-cart",
+      storage: createIDBStorage(),
       partialize: (state) => ({ guestItems: state.guestItems }),
       onRehydrateStorage: () => () => {
         useCartStore.setState({ _hasHydrated: true });
