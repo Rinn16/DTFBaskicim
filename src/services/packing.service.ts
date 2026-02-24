@@ -276,21 +276,49 @@ function mergeSkyline(skyline: SkylineNode[]): SkylineNode[] {
   return merged;
 }
 
-// ─── Async wrapper ───────────────────────────────────────────────
+// ─── Web Worker async wrapper ────────────────────────────────────
 
 /**
- * Async version of autoPack. Defers to next macrotask so the browser
- * can paint a loading state before the heavy computation starts.
- * Results are identical to sync autoPack (all 4 sort strategies).
+ * Run packing in a Web Worker so the main thread never blocks.
+ * Worker is a static JS file in public/ (no bundler involvement).
+ * Falls back to sync autoPack if Worker creation fails (SSR, etc.).
+ *
+ * NOTE: public/workers/packing-worker.js is a mirror of the
+ * algorithm above — keep both in sync when changing packing logic.
  */
 export function autoPackAsync(
   designs: DesignInput[],
   rollWidthCm: number = ROLL_CONFIG.PRINT_WIDTH_CM,
   gapCm: number = ROLL_CONFIG.GAP_CM
 ): Promise<PackResult> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(autoPack(designs, rollWidthCm, gapCm));
-    }, 0);
-  });
+  if (typeof window !== "undefined") {
+    return new Promise((resolve) => {
+      try {
+        const worker = new Worker("/workers/packing-worker.js");
+
+        const timeout = setTimeout(() => {
+          worker.terminate();
+          resolve(autoPack(designs, rollWidthCm, gapCm));
+        }, 30_000);
+
+        worker.onmessage = (e: MessageEvent<PackResult>) => {
+          clearTimeout(timeout);
+          worker.terminate();
+          resolve(e.data);
+        };
+
+        worker.onerror = () => {
+          clearTimeout(timeout);
+          worker.terminate();
+          resolve(autoPack(designs, rollWidthCm, gapCm));
+        };
+
+        worker.postMessage({ designs, rollWidthCm, gapCm });
+      } catch {
+        resolve(autoPack(designs, rollWidthCm, gapCm));
+      }
+    });
+  }
+
+  return Promise.resolve(autoPack(designs, rollWidthCm, gapCm));
 }
