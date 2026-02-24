@@ -23,6 +23,8 @@ export const useHistoryStore = create<HistoryState>()((set, get) => ({
 
   pushState: (placements) => {
     if (get()._isRestoring) return;
+    // Skip history for large sets — cloning 200+ placements per action is expensive
+    if (placements.length > 200) return;
     set((state) => {
       const snapshot = placements.map((p) => ({ ...p }));
       const newPast = [...state.past, snapshot];

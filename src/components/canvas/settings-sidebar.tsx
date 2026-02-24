@@ -20,8 +20,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useCanvasStore } from "@/stores/canvas-store";
-import { autoPack } from "@/services/packing.service";
-import { addImageToCanvas, clearCanvasDesigns, displayPxToCm } from "./roll-canvas";
+import { autoPack, autoPackAsync } from "@/services/packing.service";
+import { addImageToCanvas, clearCanvasDesigns, displayPxToCm, CANVAS_PLACEMENT_LIMIT } from "./roll-canvas";
 import type { DesignInput } from "@/types/canvas";
 
 export function SettingsSidebar() {
@@ -99,7 +99,7 @@ export function SettingsSidebar() {
     clearPlacements();
   };
 
-  const handleReplace = () => {
+  const handleReplace = async () => {
     if (!canvas || placements.length === 0) return;
 
     // Group current placements by imageId and count them
@@ -126,11 +126,18 @@ export function SettingsSidebar() {
 
     if (designs.length === 0) return;
 
-    const result = autoPack(designs, undefined, gapCm);
+    const isLargeSet = placements.length > CANVAS_PLACEMENT_LIMIT;
+
+    // Use async worker for large sets to avoid blocking main thread
+    const result = isLargeSet
+      ? await autoPackAsync(designs, undefined, gapCm)
+      : autoPack(designs, undefined, gapCm);
 
     // Clear and re-place
-    clearCanvasDesigns(canvas);
-    clearPlacements();
+    if (!isLargeSet) {
+      clearCanvasDesigns(canvas);
+      clearPlacements();
+    }
 
     const newPlacements = result.placements.map((p) => ({
       id: p.id,
@@ -142,22 +149,25 @@ export function SettingsSidebar() {
       rotation: p.rotation,
     }));
 
-    setPlacements(newPlacements);
+    setPlacements(newPlacements, { skipOverlaps: isLargeSet, skipHistory: isLargeSet });
 
-    newPlacements.forEach((placement) => {
-      const image = uploadedImages.find((i) => i.id === placement.imageId);
-      if (!image) return;
-      addImageToCanvas(
-        canvas,
-        image.thumbnailUrl,
-        placement.id,
-        placement.x,
-        placement.y,
-        placement.widthCm,
-        placement.heightCm,
-        placement.rotation
-      );
-    });
+    // Only render to canvas when not in summary mode
+    if (!isLargeSet) {
+      newPlacements.forEach((placement) => {
+        const image = uploadedImages.find((i) => i.id === placement.imageId);
+        if (!image) return;
+        addImageToCanvas(
+          canvas,
+          image.thumbnailUrl,
+          placement.id,
+          placement.x,
+          placement.y,
+          placement.widthCm,
+          placement.heightCm,
+          placement.rotation
+        );
+      });
+    }
 
     lastAppliedGapRef.current = gapCm;
   };

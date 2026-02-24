@@ -164,16 +164,19 @@ export function DesignSidebar() {
       rotation: 0,
     });
 
-    addImageToCanvas(
-      canvas,
-      image.thumbnailUrl,
-      placementId,
-      0,
-      maxY,
-      widthCm,
-      heightCm,
-      0
-    );
+    // Skip canvas rendering when summary mode is active
+    if (currentPlacements.length < CANVAS_PLACEMENT_LIMIT) {
+      addImageToCanvas(
+        canvas,
+        image.thumbnailUrl,
+        placementId,
+        0,
+        maxY,
+        widthCm,
+        heightCm,
+        0
+      );
+    }
   };
 
   // Auto-place all designs (async with progress)
@@ -202,12 +205,9 @@ export function DesignSidebar() {
     if (designs.length === 0) return;
 
     setAutoPlaceProgress(0);
-    const perf: Record<string, number> = {};
-    let t = performance.now();
 
     // 1. Run packing in Web Worker (main thread stays responsive)
     const result = await autoPackAsync(designs, undefined, gapCm);
-    perf["1_worker"] = performance.now() - t; t = performance.now();
     setAutoPlaceProgress(10);
 
     // 2. Build placements
@@ -220,23 +220,20 @@ export function DesignSidebar() {
       heightCm: p.heightCm,
       rotation: p.rotation,
     }));
-    perf["2_mapPlacements"] = performance.now() - t; t = performance.now();
 
     const isLargeSet = newPlacements.length > CANVAS_PLACEMENT_LIMIT;
 
     // 3. Clear existing canvas objects + state
-    clearCanvasDesigns(canvas);
     if (!isLargeSet) {
+      clearCanvasDesigns(canvas);
       clearPlacements();
     }
-    perf["3_clearCanvas"] = performance.now() - t; t = performance.now();
 
     // 4. Set new placements — skip history clone for large sets (avoids O(n) block)
     setPlacements(newPlacements, { skipOverlaps: true, skipHistory: isLargeSet });
-    perf["4_setPlacements"] = performance.now() - t; t = performance.now();
 
     // 5. Batch image loading — skip canvas rendering for large placement counts
-    if (newPlacements.length <= CANVAS_PLACEMENT_LIMIT) {
+    if (!isLargeSet) {
       const batchItems = newPlacements.map((placement) => {
         const image = uploadedImages.find((img) => img.id === placement.imageId);
         return {
@@ -253,35 +250,24 @@ export function DesignSidebar() {
       await addImagesToCanvas(canvas, batchItems, (fraction) => {
         setAutoPlaceProgress(10 + fraction * 90);
       });
-      perf["5_addImages"] = performance.now() - t; t = performance.now();
     }
 
     setAutoPlaceProgress(null);
     setAutoPlaceOpen(false);
-    perf["6_cleanup"] = performance.now() - t;
-
-    console.table(perf);
-    console.log(`[perf] Total items: ${newPlacements.length}, isLargeSet: ${isLargeSet}`);
-
-    // Measure when browser actually becomes idle after React renders
-    requestAnimationFrame(() => {
-      const paintTime = performance.now();
-      console.log(`[perf] First paint after auto-place: ${(paintTime - t).toFixed(0)}ms after cleanup`);
-    });
   };
 
   const handleRemoveImage = (id: string) => {
     // First, collect placement IDs belonging to this image and remove them from store
-    const placementsToRemove = useCanvasStore
-      .getState()
-      .placements.filter((p) => p.imageId === id);
+    const currentPlacements = useCanvasStore.getState().placements;
+    const placementsToRemove = currentPlacements.filter((p) => p.imageId === id);
+    const isLargeSet = currentPlacements.length > CANVAS_PLACEMENT_LIMIT;
 
     placementsToRemove.forEach((p) => removePlacement(p.id));
 
     removeUploadedImage(id);
 
-    // Also remove fabric objects from canvas
-    if (canvas) {
+    // Also remove fabric objects from canvas — skip when summary mode is active
+    if (canvas && !isLargeSet) {
       const placementIds = new Set(placementsToRemove.map((p) => p.id));
       const objectsToRemove = canvas
         .getObjects()

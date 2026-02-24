@@ -173,70 +173,75 @@ export function RollCanvas() {
       const canvas = fabricRef.current;
       if (!canvas) return;
 
-      canvas.discardActiveObject();
+      const isLargeSet = restoredPlacements.length > CANVAS_PLACEMENT_LIMIT;
 
-      // Build map of existing fabric objects by placement ID
-      const existingObjects = new Map<string, fabric.FabricObject>();
-      for (const obj of canvas.getObjects()) {
-        if ((obj as fabric.FabricObject & { _isBackground?: boolean })._isBackground) continue;
-        const pid = (obj as fabric.FabricObject & { _placementId?: string })._placementId;
-        if (pid) existingObjects.set(pid, obj);
-      }
+      // For large sets, skip all canvas fabric operations (summary mode is active)
+      if (!isLargeSet) {
+        canvas.discardActiveObject();
 
-      const restoredIds = new Set(restoredPlacements.map((p) => p.id));
-
-      // Remove objects no longer in restored placements
-      for (const [pid, obj] of existingObjects) {
-        if (!restoredIds.has(pid)) {
-          canvas.remove(obj);
-          existingObjects.delete(pid);
+        // Build map of existing fabric objects by placement ID
+        const existingObjects = new Map<string, fabric.FabricObject>();
+        for (const obj of canvas.getObjects()) {
+          if ((obj as fabric.FabricObject & { _isBackground?: boolean })._isBackground) continue;
+          const pid = (obj as fabric.FabricObject & { _placementId?: string })._placementId;
+          if (pid) existingObjects.set(pid, obj);
         }
-      }
 
-      // Update existing or add new
-      const { uploadedImages } = useCanvasStore.getState();
-      for (const placement of restoredPlacements) {
-        const existing = existingObjects.get(placement.id);
+        const restoredIds = new Set(restoredPlacements.map((p) => p.id));
 
-        if (existing) {
-          const displayLeft = cmToDisplayPx(placement.x);
-          const displayTop = cmToDisplayPx(placement.y);
-          const displayWidth = cmToDisplayPx(placement.widthCm);
-          const displayHeight = cmToDisplayPx(placement.heightCm);
-          const scaleX = displayWidth / (existing.width || 1);
-          const scaleY = displayHeight / (existing.height || 1);
-
-          let left = displayLeft;
-          let top = displayTop;
-          if (placement.rotation === 90) {
-            left = displayLeft + displayHeight;
-          } else if (placement.rotation === 270) {
-            top = displayTop + displayWidth;
+        // Remove objects no longer in restored placements
+        for (const [pid, obj] of existingObjects) {
+          if (!restoredIds.has(pid)) {
+            canvas.remove(obj);
+            existingObjects.delete(pid);
           }
-
-          existing.set({ left, top, scaleX, scaleY, angle: placement.rotation });
-          existing.setCoords();
-        } else {
-          const image = uploadedImages.find((img) => img.id === placement.imageId);
-          if (!image) continue;
-          const canvasUrl =
-            image.originalUrl && !image.originalUrl.startsWith("blob:")
-              ? image.originalUrl
-              : image.thumbnailUrl;
-          addImageToCanvas(
-            canvas,
-            canvasUrl,
-            placement.id,
-            placement.x,
-            placement.y,
-            placement.widthCm,
-            placement.heightCm,
-            placement.rotation
-          );
         }
-      }
 
-      canvas.renderAll();
+        // Update existing or add new
+        const { uploadedImages } = useCanvasStore.getState();
+        for (const placement of restoredPlacements) {
+          const existing = existingObjects.get(placement.id);
+
+          if (existing) {
+            const displayLeft = cmToDisplayPx(placement.x);
+            const displayTop = cmToDisplayPx(placement.y);
+            const displayWidth = cmToDisplayPx(placement.widthCm);
+            const displayHeight = cmToDisplayPx(placement.heightCm);
+            const scaleX = displayWidth / (existing.width || 1);
+            const scaleY = displayHeight / (existing.height || 1);
+
+            let left = displayLeft;
+            let top = displayTop;
+            if (placement.rotation === 90) {
+              left = displayLeft + displayHeight;
+            } else if (placement.rotation === 270) {
+              top = displayTop + displayWidth;
+            }
+
+            existing.set({ left, top, scaleX, scaleY, angle: placement.rotation });
+            existing.setCoords();
+          } else {
+            const image = uploadedImages.find((img) => img.id === placement.imageId);
+            if (!image) continue;
+            const canvasUrl =
+              image.originalUrl && !image.originalUrl.startsWith("blob:")
+                ? image.originalUrl
+                : image.thumbnailUrl;
+            addImageToCanvas(
+              canvas,
+              canvasUrl,
+              placement.id,
+              placement.x,
+              placement.y,
+              placement.widthCm,
+              placement.heightCm,
+              placement.rotation
+            );
+          }
+        }
+
+        canvas.renderAll();
+      }
 
       // Update store without triggering history push (_isRestoring is true)
       useCanvasStore.setState({ placements: restoredPlacements });
@@ -306,9 +311,10 @@ export function RollCanvas() {
     drawRollBackground(canvas, FALLBACK_MIN_HEIGHT, showGrid);
 
     // Restore persisted placements onto the canvas (runs once after init)
+    // Skip for large sets — summary mode will be shown instead
     const { placements: savedPlacements, uploadedImages: savedImages } =
       useCanvasStore.getState();
-    if (savedPlacements.length > 0) {
+    if (savedPlacements.length > 0 && savedPlacements.length <= CANVAS_PLACEMENT_LIMIT) {
       for (const placement of savedPlacements) {
         const image = savedImages.find((img) => img.id === placement.imageId);
         if (!image) continue;
@@ -327,6 +333,8 @@ export function RollCanvas() {
           placement.rotation
         );
       }
+    }
+    if (savedPlacements.length > 0) {
       useCanvasStore.getState().recalculateHeight();
     }
 
@@ -413,6 +421,10 @@ export function RollCanvas() {
       // Don't handle shortcuts when typing in inputs
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
+      // Skip canvas shortcuts when summary mode is active (no fabric objects)
+      const currentPlacementCount = useCanvasStore.getState().placements.length;
+      if (currentPlacementCount > CANVAS_PLACEMENT_LIMIT) return;
 
       const ctrl = e.ctrlKey || e.metaKey;
 
@@ -673,6 +685,12 @@ export function RollCanvas() {
       const { overlappingIds } = state;
       if (overlappingIds === prevIds) return;
 
+      // Skip canvas operations when summary mode is active
+      if (state.placements.length > CANVAS_PLACEMENT_LIMIT) {
+        prevIds = overlappingIds;
+        return;
+      }
+
       const canvas = fabricRef.current;
       if (!canvas) return;
 
@@ -713,6 +731,9 @@ export function RollCanvas() {
     const unsub = useCanvasStore.subscribe((state, prev) => {
       const canvas = fabricRef.current;
       if (!canvas) return;
+
+      // Skip canvas operations when summary mode is active
+      if (state.placements.length > CANVAS_PLACEMENT_LIMIT) return;
 
       // Background color changed
       if (state.canvasBgColor !== prev.canvasBgColor) {
@@ -772,6 +793,9 @@ export function RollCanvas() {
 
       const canvas = fabricRef.current;
       if (!canvas) return;
+
+      // Skip drop when summary mode is active
+      if (useCanvasStore.getState().placements.length > CANVAS_PLACEMENT_LIMIT) return;
 
       const { uploadedImages, gapCm } = useCanvasStore.getState();
       const image = uploadedImages.find((img) => img.id === imageId);
