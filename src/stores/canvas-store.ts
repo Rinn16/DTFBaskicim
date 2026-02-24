@@ -659,6 +659,14 @@ export const useCanvasStore = create<CanvasState>()(
           activeDraftName: ((p as Record<string, unknown>).activeDraftName as string) || "Adsız Tasarım",
         };
       },
+
+      // After hydration, recalculate derived fields (totalHeightCm, priceBreakdown)
+      // that are not persisted.
+      onRehydrateStorage: () => (state) => {
+        if (state && state.placements.length > 0) {
+          state.recalculateHeight(true);
+        }
+      },
     }
   )
 );
