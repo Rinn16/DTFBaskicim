@@ -23,6 +23,15 @@ export async function POST(request: Request) {
 
     const { message, phones, templateId } = parsed.data;
 
+    // Check if SMS is enabled
+    const settings = await db.siteSettings.findUnique({ where: { id: "default" } });
+    if (!settings?.smsEnabled) {
+      return NextResponse.json(
+        { error: "SMS sistemi devre dışı. Ayarlar'dan etkinleştirin." },
+        { status: 400 },
+      );
+    }
+
     const result = await sendBulkSms(phones, message);
 
     await db.smsLog.create({

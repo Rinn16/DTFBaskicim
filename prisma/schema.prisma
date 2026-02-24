@@ -217,6 +217,12 @@ model ShippingConfig {
   updatedAt       DateTime @updatedAt
 }
 
+model SiteSettings {
+  id         String   @id @default("default")
+  smsEnabled Boolean  @default(false)
+  updatedAt  DateTime @updatedAt
+}
+
 // ==================== ORDERS ====================
 
 model Order {

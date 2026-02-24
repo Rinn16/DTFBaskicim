@@ -167,6 +167,13 @@ export async function sendOrderEventSms(
   trigger: SmsTemplateType,
 ): Promise<void> {
   try {
+    // Check if SMS is enabled in site settings
+    const settings = await db.siteSettings.findUnique({ where: { id: "default" } });
+    if (!settings?.smsEnabled) {
+      console.log(`[sms] SMS disabled, skipping ${trigger} for order ${order.orderNumber}`);
+      return;
+    }
+
     const template = await db.smsTemplate.findFirst({
       where: { type: trigger, isActive: true },
     });
