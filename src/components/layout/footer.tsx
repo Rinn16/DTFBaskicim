@@ -61,18 +61,36 @@ export function Footer() {
           <p>
             &copy; {new Date().getFullYear()} DTF Baskıcım. Tüm hakları saklıdır.
           </p>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2">
             <Link
-              href="#"
+              href="/gizlilik-politikasi"
               className="hover:text-muted-foreground transition-colors"
             >
               Gizlilik Politikası
             </Link>
             <Link
-              href="#"
+              href="/kullanim-sartlari"
               className="hover:text-muted-foreground transition-colors"
             >
               Kullanım Şartları
+            </Link>
+            <Link
+              href="/mesafeli-satis-sozlesmesi"
+              className="hover:text-muted-foreground transition-colors"
+            >
+              Mesafeli Satış Sözleşmesi
+            </Link>
+            <Link
+              href="/iptal-ve-iade-politikasi"
+              className="hover:text-muted-foreground transition-colors"
+            >
+              İptal ve İade Politikası
+            </Link>
+            <Link
+              href="/cerez-politikasi"
+              className="hover:text-muted-foreground transition-colors"
+            >
+              Çerez Politikası
             </Link>
           </div>
         </div>

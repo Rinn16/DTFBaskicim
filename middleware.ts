@@ -8,6 +8,11 @@ const publicPages = [
   "/tasarim",
   "/sepet", "/odeme", "/odeme/basarili", "/odeme/banka-havale",
   "/siparis-takip",
+  "/gizlilik-politikasi",
+  "/kullanim-sartlari",
+  "/mesafeli-satis-sozlesmesi",
+  "/iptal-ve-iade-politikasi",
+  "/cerez-politikasi",
 ];
 
 export default async function middleware(request: NextRequest) {

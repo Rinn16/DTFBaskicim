@@ -35,7 +35,7 @@ import {
   type BillingFields,
 } from "@/components/checkout/billing-form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { billingInfoSchema } from "@/validations/checkout";
+import { billingInfoSchema, billingInfoStrictSchema } from "@/validations/checkout";
 
 type CheckoutStep = "form" | "payment";
 
@@ -105,12 +105,13 @@ export default function OdemePage() {
         const { billing } = await res.json();
         if (!billing) return;
         // Only prefill if user has previously saved billing data
-        const hasBillingData = billing.billingFullName || billing.billingCompanyName || billing.billingAddress;
+        const hasBillingData = billing.billingFirstName || billing.billingCompanyName || billing.billingAddress;
         if (!hasBillingData) return;
         setBillingType(billing.billingType || "INDIVIDUAL");
-        setBillingSameAddress(false);
+        setBillingSameAddress(!(billing.billingAddress));
         setBillingFields({
-          billingFullName: billing.billingFullName || "",
+          billingFirstName: billing.billingFirstName || "",
+          billingLastName: billing.billingLastName || "",
           billingCompanyName: billing.billingCompanyName || "",
           billingTaxOffice: billing.billingTaxOffice || "",
           billingTaxNumber: billing.billingTaxNumber || "",
@@ -185,10 +186,12 @@ export default function OdemePage() {
       return;
     }
 
-    // Billing validation
-    if (!billingSameAddress) {
+    // Billing validation — always validate name/tax fields;
+    // address fields only when billingSameAddress is false
+    {
       const billingData = { billingType, ...billingFields };
-      const billingResult = billingInfoSchema.safeParse(billingData);
+      const schema = billingSameAddress ? billingInfoSchema : billingInfoStrictSchema;
+      const billingResult = schema.safeParse(billingData);
       if (!billingResult.success) {
         const fieldErrors: Record<string, string> = {};
         for (const issue of billingResult.error.issues) {
@@ -208,9 +211,7 @@ export default function OdemePage() {
         paymentMethod,
         customerNote: customerNote || undefined,
         billingSameAddress,
-        ...(!billingSameAddress && {
-          billingInfo: { billingType, ...billingFields },
-        }),
+        billingInfo: { billingType, ...billingFields },
       };
 
       if (isAuthenticated) {
@@ -251,7 +252,7 @@ export default function OdemePage() {
       const { order } = await res.json();
 
       // Save billing info to user profile (fire-and-forget)
-      if (isAuthenticated && !billingSameAddress) {
+      if (isAuthenticated) {
         fetch("/api/user/billing", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -565,7 +566,15 @@ export default function OdemePage() {
                     <span className="w-2 h-2 rounded-full bg-primary" />
                     Fatura Bilgileri
                   </h3>
-                  <div className="flex items-center gap-2 mb-4">
+                  <BillingForm
+                    billingType={billingType}
+                    onBillingTypeChange={setBillingType}
+                    values={billingFields}
+                    onChange={setBillingFields}
+                    errors={billingErrors}
+                    showAddressFields={!billingSameAddress}
+                  />
+                  <div className="flex items-center gap-2 mt-4">
                     <Checkbox
                       id="billingSame"
                       checked={billingSameAddress}
@@ -581,15 +590,6 @@ export default function OdemePage() {
                       Fatura adresim teslimat adresimle aynı
                     </label>
                   </div>
-                  {!billingSameAddress && (
-                    <BillingForm
-                      billingType={billingType}
-                      onBillingTypeChange={setBillingType}
-                      values={billingFields}
-                      onChange={setBillingFields}
-                      errors={billingErrors}
-                    />
-                  )}
                 </div>
 
                 {/* Payment method */}
@@ -654,7 +654,8 @@ export default function OdemePage() {
                   <p className="text-center text-[10px] text-muted-foreground/70 mt-2">
                     &quot;Siparişi Tamamla&quot; butonuna tıklayarak{" "}
                     <Link
-                      href="#"
+                      href="/mesafeli-satis-sozlesmesi"
+                      target="_blank"
                       className="text-muted-foreground underline hover:text-primary"
                     >
                       Mesafeli Satış Sözleşmesi
