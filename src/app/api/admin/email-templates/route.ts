@@ -293,7 +293,11 @@ const DEFAULT_TEMPLATES: {
   },
 ];
 
+let seeded = false;
+
 async function seedDefaults() {
+  if (seeded) return;
+
   const existing = await db.emailTemplate.findMany({ select: { type: true } });
   const existingTypes = new Set(existing.map((t) => t.type));
 
@@ -302,6 +306,8 @@ async function seedDefaults() {
       await db.emailTemplate.create({ data: tpl });
     }
   }
+
+  seeded = true;
 }
 
 export async function GET() {
