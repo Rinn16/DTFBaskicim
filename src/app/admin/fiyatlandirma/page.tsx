@@ -23,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, Plus, Pencil, Trash2, Truck } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Truck, Layers, Tag } from "lucide-react";
 import { toast } from "sonner";
 import { confirm } from "@/components/ui/confirm-dialog";
 
@@ -456,9 +456,11 @@ export default function PricingPage() {
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
               ) : tiers.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  Henüz kademe eklenmemiş
-                </p>
+                <div className="flex flex-col items-center gap-2 text-muted-foreground py-12">
+                  <Layers className="h-8 w-8 opacity-40" />
+                  <p className="text-sm font-medium">Henüz kademe eklenmemiş</p>
+                  <p className="text-xs">Fiyat kademesi ekleyerek başlayın</p>
+                </div>
               ) : (
                 <div className="overflow-x-auto">
                 <Table>
@@ -533,9 +535,11 @@ export default function PricingPage() {
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
               ) : discounts.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  Henüz indirim kodu eklenmemiş
-                </p>
+                <div className="flex flex-col items-center gap-2 text-muted-foreground py-12">
+                  <Tag className="h-8 w-8 opacity-40" />
+                  <p className="text-sm font-medium">Henüz indirim kodu eklenmemiş</p>
+                  <p className="text-xs">Yeni bir indirim kodu oluşturun</p>
+                </div>
               ) : (
                 <div className="overflow-x-auto">
                 <Table>

@@ -348,8 +348,14 @@ function OrdersContent() {
                 ))}
                 {orders.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
-                      Sipariş bulunamadı
+                    <TableCell colSpan={8} className="py-16">
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                        <FileText className="h-8 w-8 opacity-40" />
+                        <p className="text-sm font-medium">Sipariş bulunamadı</p>
+                        {(currentSearch || currentStatus) && (
+                          <p className="text-xs">Filtreleri değiştirmeyi deneyin</p>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

@@ -400,9 +400,10 @@ export default function EmailTemplatesPage() {
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
           ) : templates.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">
-              Henüz e-posta şablonu yok
-            </p>
+            <div className="flex flex-col items-center gap-2 text-muted-foreground py-12">
+              <Mail className="h-8 w-8 opacity-40" />
+              <p className="text-sm font-medium">Henüz e-posta şablonu yok</p>
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>

@@ -20,6 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  Users,
 } from "lucide-react";
 
 interface CustomerRow {
@@ -178,11 +179,14 @@ function CustomersContent() {
               ))}
               {customers.length === 0 && (
                 <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="text-center text-muted-foreground py-8"
-                  >
-                    Müşteri bulunamadı
+                  <TableCell colSpan={6} className="py-16">
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <Users className="h-8 w-8 opacity-40" />
+                      <p className="text-sm font-medium">Müşteri bulunamadı</p>
+                      {currentSearch && (
+                        <p className="text-xs">Farklı bir arama terimi deneyin</p>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               )}

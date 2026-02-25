@@ -32,7 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, Plus, Pencil, Trash2, Send, Users, Edit3 } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Send, Users, Edit3, MessageSquare, History } from "lucide-react";
 import { toast } from "sonner";
 import { confirm } from "@/components/ui/confirm-dialog";
 
@@ -336,9 +336,11 @@ export default function SmsManagementPage() {
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
               ) : templates.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  Henüz şablon eklenmemiş
-                </p>
+                <div className="flex flex-col items-center gap-2 text-muted-foreground py-12">
+                  <MessageSquare className="h-8 w-8 opacity-40" />
+                  <p className="text-sm font-medium">Henüz şablon eklenmemiş</p>
+                  <p className="text-xs">Yeni bir SMS şablonu ekleyerek başlayın</p>
+                </div>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
@@ -505,9 +507,10 @@ export default function SmsManagementPage() {
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
               ) : logs.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  Henüz SMS gönderilmemiş
-                </p>
+                <div className="flex flex-col items-center gap-2 text-muted-foreground py-12">
+                  <History className="h-8 w-8 opacity-40" />
+                  <p className="text-sm font-medium">Henüz SMS gönderilmemiş</p>
+                </div>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>

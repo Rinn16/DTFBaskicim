@@ -237,8 +237,8 @@ export default function HomePage() {
                 </div>
               </div>
               <div className="mt-2 flex justify-between text-[10px] text-muted-foreground/70 font-mono">
-                <span>INK: 85%</span>
-                <span>TEMP: 165°C</span>
+                <span>WIDTH: 57cm</span>
+                <span>DPI: 300</span>
               </div>
             </div>
           </div>

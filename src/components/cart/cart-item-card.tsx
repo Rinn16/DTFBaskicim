@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Trash2, Pencil, Image as ImageIcon, Ruler } from "lucide-react";
+import { Trash2, Pencil, Image as ImageIcon, Ruler, Loader2 } from "lucide-react";
 import type { CartItemData } from "@/stores/cart-store";
 
 interface CartItemCardProps {
@@ -90,7 +90,11 @@ export function CartItemCard({ item, onRemove, onEdit, pricePerMeter, isRemoving
                 onClick={() => onRemove(item.id)}
                 disabled={isRemoving}
               >
-                <Trash2 className="h-3.5 w-3.5 mr-1" />
+                {isRemoving ? (
+                  <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+                ) : (
+                  <Trash2 className="h-3.5 w-3.5 mr-1" />
+                )}
                 Kaldır
               </Button>
             </div>
