@@ -6,7 +6,7 @@ import type { NextRequest } from "next/server";
 const publicPages = [
   "/", "/giris", "/kayit",
   "/tasarim",
-  "/sepet", "/odeme", "/odeme/basarili", "/odeme/banka-havale",
+  "/sepet", "/odeme", "/odeme/basarili", "/odeme/basarisiz", "/odeme/banka-havale",
   "/siparis-takip",
   "/gizlilik-politikasi",
   "/kullanim-sartlari",

@@ -50,7 +50,21 @@ import {
   CircleDot,
   Receipt,
   FileText,
+  XCircle,
+  RefreshCw,
+  Banknote,
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { ORDER_STATUSES } from "@/lib/constants";
 import { STATUS_COLORS, statusLabel } from "@/lib/order-utils";
 import { StatusTimeline } from "@/components/order/status-timeline";
@@ -158,7 +172,21 @@ export default function AdminOrderDetailPage() {
   const [trackingCodeInput, setTrackingCodeInput] = useState("");
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
   const [isCreatingInvoice, setIsCreatingInvoice] = useState(false);
+  const [isCancellingInvoice, setIsCancellingInvoice] = useState(false);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+  const [isConfirmingPayment, setIsConfirmingPayment] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [invoices, setInvoices] = useState<{ id: string; status: string; billingType: string; gibInvoiceId: string | null }[]>([]);
+
+  const fetchInvoices = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/admin/orders/${orderId}/invoice`);
+      if (res.ok) {
+        const data = await res.json();
+        setInvoices(data.invoices);
+      }
+    } catch { /* silent */ }
+  }, [orderId]);
 
   const fetchOrder = useCallback(async () => {
     try {
@@ -176,8 +204,11 @@ export default function AdminOrderDetailPage() {
   }, [orderId]);
 
   useEffect(() => {
-    if (orderId) fetchOrder();
-  }, [orderId, fetchOrder]);
+    if (orderId) {
+      fetchOrder();
+      fetchInvoices();
+    }
+  }, [orderId, fetchOrder, fetchInvoices]);
 
   const handleStatusUpdate = async (status: string, note?: string, trackingCode?: string) => {
     if (!order || status === order.status) return;
@@ -303,6 +334,7 @@ export default function AdminOrderDetailPage() {
         toast.success("Fatura oluşturuldu");
         setRefreshKey((k) => k + 1);
         fetchOrder();
+        fetchInvoices();
       } else {
         const data = await res.json();
         toast.error(data.error || "Fatura oluşturulamadı");
@@ -311,6 +343,88 @@ export default function AdminOrderDetailPage() {
       toast.error("Bir hata oluştu");
     } finally {
       setIsCreatingInvoice(false);
+    }
+  };
+
+  const handleCancelInvoice = async () => {
+    const activeInvoice = invoices.find((i) => i.gibInvoiceId && i.status !== "CANCELLED");
+    if (!activeInvoice || !order) return;
+    setIsCancellingInvoice(true);
+    try {
+      const res = await fetch(`/api/admin/orders/${order.id}/invoice/${activeInvoice.id}/efatura`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Fatura iptal edildi");
+        setRefreshKey((k) => k + 1);
+        fetchInvoices();
+      } else {
+        toast.error(data.error || "Fatura iptal edilemedi");
+      }
+    } catch {
+      toast.error("Bir hata oluştu");
+    } finally {
+      setIsCancellingInvoice(false);
+    }
+  };
+
+  const GIB_STATUS_LABELS: Record<string, string> = {
+    PROCESSING: "İşleniyor",
+    CREATED: "Oluşturuldu",
+    SENT: "Gönderildi",
+    SENT_TO_GIB: "GİB'e Gönderildi",
+    WAITING_RESPONSE: "Yanıt Bekleniyor",
+    ACCEPTED: "Kabul Edildi",
+    REJECTED: "Reddedildi",
+    CANCELLED: "İptal Edildi",
+    ERROR: "Hata",
+    APPROVING: "Onaylanıyor",
+    REJECTING: "Reddediliyor",
+  };
+
+  const handleCheckInvoiceStatus = async () => {
+    const activeInvoice = invoices.find((i) => i.gibInvoiceId && i.status !== "CANCELLED");
+    if (!activeInvoice || !order) return;
+    setIsCheckingStatus(true);
+    try {
+      const res = await fetch(`/api/admin/orders/${order.id}/invoice/${activeInvoice.id}/efatura`);
+      const data = await res.json();
+      if (res.ok) {
+        const label = GIB_STATUS_LABELS[data.result.status] || data.result.status;
+        toast.success(`Durum: ${label}`);
+        setRefreshKey((k) => k + 1);
+        fetchInvoices();
+      } else {
+        toast.error(data.error || "Durum sorgulanamadı");
+      }
+    } catch {
+      toast.error("Bir hata oluştu");
+    } finally {
+      setIsCheckingStatus(false);
+    }
+  };
+
+  const handleConfirmPayment = async () => {
+    if (!order) return;
+    setIsConfirmingPayment(true);
+    try {
+      const res = await fetch(`/api/admin/orders/${order.id}/confirm-payment`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        toast.success("Havale onaylandı, sipariş hazırlanıyor");
+        fetchOrder();
+        fetchInvoices();
+        setRefreshKey((k) => k + 1);
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Onaylama başarısız");
+      }
+    } catch {
+      toast.error("Bir hata oluştu");
+    } finally {
+      setIsConfirmingPayment(false);
     }
   };
 
@@ -448,18 +562,60 @@ export default function AdminOrderDetailPage() {
             Fatura
           </MenubarTrigger>
           <MenubarContent>
-            <MenubarItem
-              onClick={handleCreateInvoice}
-              disabled={isCreatingInvoice}
-              className="cursor-pointer"
-            >
-              {isCreatingInvoice ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
-              ) : (
-                <FileText className="h-4 w-4 mr-1.5" />
-              )}
-              Fatura Oluştur
-            </MenubarItem>
+            {(() => {
+              const activeInvoice = invoices.find((i) => i.gibInvoiceId && i.status !== "CANCELLED");
+              const hasAnyInvoice = invoices.some((i) => i.status !== "CANCELLED");
+              const isEArchive = activeInvoice?.billingType === "INDIVIDUAL";
+
+              return (
+                <>
+                  {!hasAnyInvoice && (
+                    <MenubarItem
+                      onClick={handleCreateInvoice}
+                      disabled={isCreatingInvoice}
+                      className="cursor-pointer"
+                    >
+                      {isCreatingInvoice ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+                      ) : (
+                        <FileText className="h-4 w-4 mr-1.5" />
+                      )}
+                      Fatura Oluştur
+                    </MenubarItem>
+                  )}
+                  {activeInvoice && (
+                    <>
+                      <MenubarItem
+                        onClick={handleCheckInvoiceStatus}
+                        disabled={isCheckingStatus}
+                        className="cursor-pointer"
+                      >
+                        {isCheckingStatus ? (
+                          <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+                        ) : (
+                          <RefreshCw className="h-4 w-4 mr-1.5" />
+                        )}
+                        Durum Sorgula
+                      </MenubarItem>
+                      {isEArchive && (
+                        <MenubarItem
+                          onClick={handleCancelInvoice}
+                          disabled={isCancellingInvoice}
+                          className="cursor-pointer text-red-600 focus:text-red-600"
+                        >
+                          {isCancellingInvoice ? (
+                            <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+                          ) : (
+                            <XCircle className="h-4 w-4 mr-1.5" />
+                          )}
+                          Fatura İptal
+                        </MenubarItem>
+                      )}
+                    </>
+                  )}
+                </>
+              );
+            })()}
           </MenubarContent>
         </MenubarMenu>
 
@@ -498,6 +654,54 @@ export default function AdminOrderDetailPage() {
           </MenubarContent>
         </MenubarMenu>
       </Menubar>
+
+      {/* Bank Transfer Confirmation Banner */}
+      {order.paymentMethod === "BANK_TRANSFER" && order.paymentStatus === "PENDING" && order.status === "PENDING_PAYMENT" && (
+        <Card className="p-4 border-amber-300/50 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-500/30">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Banknote className="h-5 w-5 text-amber-600 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-amber-800 dark:text-amber-200">Banka Havalesi Bekliyor</p>
+                <p className="text-xs text-amber-700 dark:text-amber-300/70">
+                  Müşteri havale/EFT ile ödeme yapacak. Ödemeyi aldıktan sonra onaylayın.
+                </p>
+              </div>
+            </div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  size="sm"
+                  disabled={isConfirmingPayment}
+                  className="bg-amber-600 hover:bg-amber-700 text-white"
+                >
+                  {isConfirmingPayment ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+                  ) : (
+                    <Banknote className="h-4 w-4 mr-1.5" />
+                  )}
+                  Havaleyi Onayla
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Havale Onayı</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {order.orderNumber} numaralı siparişin banka havalesi ödemesini onaylamak istediğinize emin misiniz?
+                    Bu işlem siparişi &quot;Hazırlanıyor&quot; durumuna geçirecek ve müşteriye bildirim gönderecektir.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>İptal</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleConfirmPayment}>
+                    Onayla
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </Card>
+      )}
 
       {/* ── 2 Column Grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

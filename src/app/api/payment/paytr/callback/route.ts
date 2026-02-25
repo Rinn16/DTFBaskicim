@@ -110,9 +110,34 @@ export async function POST(request: Request) {
         console.error("[invoice] Auto invoice failed:", invoiceErr);
       }
     } else {
-      // Ödeme başarısız — siparişi tamamen sil
-      await db.order.delete({ where: { id: order.id } });
-      console.log(`PayTR callback: payment failed, order ${merchantOid} deleted`);
+      // Ödeme başarısız — siparişi silmek yerine FAILED durumuna çek
+      await db.$transaction([
+        db.order.update({
+          where: { id: order.id },
+          data: { paymentStatus: "FAILED" },
+        }),
+        db.orderStatusHistory.create({
+          data: {
+            orderId: order.id,
+            fromStatus: "PENDING_PAYMENT",
+            toStatus: "PENDING_PAYMENT",
+            note: "PayTR ödeme başarısız",
+            eventType: "PAYMENT",
+          },
+        }),
+        db.paymentTransaction.create({
+          data: {
+            orderId: order.id,
+            type: "PAYMENT",
+            status: "FAILED",
+            amount: order.totalAmount,
+            gatewayRef: merchantOid,
+            gatewayData: { source: "paytr", totalAmount, status },
+            note: "PayTR kredi kartı ödemesi başarısız",
+          },
+        }),
+      ]);
+      console.log(`PayTR callback: payment failed for order ${merchantOid}, marked as FAILED`);
     }
 
     return new Response("OK");

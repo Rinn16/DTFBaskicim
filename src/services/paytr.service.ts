@@ -52,7 +52,7 @@ export async function createPaytrToken(params: PaytrTokenParams): Promise<{ toke
     currency,
     test_mode: TEST_MODE,
     merchant_ok_url: `${BASE_URL}/odeme/basarili?oid=${merchantOid}`,
-    merchant_fail_url: `${BASE_URL}/odeme?hata=odeme-basarisiz`,
+    merchant_fail_url: `${BASE_URL}/odeme/basarisiz?oid=${merchantOid}`,
     user_name: userName,
     user_address: userAddress,
     user_phone: userPhone,
