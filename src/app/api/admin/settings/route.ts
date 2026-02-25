@@ -37,6 +37,25 @@ const updateSchema = z.object({
   emailWelcome: z.boolean().optional(),
   emailOrderConfirm: z.boolean().optional(),
   emailShipped: z.boolean().optional(),
+
+  // Fatura firma bilgileri
+  invoiceCompanyName: z.string().optional(),
+  invoiceCompanyTaxNumber: z.string().optional(),
+  invoiceCompanyTaxOffice: z.string().optional(),
+  invoiceCompanyAddress: z.string().optional(),
+  invoiceCompanyCity: z.string().optional(),
+  invoiceCompanyDistrict: z.string().optional(),
+  invoiceCompanyZipCode: z.string().optional(),
+  invoiceCompanyPhone: z.string().optional(),
+  invoiceCompanyEmail: z.string().optional(),
+  invoiceCompanyIban: z.string().optional(),
+  invoicePrefix: z.string().optional(),
+
+  // E-fatura ayarları
+  efaturaEnabled: z.boolean().optional(),
+  efaturaCompanyCode: z.string().optional(),
+  efaturaUsername: z.string().optional(),
+  efaturaPassword: z.string().optional(),
 });
 
 export async function PATCH(request: Request) {

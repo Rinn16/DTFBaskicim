@@ -1,6 +1,15 @@
 "use client";
 
-import { CheckCircle2, Circle, Clock } from "lucide-react";
+import {
+  CheckCircle2,
+  Circle,
+  Clock,
+  CreditCard,
+  RotateCcw,
+  Receipt,
+  Download,
+  Truck,
+} from "lucide-react";
 import { ORDER_STATUSES } from "@/lib/constants";
 
 interface StatusHistoryItem {
@@ -8,6 +17,7 @@ interface StatusHistoryItem {
   fromStatus: string | null;
   toStatus: string;
   note: string | null;
+  eventType?: string | null;
   createdAt: string;
 }
 
@@ -18,6 +28,14 @@ interface StatusTimelineProps {
 const statusLabel = (status: string) =>
   ORDER_STATUSES[status as keyof typeof ORDER_STATUSES] || status;
 
+const EVENT_ICON_MAP: Record<string, { icon: typeof Circle; color: string }> = {
+  PAYMENT: { icon: CreditCard, color: "text-green-500" },
+  REFUND: { icon: RotateCcw, color: "text-red-500" },
+  INVOICE: { icon: Receipt, color: "text-blue-500" },
+  EXPORT: { icon: Download, color: "text-purple-500" },
+  SHIPPING: { icon: Truck, color: "text-cyan-500" },
+};
+
 export function StatusTimeline({ statusHistory }: StatusTimelineProps) {
   if (statusHistory.length === 0) return null;
 
@@ -25,14 +43,25 @@ export function StatusTimeline({ statusHistory }: StatusTimelineProps) {
     <div className="space-y-3">
       {statusHistory.map((entry, idx) => {
         const isLast = idx === statusHistory.length - 1;
+        const eventConfig = entry.eventType
+          ? EVENT_ICON_MAP[entry.eventType]
+          : null;
+
+        const IconComponent = eventConfig
+          ? eventConfig.icon
+          : isLast
+            ? CheckCircle2
+            : Circle;
+        const iconColor = eventConfig
+          ? eventConfig.color
+          : isLast
+            ? "text-primary"
+            : "text-muted-foreground";
+
         return (
           <div key={entry.id} className="flex gap-3">
             <div className="flex flex-col items-center">
-              {isLast ? (
-                <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-              ) : (
-                <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-              )}
+              <IconComponent className={`h-5 w-5 flex-shrink-0 ${iconColor}`} />
               {idx < statusHistory.length - 1 && (
                 <div className="w-px h-full bg-border mt-1" />
               )}

@@ -19,7 +19,18 @@ export async function GET(
       include: {
         items: true,
         address: true,
-        statusHistory: { orderBy: { createdAt: "asc" } },
+        statusHistory: {
+          select: {
+            id: true,
+            fromStatus: true,
+            toStatus: true,
+            changedBy: true,
+            note: true,
+            eventType: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: "asc" },
+        },
         user: { select: { id: true, name: true, surname: true, email: true, phone: true } },
         gangSheets: {
           select: {

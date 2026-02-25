@@ -84,6 +84,7 @@ export async function PATCH(
           toStatus: status,
           changedBy: session.user?.id,
           note: note || null,
+          eventType: status === "SHIPPED" ? "SHIPPING" : "STATUS_CHANGE",
         },
       }),
     ]);

@@ -70,7 +70,9 @@ export const ModelName = {
   CartItem: 'CartItem',
   EmailTemplate: 'EmailTemplate',
   SmsTemplate: 'SmsTemplate',
-  SmsLog: 'SmsLog'
+  SmsLog: 'SmsLog',
+  Invoice: 'Invoice',
+  PaymentTransaction: 'PaymentTransaction'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -245,10 +247,26 @@ export const SiteSettingsScalarFieldEnum = {
   id: 'id',
   smsEnabled: 'smsEnabled',
   emailEnabled: 'emailEnabled',
-  emailOrderConfirm: 'emailOrderConfirm',
-  emailStatusUpdate: 'emailStatusUpdate',
   emailWelcome: 'emailWelcome',
-  emailOtp: 'emailOtp',
+  emailOrderConfirm: 'emailOrderConfirm',
+  emailShipped: 'emailShipped',
+  invoiceCompanyName: 'invoiceCompanyName',
+  invoiceCompanyTaxNumber: 'invoiceCompanyTaxNumber',
+  invoiceCompanyTaxOffice: 'invoiceCompanyTaxOffice',
+  invoiceCompanyAddress: 'invoiceCompanyAddress',
+  invoiceCompanyCity: 'invoiceCompanyCity',
+  invoiceCompanyDistrict: 'invoiceCompanyDistrict',
+  invoiceCompanyZipCode: 'invoiceCompanyZipCode',
+  invoiceCompanyPhone: 'invoiceCompanyPhone',
+  invoiceCompanyEmail: 'invoiceCompanyEmail',
+  invoiceCompanyIban: 'invoiceCompanyIban',
+  invoiceCompanyLogoKey: 'invoiceCompanyLogoKey',
+  invoicePrefix: 'invoicePrefix',
+  invoiceNextNumber: 'invoiceNextNumber',
+  efaturaEnabled: 'efaturaEnabled',
+  efaturaCompanyCode: 'efaturaCompanyCode',
+  efaturaUsername: 'efaturaUsername',
+  efaturaPassword: 'efaturaPassword',
   updatedAt: 'updatedAt'
 } as const
 
@@ -323,6 +341,7 @@ export const OrderStatusHistoryScalarFieldEnum = {
   toStatus: 'toStatus',
   changedBy: 'changedBy',
   note: 'note',
+  eventType: 'eventType',
   createdAt: 'createdAt'
 } as const
 
@@ -411,6 +430,64 @@ export const SmsLogScalarFieldEnum = {
 export type SmsLogScalarFieldEnum = (typeof SmsLogScalarFieldEnum)[keyof typeof SmsLogScalarFieldEnum]
 
 
+export const InvoiceScalarFieldEnum = {
+  id: 'id',
+  invoiceNumber: 'invoiceNumber',
+  orderId: 'orderId',
+  type: 'type',
+  status: 'status',
+  sellerName: 'sellerName',
+  sellerTaxNumber: 'sellerTaxNumber',
+  sellerTaxOffice: 'sellerTaxOffice',
+  sellerAddress: 'sellerAddress',
+  sellerCity: 'sellerCity',
+  sellerPhone: 'sellerPhone',
+  billingType: 'billingType',
+  billingFullName: 'billingFullName',
+  billingCompanyName: 'billingCompanyName',
+  billingTaxOffice: 'billingTaxOffice',
+  billingTaxNumber: 'billingTaxNumber',
+  billingAddress: 'billingAddress',
+  billingCity: 'billingCity',
+  billingDistrict: 'billingDistrict',
+  billingZipCode: 'billingZipCode',
+  subtotal: 'subtotal',
+  discountAmount: 'discountAmount',
+  taxRate: 'taxRate',
+  taxAmount: 'taxAmount',
+  totalAmount: 'totalAmount',
+  shippingCost: 'shippingCost',
+  lineItems: 'lineItems',
+  pdfKey: 'pdfKey',
+  gibInvoiceId: 'gibInvoiceId',
+  gibStatus: 'gibStatus',
+  ublXmlKey: 'ublXmlKey',
+  issuedAt: 'issuedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
+export const PaymentTransactionScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  type: 'type',
+  status: 'status',
+  amount: 'amount',
+  currency: 'currency',
+  gatewayRef: 'gatewayRef',
+  gatewayData: 'gatewayData',
+  refundReason: 'refundReason',
+  refundedBy: 'refundedBy',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type PaymentTransactionScalarFieldEnum = (typeof PaymentTransactionScalarFieldEnum)[keyof typeof PaymentTransactionScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -424,6 +501,14 @@ export const JsonNullValueInput = {
 } as const
 
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {

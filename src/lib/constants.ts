@@ -55,6 +55,44 @@ export const EXPORT = {
   MAX_RETRIES: 3,
 } as const;
 
+// Invoice
+export const INVOICE = {
+  DEFAULT_PREFIX: 'DTF-F',
+  TAX_RATE: 20,
+  S3_PREFIX: 'invoices',
+  PDF_URL_EXPIRY: 3600,
+} as const;
+
+export const INVOICE_STATUSES = {
+  DRAFT: 'Taslak',
+  ISSUED: 'Düzenlendi',
+  CANCELLED: 'İptal Edildi',
+  SENT_TO_GIB: "GİB'e Gönderildi",
+  ACCEPTED: 'Kabul Edildi',
+  REJECTED: 'Reddedildi',
+} as const;
+
+export const TRANSACTION_TYPES = {
+  PAYMENT: 'Ödeme',
+  REFUND: 'İade',
+  PARTIAL_REFUND: 'Kısmi İade',
+} as const;
+
+export const TRANSACTION_STATUSES = {
+  PENDING: 'Bekliyor',
+  COMPLETED: 'Tamamlandı',
+  FAILED: 'Başarısız',
+} as const;
+
+export const EVENT_TYPES = {
+  STATUS_CHANGE: 'STATUS_CHANGE',
+  PAYMENT: 'PAYMENT',
+  REFUND: 'REFUND',
+  INVOICE: 'INVOICE',
+  EXPORT: 'EXPORT',
+  SHIPPING: 'SHIPPING',
+} as const;
+
 // Order
 export const ORDER_STATUSES = {
   PENDING_PAYMENT: 'Ödeme Bekleniyor',

@@ -46,6 +46,32 @@ enum BillingType {
   CORPORATE
 }
 
+enum InvoiceType {
+  SATIS
+  IADE
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  CANCELLED
+  SENT_TO_GIB
+  ACCEPTED
+  REJECTED
+}
+
+enum TransactionType {
+  PAYMENT
+  REFUND
+  PARTIAL_REFUND
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
 // ==================== USER & AUTH ====================
 
 model User {
@@ -224,7 +250,31 @@ model SiteSettings {
   emailWelcome      Boolean  @default(true)
   emailOrderConfirm Boolean  @default(true)
   emailShipped      Boolean  @default(true)
-  updatedAt         DateTime @updatedAt
+
+  // Fatura firma bilgileri (DTF Baskıcım'dan farklı olabilir)
+  invoiceCompanyName      String?
+  invoiceCompanyTaxNumber String?
+  invoiceCompanyTaxOffice String?
+  invoiceCompanyAddress   String?  @db.Text
+  invoiceCompanyCity      String?
+  invoiceCompanyDistrict  String?
+  invoiceCompanyZipCode   String?
+  invoiceCompanyPhone     String?
+  invoiceCompanyEmail     String?
+  invoiceCompanyIban      String?
+  invoiceCompanyLogoKey   String?
+
+  // Fatura numaralama
+  invoicePrefix     String  @default("DTF-F")
+  invoiceNextNumber Int     @default(1)
+
+  // E-fatura ayarları (Trendyol E-Faturam)
+  efaturaEnabled     Boolean @default(false)
+  efaturaCompanyCode String?
+  efaturaUsername    String?
+  efaturaPassword   String?
+
+  updatedAt DateTime @updatedAt
 }
 
 // ==================== ORDERS ====================
@@ -287,6 +337,8 @@ model Order {
   items         OrderItem[]
   statusHistory OrderStatusHistory[]
   gangSheets    OrderGangSheet[]
+  invoices      Invoice[]
+  transactions  PaymentTransaction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -323,6 +375,7 @@ model OrderStatusHistory {
   toStatus   OrderStatus
   changedBy  String?
   note       String?
+  eventType  String?
 
   createdAt DateTime @default(now())
 
@@ -426,4 +479,81 @@ model SmsLog {
   createdAt      DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// ==================== INVOICE & TRANSACTIONS ====================
+
+model Invoice {
+  id             String        @id @default(cuid())
+  invoiceNumber  String        @unique
+  orderId        String
+  order          Order         @relation(fields: [orderId], references: [id])
+  type           InvoiceType   @default(SATIS)
+  status         InvoiceStatus @default(DRAFT)
+
+  // Fatura anındaki satıcı firma bilgileri snapshot
+  sellerName      String
+  sellerTaxNumber String
+  sellerTaxOffice String
+  sellerAddress   String? @db.Text
+  sellerCity      String?
+  sellerPhone     String?
+
+  // Alıcı bilgileri snapshot
+  billingType        BillingType
+  billingFullName    String?
+  billingCompanyName String?
+  billingTaxOffice   String?
+  billingTaxNumber   String?
+  billingAddress     String? @db.Text
+  billingCity        String?
+  billingDistrict    String?
+  billingZipCode     String?
+
+  // Finansal snapshot
+  subtotal       Decimal @db.Decimal(10, 2)
+  discountAmount Decimal @db.Decimal(10, 2) @default(0)
+  taxRate        Decimal @db.Decimal(5, 2)  @default(20)
+  taxAmount      Decimal @db.Decimal(10, 2)
+  totalAmount    Decimal @db.Decimal(10, 2)
+  shippingCost   Decimal @db.Decimal(10, 2) @default(0)
+
+  lineItems Json
+
+  pdfKey String?
+
+  // E-fatura alanları
+  gibInvoiceId String?
+  gibStatus    String?
+  ublXmlKey    String?
+
+  issuedAt  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([orderId])
+  @@index([invoiceNumber])
+  @@index([status])
+}
+
+model PaymentTransaction {
+  id       String            @id @default(cuid())
+  orderId  String
+  order    Order             @relation(fields: [orderId], references: [id])
+  type     TransactionType
+  status   TransactionStatus @default(PENDING)
+  amount   Decimal           @db.Decimal(10, 2)
+  currency String            @default("TRY")
+
+  gatewayRef  String?
+  gatewayData Json?
+
+  refundReason String? @db.Text
+  refundedBy   String?
+  note         String? @db.Text
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([type])
 }

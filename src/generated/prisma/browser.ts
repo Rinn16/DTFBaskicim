@@ -117,3 +117,13 @@ export type SmsTemplate = Prisma.SmsTemplateModel
  * 
  */
 export type SmsLog = Prisma.SmsLogModel
+/**
+ * Model Invoice
+ * 
+ */
+export type Invoice = Prisma.InvoiceModel
+/**
+ * Model PaymentTransaction
+ * 
+ */
+export type PaymentTransaction = Prisma.PaymentTransactionModel

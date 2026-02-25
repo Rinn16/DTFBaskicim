@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -46,14 +46,18 @@ import {
   Truck,
   Package,
   RotateCcw,
-  Printer,
   ChevronDown,
   CircleDot,
   Receipt,
+  FileText,
 } from "lucide-react";
 import { ORDER_STATUSES } from "@/lib/constants";
 import { STATUS_COLORS, statusLabel } from "@/lib/order-utils";
 import { StatusTimeline } from "@/components/order/status-timeline";
+import { RefundDialog } from "@/components/admin/orders/order-refund-dialog";
+import { OrderTransactions } from "@/components/admin/orders/order-transactions";
+import { OrderInvoiceCard } from "@/components/admin/orders/order-invoice-card";
+import { PackingSlipButton } from "@/components/admin/orders/order-packing-slip";
 import { toast } from "sonner";
 
 interface GangSheetDetail {
@@ -136,6 +140,7 @@ interface OrderDetail {
     fromStatus: string | null;
     toStatus: string;
     note: string | null;
+    eventType?: string | null;
     createdAt: string;
   }[];
 }
@@ -151,8 +156,11 @@ export default function AdminOrderDetailPage() {
   const [exportingSheetIds, setExportingSheetIds] = useState<Set<string>>(new Set());
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
   const [trackingCodeInput, setTrackingCodeInput] = useState("");
+  const [refundDialogOpen, setRefundDialogOpen] = useState(false);
+  const [isCreatingInvoice, setIsCreatingInvoice] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const fetchOrder = async () => {
+  const fetchOrder = useCallback(async () => {
     try {
       const detailRes = await fetch(`/api/admin/orders/${orderId}`);
       if (detailRes.ok) {
@@ -165,12 +173,11 @@ export default function AdminOrderDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [orderId]);
 
   useEffect(() => {
     if (orderId) fetchOrder();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderId]);
+  }, [orderId, fetchOrder]);
 
   const handleStatusUpdate = async (status: string, note?: string, trackingCode?: string) => {
     if (!order || status === order.status) return;
@@ -189,6 +196,7 @@ export default function AdminOrderDetailPage() {
       if (res.ok) {
         toast.success("Durum güncellendi");
         fetchOrder();
+        setRefreshKey((k) => k + 1);
       } else {
         const data = await res.json();
         toast.error(data.error || "Güncelleme başarısız");
@@ -207,10 +215,7 @@ export default function AdminOrderDetailPage() {
       const res = await fetch(`/api/admin/orders/${order.id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          status: order.status,
-          adminNote,
-        }),
+        body: JSON.stringify({ status: order.status, adminNote }),
       });
       if (res.ok) {
         toast.success("Not kaydedildi");
@@ -262,7 +267,6 @@ export default function AdminOrderDetailPage() {
     if (!order || !order.gangSheets.length) return;
     setIsExporting(true);
     try {
-      // Her gang sheet için ayrı export kuyruğa ekle
       const res = await fetch(`/api/admin/orders/${order.id}/export`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -286,6 +290,28 @@ export default function AdminOrderDetailPage() {
     const params = new URLSearchParams({ format });
     if (gangSheetId) params.set("gangSheetId", gangSheetId);
     window.open(`/api/admin/orders/${order.id}/download?${params.toString()}`, "_blank");
+  };
+
+  const handleCreateInvoice = async () => {
+    if (!order) return;
+    setIsCreatingInvoice(true);
+    try {
+      const res = await fetch(`/api/admin/orders/${order.id}/invoice`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        toast.success("Fatura oluşturuldu");
+        setRefreshKey((k) => k + 1);
+        fetchOrder();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Fatura oluşturulamadı");
+      }
+    } catch {
+      toast.error("Bir hata oluştu");
+    } finally {
+      setIsCreatingInvoice(false);
+    }
   };
 
   if (isLoading) {
@@ -401,12 +427,38 @@ export default function AdminOrderDetailPage() {
               Kargoya verildi olarak işaretle
             </MenubarItem>
             <MenubarSeparator />
+            <MenubarItem className="cursor-pointer p-0">
+              <PackingSlipButton
+                orderNumber={order.orderNumber}
+                orderDate={order.createdAt}
+                customerName={customerName}
+                address={order.address}
+                items={order.items.map((i) => ({ imageName: i.imageName, quantity: i.quantity }))}
+                totalMeters={order.totalMeters}
+                trackingCode={order.trackingCode}
+              />
+            </MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+
+        {/* Invoice */}
+        <MenubarMenu>
+          <MenubarTrigger className="gap-1.5 cursor-pointer">
+            <Receipt className="h-4 w-4" />
+            Fatura
+          </MenubarTrigger>
+          <MenubarContent>
             <MenubarItem
-              onClick={() => toast.info("Barkod yazdırma henüz aktif değil")}
+              onClick={handleCreateInvoice}
+              disabled={isCreatingInvoice}
               className="cursor-pointer"
             >
-              <Printer className="h-4 w-4 mr-1.5" />
-              Kargo barkodu yazdır
+              {isCreatingInvoice ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+              ) : (
+                <FileText className="h-4 w-4 mr-1.5" />
+              )}
+              Fatura Oluştur
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
@@ -419,6 +471,19 @@ export default function AdminOrderDetailPage() {
           </MenubarTrigger>
           <MenubarContent>
             <MenubarItem
+              onClick={() => setRefundDialogOpen(true)}
+              disabled={
+                order.status === "REFUNDED" ||
+                order.status === "PENDING_PAYMENT" ||
+                isUpdating
+              }
+              className="cursor-pointer"
+            >
+              <RotateCcw className="h-4 w-4 mr-1.5" />
+              İade İşlemi Başlat
+            </MenubarItem>
+            <MenubarSeparator />
+            <MenubarItem
               onClick={() => handleStatusUpdate("CANCELLED", "Sipariş iptal edildi")}
               disabled={
                 order.status === "CANCELLED" ||
@@ -429,18 +494,6 @@ export default function AdminOrderDetailPage() {
               className="cursor-pointer"
             >
               Siparişi iptal et
-            </MenubarItem>
-            <MenubarItem
-              onClick={() => handleStatusUpdate("REFUNDED", "İade işlemi yapıldı")}
-              disabled={
-                order.status === "REFUNDED" ||
-                order.status === "PENDING_PAYMENT" ||
-                isUpdating
-              }
-              variant="destructive"
-              className="cursor-pointer"
-            >
-              İade olarak işaretle
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
@@ -453,7 +506,6 @@ export default function AdminOrderDetailPage() {
           {/* Gang Sheet Cards */}
           {hasGangSheets ? (
             <div className="space-y-3">
-              {/* Tümünü Export Et butonu */}
               {!hasExport && (
                 <div className="flex justify-end">
                   <Button
@@ -486,7 +538,6 @@ export default function AdminOrderDetailPage() {
                 return (
                   <Card key={gs.id} className="p-4">
                     <div className="flex gap-4">
-                      {/* Gang sheet preview */}
                       <div className="flex-shrink-0 w-20 h-24 bg-muted rounded-md flex items-center justify-center border border-dashed">
                         <div className="text-center">
                           <Ruler className="h-5 w-5 mx-auto text-muted-foreground mb-1" />
@@ -495,20 +546,14 @@ export default function AdminOrderDetailPage() {
                           </span>
                         </div>
                       </div>
-
-                      {/* Info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <h3 className="font-medium text-sm">
-                              Gang Sheet {idx + 1}
-                            </h3>
+                            <h3 className="font-medium text-sm">Gang Sheet {idx + 1}</h3>
                             <p className="text-xs text-muted-foreground mt-0.5">
                               {gs.totalMeters.toFixed(2)} metre
                             </p>
                           </div>
-
-                          {/* Download dropdown */}
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button size="sm" variant="outline" className="h-8 gap-1.5">
@@ -520,64 +565,32 @@ export default function AdminOrderDetailPage() {
                             <DropdownMenuContent align="end">
                               {gsHasExport ? (
                                 <>
-                                  <DropdownMenuItem onClick={() => handleDownload("png", gs.id)} className="cursor-pointer">
-                                    PNG
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleDownload("tiff", gs.id)} className="cursor-pointer">
-                                    TIFF
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleDownload("pdf", gs.id)} className="cursor-pointer">
-                                    PDF
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => handleExport(gs.id)}
-                                    disabled={gsIsExporting}
-                                    className="cursor-pointer"
-                                  >
-                                    {gsIsExporting ? (
-                                      <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
-                                    ) : (
-                                      <RotateCcw className="h-4 w-4 mr-1.5" />
-                                    )}
+                                  <DropdownMenuItem onClick={() => handleDownload("png", gs.id)} className="cursor-pointer">PNG</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleDownload("tiff", gs.id)} className="cursor-pointer">TIFF</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleDownload("pdf", gs.id)} className="cursor-pointer">PDF</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleExport(gs.id)} disabled={gsIsExporting} className="cursor-pointer">
+                                    {gsIsExporting ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : <RotateCcw className="h-4 w-4 mr-1.5" />}
                                     Yeniden export et
                                   </DropdownMenuItem>
                                 </>
                               ) : (
-                                <DropdownMenuItem
-                                  onClick={() => handleExport(gs.id)}
-                                  disabled={gsIsExporting}
-                                  className="cursor-pointer"
-                                >
-                                  {gsIsExporting ? (
-                                    <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
-                                  ) : (
-                                    <Play className="h-4 w-4 mr-1.5" />
-                                  )}
+                                <DropdownMenuItem onClick={() => handleExport(gs.id)} disabled={gsIsExporting} className="cursor-pointer">
+                                  {gsIsExporting ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : <Play className="h-4 w-4 mr-1.5" />}
                                   Export oluştur
                                 </DropdownMenuItem>
                               )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
-
-                        {/* Items list */}
                         <div className="mt-2 flex flex-wrap gap-1.5">
                           {gsLayout.items?.map((item: { imageName: string; placements: unknown[] }, itemIdx: number) => (
-                            <Badge
-                              key={itemIdx}
-                              variant="secondary"
-                              className="text-[11px] h-5 gap-1 font-normal"
-                            >
+                            <Badge key={itemIdx} variant="secondary" className="text-[11px] h-5 gap-1 font-normal">
                               <ImageIcon className="h-3 w-3" />
-                              {item.imageName.length > 20
-                                ? item.imageName.slice(0, 20) + "..."
-                                : item.imageName}
+                              {item.imageName.length > 20 ? item.imageName.slice(0, 20) + "..." : item.imageName}
                               <span className="text-muted-foreground">x{item.placements?.length ?? 0}</span>
                             </Badge>
                           ))}
                         </div>
-
-                        {/* Footer */}
                         <div className="mt-3">
                           <span className="text-xs text-muted-foreground">
                             {gsItemCount} görsel, {gsPlacementCount} yerleşim
@@ -590,10 +603,8 @@ export default function AdminOrderDetailPage() {
               })}
             </div>
           ) : (
-            /* Eski tek gang sheet card (backward compat) */
             <Card className="p-4">
               <div className="flex gap-4">
-                {/* Gang sheet preview */}
                 <div className="flex-shrink-0 w-20 h-24 bg-muted rounded-md flex items-center justify-center border border-dashed">
                   <div className="text-center">
                     <Ruler className="h-5 w-5 mx-auto text-muted-foreground mb-1" />
@@ -602,8 +613,6 @@ export default function AdminOrderDetailPage() {
                     </span>
                   </div>
                 </div>
-
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -612,8 +621,6 @@ export default function AdminOrderDetailPage() {
                         {order.totalMeters.toFixed(2)} metre
                       </p>
                     </div>
-
-                    {/* Inline download dropdown */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button size="sm" variant="outline" className="h-8 gap-1.5">
@@ -625,48 +632,28 @@ export default function AdminOrderDetailPage() {
                       <DropdownMenuContent align="end">
                         {hasExport ? (
                           <>
-                            <DropdownMenuItem onClick={() => handleDownload("png")} className="cursor-pointer">
-                              PNG
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDownload("tiff")} className="cursor-pointer">
-                              TIFF
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDownload("pdf")} className="cursor-pointer">
-                              PDF
-                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDownload("png")} className="cursor-pointer">PNG</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDownload("tiff")} className="cursor-pointer">TIFF</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDownload("pdf")} className="cursor-pointer">PDF</DropdownMenuItem>
                           </>
                         ) : (
                           <DropdownMenuItem onClick={() => handleExport()} disabled={isExporting} className="cursor-pointer">
-                            {isExporting ? (
-                              <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
-                            ) : (
-                              <Play className="h-4 w-4 mr-1.5" />
-                            )}
+                            {isExporting ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : <Play className="h-4 w-4 mr-1.5" />}
                             Export oluştur
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-
-                  {/* Items list */}
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {order.items.map((item) => (
-                      <Badge
-                        key={item.id}
-                        variant="secondary"
-                        className="text-[11px] h-5 gap-1 font-normal"
-                      >
+                      <Badge key={item.id} variant="secondary" className="text-[11px] h-5 gap-1 font-normal">
                         <ImageIcon className="h-3 w-3" />
-                        {item.imageName.length > 20
-                          ? item.imageName.slice(0, 20) + "..."
-                          : item.imageName}
+                        {item.imageName.length > 20 ? item.imageName.slice(0, 20) + "..." : item.imageName}
                         <span className="text-muted-foreground">x{item.quantity}</span>
                       </Badge>
                     ))}
                   </div>
-
-                  {/* Footer */}
                   <div className="mt-3">
                     <span className="text-xs text-muted-foreground">
                       {order.items.length} görsel, {totalPlacements} yerleşim
@@ -677,42 +664,32 @@ export default function AdminOrderDetailPage() {
             </Card>
           )}
 
-          {/* Price Breakdown + Payment + Timeline */}
+          {/* Price Breakdown + Payment + Transactions + Timeline */}
           <Card>
             <CardContent className="pt-6 space-y-5">
               {/* Price breakdown */}
               <div className="space-y-2.5 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Toplam Metre</span>
-                  <span className="font-medium tabular-nums">
-                    {order.totalMeters.toFixed(2)} m
-                  </span>
+                  <span className="font-medium tabular-nums">{order.totalMeters.toFixed(2)} m</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Birim Fiyat</span>
-                  <span className="font-medium tabular-nums">
-                    {order.pricePerMeter.toFixed(2)} TL/m
-                  </span>
+                  <span className="font-medium tabular-nums">{order.pricePerMeter.toFixed(2)} TL/m</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Ara Toplam</span>
-                  <span className="font-medium tabular-nums">
-                    {order.subtotal.toFixed(2)} TL
-                  </span>
+                  <span className="font-medium tabular-nums">{order.subtotal.toFixed(2)} TL</span>
                 </div>
                 {order.discountAmount > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>İndirim</span>
-                    <span className="font-medium tabular-nums">
-                      -{order.discountAmount.toFixed(2)} TL
-                    </span>
+                    <span className="font-medium tabular-nums">-{order.discountAmount.toFixed(2)} TL</span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">KDV (%20)</span>
-                  <span className="font-medium tabular-nums">
-                    {order.taxAmount.toFixed(2)} TL
-                  </span>
+                  <span className="font-medium tabular-nums">{order.taxAmount.toFixed(2)} TL</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Kargo</span>
@@ -723,9 +700,7 @@ export default function AdminOrderDetailPage() {
                 <Separator />
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Toplam</span>
-                  <span className="text-xl font-bold tabular-nums">
-                    {order.totalAmount.toFixed(2)} TL
-                  </span>
+                  <span className="text-xl font-bold tabular-nums">{order.totalAmount.toFixed(2)} TL</span>
                 </div>
               </div>
 
@@ -751,6 +726,10 @@ export default function AdminOrderDetailPage() {
                 </div>
               </div>
 
+              {/* Transactions */}
+              <Separator />
+              <OrderTransactions orderId={order.id} refreshKey={refreshKey} />
+
               {/* Timeline */}
               {order.statusHistory.length > 0 && (
                 <>
@@ -765,9 +744,9 @@ export default function AdminOrderDetailPage() {
           </Card>
         </div>
 
-        {/* ── Right Column (1/3) — Single Card ── */}
+        {/* ── Right Column (1/3) — Sidebar ── */}
         <div className="lg:col-span-1">
-          <div className="sticky top-4">
+          <div className="sticky top-4 space-y-4">
             <Card>
               <CardContent className="pt-6 space-y-5">
                 {/* Customer */}
@@ -807,9 +786,7 @@ export default function AdminOrderDetailPage() {
                     <div className="space-y-2">
                       <p className="text-sm font-medium">Teslimat Adresi</p>
                       <div className="space-y-1.5 text-sm">
-                        <p className="text-muted-foreground font-medium">
-                          {order.address.title}
-                        </p>
+                        <p className="text-muted-foreground font-medium">{order.address.title}</p>
                         <div className="flex items-start gap-2 text-muted-foreground">
                           <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
                           <div>
@@ -835,9 +812,7 @@ export default function AdminOrderDetailPage() {
                 <div className="space-y-2">
                   <p className="text-sm font-medium">Fatura Bilgileri</p>
                   {order.billingSameAddress ? (
-                    <p className="text-sm text-muted-foreground">
-                      Teslimat adresi ile aynı
-                    </p>
+                    <p className="text-sm text-muted-foreground">Teslimat adresi ile aynı</p>
                   ) : (
                     <div className="space-y-1.5 text-sm">
                       <Badge variant="secondary" className="text-xs">
@@ -845,19 +820,13 @@ export default function AdminOrderDetailPage() {
                       </Badge>
                       {order.billingType === "CORPORATE" ? (
                         <>
-                          {order.billingCompanyName && (
-                            <p className="font-medium">{order.billingCompanyName}</p>
-                          )}
+                          {order.billingCompanyName && <p className="font-medium">{order.billingCompanyName}</p>}
                           {order.billingTaxOffice && order.billingTaxNumber && (
-                            <p className="text-muted-foreground">
-                              {order.billingTaxOffice} - {order.billingTaxNumber}
-                            </p>
+                            <p className="text-muted-foreground">{order.billingTaxOffice} - {order.billingTaxNumber}</p>
                           )}
                         </>
                       ) : (
-                        order.billingFullName && (
-                          <p className="font-medium">{order.billingFullName}</p>
-                        )
+                        order.billingFullName && <p className="font-medium">{order.billingFullName}</p>
                       )}
                       {order.billingAddress && (
                         <div className="flex items-start gap-2 text-muted-foreground">
@@ -884,9 +853,7 @@ export default function AdminOrderDetailPage() {
                       <div className="flex items-center gap-2">
                         <Package className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm text-muted-foreground">Takip Kodu:</span>
-                        <Badge variant="secondary" className="font-mono text-xs">
-                          {order.trackingCode}
-                        </Badge>
+                        <Badge variant="secondary" className="font-mono text-xs">{order.trackingCode}</Badge>
                       </div>
                     </div>
                   </>
@@ -900,19 +867,13 @@ export default function AdminOrderDetailPage() {
                     <div>
                       <div className="flex items-center gap-1.5 mb-1">
                         <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="text-xs font-medium text-muted-foreground">
-                          Müşteri Notu
-                        </span>
+                        <span className="text-xs font-medium text-muted-foreground">Müşteri Notu</span>
                       </div>
-                      <p className="text-sm bg-muted/50 rounded-md p-2.5 italic">
-                        {order.customerNote}
-                      </p>
+                      <p className="text-sm bg-muted/50 rounded-md p-2.5 italic">{order.customerNote}</p>
                     </div>
                   )}
                   <div>
-                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
-                      Admin Notu
-                    </label>
+                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Admin Notu</label>
                     <Textarea
                       value={adminNote}
                       onChange={(e) => setAdminNote(e.target.value)}
@@ -927,13 +888,18 @@ export default function AdminOrderDetailPage() {
                       disabled={isSavingNote}
                       className="mt-2 w-full"
                     >
-                      {isSavingNote && (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
-                      )}
+                      {isSavingNote && <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />}
                       Kaydet
                     </Button>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Invoice Card */}
+            <Card>
+              <CardContent className="pt-6">
+                <OrderInvoiceCard orderId={order.id} refreshKey={refreshKey} />
               </CardContent>
             </Card>
           </div>
@@ -960,17 +926,11 @@ export default function AdminOrderDetailPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShippingDialogOpen(false)}>
-              İptal
-            </Button>
+            <Button variant="outline" onClick={() => setShippingDialogOpen(false)}>İptal</Button>
             <Button
               onClick={async () => {
                 setShippingDialogOpen(false);
-                await handleStatusUpdate(
-                  "SHIPPED",
-                  "Kargoya verildi",
-                  trackingCodeInput.trim() || undefined,
-                );
+                await handleStatusUpdate("SHIPPED", "Kargoya verildi", trackingCodeInput.trim() || undefined);
               }}
               disabled={isUpdating}
             >
@@ -980,6 +940,19 @@ export default function AdminOrderDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Refund Dialog */}
+      <RefundDialog
+        open={refundDialogOpen}
+        onOpenChange={setRefundDialogOpen}
+        orderId={order.id}
+        totalAmount={order.totalAmount}
+        priorRefundTotal={0}
+        onRefundComplete={() => {
+          fetchOrder();
+          setRefreshKey((k) => k + 1);
+        }}
+      />
     </div>
   );
 }

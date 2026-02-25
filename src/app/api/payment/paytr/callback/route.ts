@@ -56,6 +56,19 @@ export async function POST(request: Request) {
             fromStatus: "PENDING_PAYMENT",
             toStatus: "PROCESSING",
             note: "PayTR ödeme başarılı",
+            eventType: "PAYMENT",
+          },
+        }),
+        // PaymentTransaction kaydı
+        db.paymentTransaction.create({
+          data: {
+            orderId: order.id,
+            type: "PAYMENT",
+            status: "COMPLETED",
+            amount: order.totalAmount,
+            gatewayRef: merchantOid,
+            gatewayData: { source: "paytr", totalAmount, status },
+            note: "PayTR kredi kartı ödemesi",
           },
         }),
         // Ödeme başarılı — sepeti temizle
@@ -87,6 +100,14 @@ export async function POST(request: Request) {
         }
       } catch (err) {
         console.error("[sms] Order confirmed SMS failed:", err);
+      }
+
+      // Fire-and-forget: Otomatik fatura oluştur
+      try {
+        const { issueInvoice } = await import("@/services/invoice.service");
+        await issueInvoice(order.id);
+      } catch (invoiceErr) {
+        console.error("[invoice] Auto invoice failed:", invoiceErr);
       }
     } else {
       // Ödeme başarısız — siparişi tamamen sil

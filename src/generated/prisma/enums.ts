@@ -64,11 +64,48 @@ export const BillingType = {
 export type BillingType = (typeof BillingType)[keyof typeof BillingType]
 
 
+export const InvoiceType = {
+  SATIS: 'SATIS',
+  IADE: 'IADE'
+} as const
+
+export type InvoiceType = (typeof InvoiceType)[keyof typeof InvoiceType]
+
+
+export const InvoiceStatus = {
+  DRAFT: 'DRAFT',
+  ISSUED: 'ISSUED',
+  CANCELLED: 'CANCELLED',
+  SENT_TO_GIB: 'SENT_TO_GIB',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus]
+
+
+export const TransactionType = {
+  PAYMENT: 'PAYMENT',
+  REFUND: 'REFUND',
+  PARTIAL_REFUND: 'PARTIAL_REFUND'
+} as const
+
+export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType]
+
+
+export const TransactionStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+} as const
+
+export type TransactionStatus = (typeof TransactionStatus)[keyof typeof TransactionStatus]
+
+
 export const EmailTemplateType = {
-  ORDER_CONFIRMATION: 'ORDER_CONFIRMATION',
-  STATUS_UPDATE: 'STATUS_UPDATE',
   WELCOME: 'WELCOME',
-  OTP: 'OTP'
+  ORDER_CONFIRMATION: 'ORDER_CONFIRMATION',
+  SHIPPED: 'SHIPPED'
 } as const
 
 export type EmailTemplateType = (typeof EmailTemplateType)[keyof typeof EmailTemplateType]
