@@ -299,10 +299,10 @@ export function DesignSidebar() {
                 autoFocus
                 maxLength={100}
               />
-              <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-green-400" onClick={handleConfirmRename}>
+              <Button variant="ghost" size="sm" aria-label="Onayla" className="h-7 w-7 p-0 text-green-400" onClick={handleConfirmRename}>
                 <Check className="h-3.5 w-3.5" />
               </Button>
-              <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-slate-400" onClick={handleCancelRename}>
+              <Button variant="ghost" size="sm" aria-label="İptal" className="h-7 w-7 p-0 text-slate-400" onClick={handleCancelRename}>
                 <X className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -311,7 +311,7 @@ export function DesignSidebar() {
               <h2 className="text-sm font-semibold text-white truncate flex-1 min-w-0">
                 {activeDraftName}
               </h2>
-              <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-slate-400 hover:text-white shrink-0" onClick={handleStartRename}>
+              <Button variant="ghost" size="sm" aria-label="Adı düzenle" className="h-7 w-7 p-0 text-slate-400 hover:text-white shrink-0" onClick={handleStartRename}>
                 <Pencil className="h-3 w-3" />
               </Button>
             </>

@@ -106,7 +106,7 @@ export function Header() {
             <>
               {/* Mobile cart */}
               <Link href="/sepet" className="relative md:hidden">
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hover:bg-muted">
+                <Button variant="ghost" size="icon" aria-label="Sepet" className="text-muted-foreground hover:text-foreground hover:bg-muted">
                   <ShoppingCart className="h-5 w-5" />
                 </Button>
                 {cartCount > 0 && (
@@ -240,7 +240,7 @@ export function Header() {
           {/* Mobile menu */}
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hover:bg-muted">
+              <Button variant="ghost" size="icon" aria-label="Menü" className="text-muted-foreground hover:text-foreground hover:bg-muted">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>

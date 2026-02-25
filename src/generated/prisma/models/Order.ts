@@ -80,6 +80,8 @@ export type OrderMinAggregateOutputType = {
   adminNote: string | null
   billingType: $Enums.BillingType | null
   billingSameAddress: boolean | null
+  billingFirstName: string | null
+  billingLastName: string | null
   billingFullName: string | null
   billingCompanyName: string | null
   billingTaxOffice: string | null
@@ -122,6 +124,8 @@ export type OrderMaxAggregateOutputType = {
   adminNote: string | null
   billingType: $Enums.BillingType | null
   billingSameAddress: boolean | null
+  billingFirstName: string | null
+  billingLastName: string | null
   billingFullName: string | null
   billingCompanyName: string | null
   billingTaxOffice: string | null
@@ -165,6 +169,8 @@ export type OrderCountAggregateOutputType = {
   adminNote: number
   billingType: number
   billingSameAddress: number
+  billingFirstName: number
+  billingLastName: number
   billingFullName: number
   billingCompanyName: number
   billingTaxOffice: number
@@ -233,6 +239,8 @@ export type OrderMinAggregateInputType = {
   adminNote?: true
   billingType?: true
   billingSameAddress?: true
+  billingFirstName?: true
+  billingLastName?: true
   billingFullName?: true
   billingCompanyName?: true
   billingTaxOffice?: true
@@ -275,6 +283,8 @@ export type OrderMaxAggregateInputType = {
   adminNote?: true
   billingType?: true
   billingSameAddress?: true
+  billingFirstName?: true
+  billingLastName?: true
   billingFullName?: true
   billingCompanyName?: true
   billingTaxOffice?: true
@@ -318,6 +328,8 @@ export type OrderCountAggregateInputType = {
   adminNote?: true
   billingType?: true
   billingSameAddress?: true
+  billingFirstName?: true
+  billingLastName?: true
   billingFullName?: true
   billingCompanyName?: true
   billingTaxOffice?: true
@@ -448,6 +460,8 @@ export type OrderGroupByOutputType = {
   adminNote: string | null
   billingType: $Enums.BillingType
   billingSameAddress: boolean
+  billingFirstName: string | null
+  billingLastName: string | null
   billingFullName: string | null
   billingCompanyName: string | null
   billingTaxOffice: string | null
@@ -514,6 +528,8 @@ export type OrderWhereInput = {
   adminNote?: Prisma.StringNullableFilter<"Order"> | string | null
   billingType?: Prisma.EnumBillingTypeFilter<"Order"> | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFilter<"Order"> | boolean
+  billingFirstName?: Prisma.StringNullableFilter<"Order"> | string | null
+  billingLastName?: Prisma.StringNullableFilter<"Order"> | string | null
   billingFullName?: Prisma.StringNullableFilter<"Order"> | string | null
   billingCompanyName?: Prisma.StringNullableFilter<"Order"> | string | null
   billingTaxOffice?: Prisma.StringNullableFilter<"Order"> | string | null
@@ -565,6 +581,8 @@ export type OrderOrderByWithRelationInput = {
   adminNote?: Prisma.SortOrderInput | Prisma.SortOrder
   billingType?: Prisma.SortOrder
   billingSameAddress?: Prisma.SortOrder
+  billingFirstName?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingLastName?: Prisma.SortOrderInput | Prisma.SortOrder
   billingFullName?: Prisma.SortOrderInput | Prisma.SortOrder
   billingCompanyName?: Prisma.SortOrderInput | Prisma.SortOrder
   billingTaxOffice?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -619,6 +637,8 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   adminNote?: Prisma.StringNullableFilter<"Order"> | string | null
   billingType?: Prisma.EnumBillingTypeFilter<"Order"> | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFilter<"Order"> | boolean
+  billingFirstName?: Prisma.StringNullableFilter<"Order"> | string | null
+  billingLastName?: Prisma.StringNullableFilter<"Order"> | string | null
   billingFullName?: Prisma.StringNullableFilter<"Order"> | string | null
   billingCompanyName?: Prisma.StringNullableFilter<"Order"> | string | null
   billingTaxOffice?: Prisma.StringNullableFilter<"Order"> | string | null
@@ -670,6 +690,8 @@ export type OrderOrderByWithAggregationInput = {
   adminNote?: Prisma.SortOrderInput | Prisma.SortOrder
   billingType?: Prisma.SortOrder
   billingSameAddress?: Prisma.SortOrder
+  billingFirstName?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingLastName?: Prisma.SortOrderInput | Prisma.SortOrder
   billingFullName?: Prisma.SortOrderInput | Prisma.SortOrder
   billingCompanyName?: Prisma.SortOrderInput | Prisma.SortOrder
   billingTaxOffice?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -721,6 +743,8 @@ export type OrderScalarWhereWithAggregatesInput = {
   adminNote?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   billingType?: Prisma.EnumBillingTypeWithAggregatesFilter<"Order"> | $Enums.BillingType
   billingSameAddress?: Prisma.BoolWithAggregatesFilter<"Order"> | boolean
+  billingFirstName?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  billingLastName?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   billingFullName?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   billingCompanyName?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   billingTaxOffice?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
@@ -761,6 +785,8 @@ export type OrderCreateInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -812,6 +838,8 @@ export type OrderUncheckedCreateInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -857,6 +885,8 @@ export type OrderUpdateInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -908,6 +938,8 @@ export type OrderUncheckedUpdateInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -956,6 +988,8 @@ export type OrderCreateManyInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -996,6 +1030,8 @@ export type OrderUpdateManyMutationInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1039,6 +1075,8 @@ export type OrderUncheckedUpdateManyInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1092,6 +1130,8 @@ export type OrderCountOrderByAggregateInput = {
   adminNote?: Prisma.SortOrder
   billingType?: Prisma.SortOrder
   billingSameAddress?: Prisma.SortOrder
+  billingFirstName?: Prisma.SortOrder
+  billingLastName?: Prisma.SortOrder
   billingFullName?: Prisma.SortOrder
   billingCompanyName?: Prisma.SortOrder
   billingTaxOffice?: Prisma.SortOrder
@@ -1146,6 +1186,8 @@ export type OrderMaxOrderByAggregateInput = {
   adminNote?: Prisma.SortOrder
   billingType?: Prisma.SortOrder
   billingSameAddress?: Prisma.SortOrder
+  billingFirstName?: Prisma.SortOrder
+  billingLastName?: Prisma.SortOrder
   billingFullName?: Prisma.SortOrder
   billingCompanyName?: Prisma.SortOrder
   billingTaxOffice?: Prisma.SortOrder
@@ -1188,6 +1230,8 @@ export type OrderMinOrderByAggregateInput = {
   adminNote?: Prisma.SortOrder
   billingType?: Prisma.SortOrder
   billingSameAddress?: Prisma.SortOrder
+  billingFirstName?: Prisma.SortOrder
+  billingLastName?: Prisma.SortOrder
   billingFullName?: Prisma.SortOrder
   billingCompanyName?: Prisma.SortOrder
   billingTaxOffice?: Prisma.SortOrder
@@ -1453,6 +1497,8 @@ export type OrderCreateWithoutUserInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1502,6 +1548,8 @@ export type OrderUncheckedCreateWithoutUserInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1579,6 +1627,8 @@ export type OrderScalarWhereInput = {
   adminNote?: Prisma.StringNullableFilter<"Order"> | string | null
   billingType?: Prisma.EnumBillingTypeFilter<"Order"> | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFilter<"Order"> | boolean
+  billingFirstName?: Prisma.StringNullableFilter<"Order"> | string | null
+  billingLastName?: Prisma.StringNullableFilter<"Order"> | string | null
   billingFullName?: Prisma.StringNullableFilter<"Order"> | string | null
   billingCompanyName?: Prisma.StringNullableFilter<"Order"> | string | null
   billingTaxOffice?: Prisma.StringNullableFilter<"Order"> | string | null
@@ -1619,6 +1669,8 @@ export type OrderCreateWithoutAddressInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1668,6 +1720,8 @@ export type OrderUncheckedCreateWithoutAddressInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1739,6 +1793,8 @@ export type OrderCreateWithoutDiscountCodeInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1788,6 +1844,8 @@ export type OrderUncheckedCreateWithoutDiscountCodeInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1859,6 +1917,8 @@ export type OrderCreateWithoutItemsInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1909,6 +1969,8 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1969,6 +2031,8 @@ export type OrderUpdateWithoutItemsInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2019,6 +2083,8 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2063,6 +2129,8 @@ export type OrderCreateWithoutStatusHistoryInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -2113,6 +2181,8 @@ export type OrderUncheckedCreateWithoutStatusHistoryInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -2173,6 +2243,8 @@ export type OrderUpdateWithoutStatusHistoryInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2223,6 +2295,8 @@ export type OrderUncheckedUpdateWithoutStatusHistoryInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2267,6 +2341,8 @@ export type OrderCreateWithoutGangSheetsInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -2317,6 +2393,8 @@ export type OrderUncheckedCreateWithoutGangSheetsInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -2377,6 +2455,8 @@ export type OrderUpdateWithoutGangSheetsInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2427,6 +2507,8 @@ export type OrderUncheckedUpdateWithoutGangSheetsInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2471,6 +2553,8 @@ export type OrderCreateWithoutInvoicesInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -2521,6 +2605,8 @@ export type OrderUncheckedCreateWithoutInvoicesInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -2581,6 +2667,8 @@ export type OrderUpdateWithoutInvoicesInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2631,6 +2719,8 @@ export type OrderUncheckedUpdateWithoutInvoicesInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2675,6 +2765,8 @@ export type OrderCreateWithoutTransactionsInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -2725,6 +2817,8 @@ export type OrderUncheckedCreateWithoutTransactionsInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -2785,6 +2879,8 @@ export type OrderUpdateWithoutTransactionsInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2835,6 +2931,8 @@ export type OrderUncheckedUpdateWithoutTransactionsInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2881,6 +2979,8 @@ export type OrderCreateManyUserInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -2921,6 +3021,8 @@ export type OrderUpdateWithoutUserInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2970,6 +3072,8 @@ export type OrderUncheckedUpdateWithoutUserInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3017,6 +3121,8 @@ export type OrderUncheckedUpdateManyWithoutUserInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3059,6 +3165,8 @@ export type OrderCreateManyAddressInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -3099,6 +3207,8 @@ export type OrderUpdateWithoutAddressInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3148,6 +3258,8 @@ export type OrderUncheckedUpdateWithoutAddressInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3195,6 +3307,8 @@ export type OrderUncheckedUpdateManyWithoutAddressInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3237,6 +3351,8 @@ export type OrderCreateManyDiscountCodeInput = {
   adminNote?: string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -3277,6 +3393,8 @@ export type OrderUpdateWithoutDiscountCodeInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3326,6 +3444,8 @@ export type OrderUncheckedUpdateWithoutDiscountCodeInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3373,6 +3493,8 @@ export type OrderUncheckedUpdateManyWithoutDiscountCodeInput = {
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3483,6 +3605,8 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   adminNote?: boolean
   billingType?: boolean
   billingSameAddress?: boolean
+  billingFirstName?: boolean
+  billingLastName?: boolean
   billingFullName?: boolean
   billingCompanyName?: boolean
   billingTaxOffice?: boolean
@@ -3535,6 +3659,8 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   adminNote?: boolean
   billingType?: boolean
   billingSameAddress?: boolean
+  billingFirstName?: boolean
+  billingLastName?: boolean
   billingFullName?: boolean
   billingCompanyName?: boolean
   billingTaxOffice?: boolean
@@ -3581,6 +3707,8 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   adminNote?: boolean
   billingType?: boolean
   billingSameAddress?: boolean
+  billingFirstName?: boolean
+  billingLastName?: boolean
   billingFullName?: boolean
   billingCompanyName?: boolean
   billingTaxOffice?: boolean
@@ -3627,6 +3755,8 @@ export type OrderSelectScalar = {
   adminNote?: boolean
   billingType?: boolean
   billingSameAddress?: boolean
+  billingFirstName?: boolean
+  billingLastName?: boolean
   billingFullName?: boolean
   billingCompanyName?: boolean
   billingTaxOffice?: boolean
@@ -3639,7 +3769,7 @@ export type OrderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "userId" | "addressId" | "guestEmail" | "guestName" | "guestPhone" | "totalMeters" | "pricePerMeter" | "subtotal" | "discountAmount" | "taxAmount" | "totalAmount" | "shippingCost" | "discountCodeId" | "status" | "paymentMethod" | "paymentStatus" | "paymentId" | "gangSheetLayout" | "gangSheetWidth" | "gangSheetHeight" | "exportPng" | "exportTiff" | "exportPdf" | "trackingCode" | "customerNote" | "adminNote" | "billingType" | "billingSameAddress" | "billingFullName" | "billingCompanyName" | "billingTaxOffice" | "billingTaxNumber" | "billingAddress" | "billingCity" | "billingDistrict" | "billingZipCode" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "userId" | "addressId" | "guestEmail" | "guestName" | "guestPhone" | "totalMeters" | "pricePerMeter" | "subtotal" | "discountAmount" | "taxAmount" | "totalAmount" | "shippingCost" | "discountCodeId" | "status" | "paymentMethod" | "paymentStatus" | "paymentId" | "gangSheetLayout" | "gangSheetWidth" | "gangSheetHeight" | "exportPng" | "exportTiff" | "exportPdf" | "trackingCode" | "customerNote" | "adminNote" | "billingType" | "billingSameAddress" | "billingFirstName" | "billingLastName" | "billingFullName" | "billingCompanyName" | "billingTaxOffice" | "billingTaxNumber" | "billingAddress" | "billingCity" | "billingDistrict" | "billingZipCode" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Order$userArgs<ExtArgs>
   address?: boolean | Prisma.Order$addressArgs<ExtArgs>
@@ -3705,6 +3835,8 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     adminNote: string | null
     billingType: $Enums.BillingType
     billingSameAddress: boolean
+    billingFirstName: string | null
+    billingLastName: string | null
     billingFullName: string | null
     billingCompanyName: string | null
     billingTaxOffice: string | null
@@ -4176,6 +4308,8 @@ export interface OrderFieldRefs {
   readonly adminNote: Prisma.FieldRef<"Order", 'String'>
   readonly billingType: Prisma.FieldRef<"Order", 'BillingType'>
   readonly billingSameAddress: Prisma.FieldRef<"Order", 'Boolean'>
+  readonly billingFirstName: Prisma.FieldRef<"Order", 'String'>
+  readonly billingLastName: Prisma.FieldRef<"Order", 'String'>
   readonly billingFullName: Prisma.FieldRef<"Order", 'String'>
   readonly billingCompanyName: Prisma.FieldRef<"Order", 'String'>
   readonly billingTaxOffice: Prisma.FieldRef<"Order", 'String'>

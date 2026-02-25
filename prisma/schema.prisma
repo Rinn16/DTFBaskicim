@@ -90,6 +90,8 @@ model User {
   image         String?
 
   billingType        BillingType @default(INDIVIDUAL)
+  billingFirstName   String?
+  billingLastName    String?
   billingFullName    String?
   billingCompanyName String?
   billingTaxOffice   String?
@@ -262,17 +264,21 @@ model SiteSettings {
   invoiceCompanyPhone     String?
   invoiceCompanyEmail     String?
   invoiceCompanyIban      String?
+  invoiceCompanyWebsite   String?
   invoiceCompanyLogoKey   String?
+  invoiceNotes            String?  @db.Text
 
   // Fatura numaralama
   invoicePrefix     String  @default("DTF-F")
   invoiceNextNumber Int     @default(1)
 
   // E-fatura ayarları (Trendyol E-Faturam)
-  efaturaEnabled     Boolean @default(false)
-  efaturaEnvironment String  @default("test") // "test" veya "production"
-  efaturaEmail       String?
-  efaturaPassword    String?
+  efaturaEnabled       Boolean @default(false)
+  efaturaEnvironment   String  @default("test") // "test" veya "production"
+  efaturaEmail         String?
+  efaturaPassword      String?
+  efaturaEarsivPrefix  String  @default("DAP") // E-Arşiv seri ön eki (3 harf)
+  efaturaEfaturaPrefix String  @default("DIP") // E-Fatura seri ön eki (3 harf)
 
   updatedAt DateTime @updatedAt
 }
@@ -325,6 +331,8 @@ model Order {
 
   billingType        BillingType @default(INDIVIDUAL)
   billingSameAddress Boolean     @default(true)
+  billingFirstName   String?
+  billingLastName    String?
   billingFullName    String?
   billingCompanyName String?
   billingTaxOffice   String?
@@ -501,6 +509,8 @@ model Invoice {
 
   // Alıcı bilgileri snapshot
   billingType        BillingType
+  billingFirstName   String?
+  billingLastName    String?
   billingFullName    String?
   billingCompanyName String?
   billingTaxOffice   String?

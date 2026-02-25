@@ -8,7 +8,8 @@ import { cn } from "@/lib/utils";
 export type BillingType = "INDIVIDUAL" | "CORPORATE";
 
 export interface BillingFields {
-  billingFullName?: string;
+  billingFirstName?: string;
+  billingLastName?: string;
   billingCompanyName?: string;
   billingTaxOffice?: string;
   billingTaxNumber?: string;
@@ -24,6 +25,7 @@ interface BillingFormProps {
   values: BillingFields;
   onChange: (values: BillingFields) => void;
   errors?: Record<string, string>;
+  showAddressFields?: boolean;
 }
 
 const types = [
@@ -49,6 +51,7 @@ export function BillingForm({
   values,
   onChange,
   errors,
+  showAddressFields = true,
 }: BillingFormProps) {
   const update = (field: keyof BillingFields, value: string) => {
     onChange({ ...values, [field]: value });
@@ -101,19 +104,50 @@ export function BillingForm({
       {/* Type-specific fields */}
       <div className="space-y-3">
         {billingType === "INDIVIDUAL" ? (
-          <div>
-            <Label htmlFor="billingFullName" className="text-foreground/80 text-xs">Ad Soyad</Label>
-            <Input
-              id="billingFullName"
-              value={values.billingFullName || ""}
-              onChange={(e) => update("billingFullName", e.target.value)}
-              placeholder="Fatura uzerindeki ad soyad"
-              className={inputClass}
-            />
-            {errors?.billingFullName && (
-              <p className="text-xs text-red-400 mt-1">{errors.billingFullName}</p>
-            )}
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="billingFirstName" className="text-foreground/80 text-xs">Ad</Label>
+                <Input
+                  id="billingFirstName"
+                  value={values.billingFirstName || ""}
+                  onChange={(e) => update("billingFirstName", e.target.value)}
+                  placeholder="Ad"
+                  className={inputClass}
+                />
+                {errors?.billingFirstName && (
+                  <p className="text-xs text-red-400 mt-1">{errors.billingFirstName}</p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="billingLastName" className="text-foreground/80 text-xs">Soyad</Label>
+                <Input
+                  id="billingLastName"
+                  value={values.billingLastName || ""}
+                  onChange={(e) => update("billingLastName", e.target.value)}
+                  placeholder="Soyad"
+                  className={inputClass}
+                />
+                {errors?.billingLastName && (
+                  <p className="text-xs text-red-400 mt-1">{errors.billingLastName}</p>
+                )}
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="billingTaxNumber" className="text-foreground/80 text-xs">TC Kimlik No (Opsiyonel)</Label>
+              <Input
+                id="billingTaxNumber"
+                value={values.billingTaxNumber || ""}
+                onChange={(e) => update("billingTaxNumber", e.target.value.replace(/\D/g, "").slice(0, 11))}
+                placeholder="11 haneli TC Kimlik No"
+                maxLength={11}
+                className={inputClass}
+              />
+              {errors?.billingTaxNumber && (
+                <p className="text-xs text-red-400 mt-1">{errors.billingTaxNumber}</p>
+              )}
+            </div>
+          </>
         ) : (
           <>
             <div>
@@ -162,59 +196,61 @@ export function BillingForm({
       </div>
 
       {/* Common address fields */}
-      <div className="space-y-3">
-        <div className="grid grid-cols-2 gap-3">
+      {showAddressFields && (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="billingCity" className="text-foreground/80 text-xs">Sehir</Label>
+              <Input
+                id="billingCity"
+                value={values.billingCity}
+                onChange={(e) => update("billingCity", e.target.value)}
+                placeholder="Sehir"
+                className={inputClass}
+              />
+              {errors?.billingCity && (
+                <p className="text-xs text-red-400 mt-1">{errors.billingCity}</p>
+              )}
+            </div>
+            <div>
+              <Label htmlFor="billingDistrict" className="text-foreground/80 text-xs">Ilce</Label>
+              <Input
+                id="billingDistrict"
+                value={values.billingDistrict}
+                onChange={(e) => update("billingDistrict", e.target.value)}
+                placeholder="Ilce"
+                className={inputClass}
+              />
+              {errors?.billingDistrict && (
+                <p className="text-xs text-red-400 mt-1">{errors.billingDistrict}</p>
+              )}
+            </div>
+          </div>
           <div>
-            <Label htmlFor="billingCity" className="text-foreground/80 text-xs">Sehir</Label>
+            <Label htmlFor="billingAddress" className="text-foreground/80 text-xs">Adres</Label>
             <Input
-              id="billingCity"
-              value={values.billingCity}
-              onChange={(e) => update("billingCity", e.target.value)}
-              placeholder="Sehir"
+              id="billingAddress"
+              value={values.billingAddress}
+              onChange={(e) => update("billingAddress", e.target.value)}
+              placeholder="Fatura adresi"
               className={inputClass}
             />
-            {errors?.billingCity && (
-              <p className="text-xs text-red-400 mt-1">{errors.billingCity}</p>
+            {errors?.billingAddress && (
+              <p className="text-xs text-red-400 mt-1">{errors.billingAddress}</p>
             )}
           </div>
           <div>
-            <Label htmlFor="billingDistrict" className="text-foreground/80 text-xs">Ilce</Label>
+            <Label htmlFor="billingZipCode" className="text-foreground/80 text-xs">Posta Kodu (Opsiyonel)</Label>
             <Input
-              id="billingDistrict"
-              value={values.billingDistrict}
-              onChange={(e) => update("billingDistrict", e.target.value)}
-              placeholder="Ilce"
+              id="billingZipCode"
+              value={values.billingZipCode || ""}
+              onChange={(e) => update("billingZipCode", e.target.value)}
+              placeholder="Posta kodu"
               className={inputClass}
             />
-            {errors?.billingDistrict && (
-              <p className="text-xs text-red-400 mt-1">{errors.billingDistrict}</p>
-            )}
           </div>
         </div>
-        <div>
-          <Label htmlFor="billingAddress" className="text-foreground/80 text-xs">Adres</Label>
-          <Input
-            id="billingAddress"
-            value={values.billingAddress}
-            onChange={(e) => update("billingAddress", e.target.value)}
-            placeholder="Fatura adresi"
-            className={inputClass}
-          />
-          {errors?.billingAddress && (
-            <p className="text-xs text-red-400 mt-1">{errors.billingAddress}</p>
-          )}
-        </div>
-        <div>
-          <Label htmlFor="billingZipCode" className="text-foreground/80 text-xs">Posta Kodu (Opsiyonel)</Label>
-          <Input
-            id="billingZipCode"
-            value={values.billingZipCode || ""}
-            onChange={(e) => update("billingZipCode", e.target.value)}
-            placeholder="Posta kodu"
-            className={inputClass}
-          />
-        </div>
-      </div>
+      )}
     </div>
   );
 }

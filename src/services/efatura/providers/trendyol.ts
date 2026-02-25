@@ -257,17 +257,7 @@ export class TrendyolEFaturaProvider implements EFaturaProvider {
     };
 
     // --- 5. Build recipientInfo with proper field validation ---
-    // For individuals: Trendyol concatenates name + surname, so strip surname
-    // from name to avoid duplication (e.g. "Ercan Akcan" + "Akcan" → "Ercan Akcan Akcan")
-    let buyerDisplayName = data.buyerName && data.buyerName.length >= 2 ? data.buyerName : "Müşteri";
-    if (!data.isCorporate && data.buyerSurname && data.buyerSurname.length >= 2) {
-      if (buyerDisplayName.endsWith(data.buyerSurname)) {
-        const firstName = buyerDisplayName.slice(0, -data.buyerSurname.length).trim();
-        if (firstName.length >= 2) {
-          buyerDisplayName = firstName;
-        }
-      }
-    }
+    const buyerDisplayName = data.buyerName && data.buyerName.length >= 2 ? data.buyerName : "Müşteri";
 
     const recipientInfo: Record<string, unknown> = {
       taxId: data.buyerTaxNumber || "11111111111",
@@ -303,8 +293,17 @@ export class TrendyolEFaturaProvider implements EFaturaProvider {
 
     // --- 6. Build payload ---
     const isEArchive = !recipientRegistered;
-    // E-Arşiv prefix: DAP, E-Fatura prefix: DIP
-    const prefix = isEArchive ? "DAP" : "DIP";
+    const prefix = isEArchive
+      ? (data.earsivPrefix || "DAP")
+      : (data.efaturaPrefix || "DIP");
+
+    // Build notes array
+    const notes = (data.notes && data.notes.length > 0) ? data.notes : [];
+
+    // Add website to recipientInfo if provided
+    if (data.sellerWebsite) {
+      recipientInfo.website = data.sellerWebsite;
+    }
 
     const payload: Record<string, unknown> = {
       autoInvoiceId: true,
@@ -312,7 +311,7 @@ export class TrendyolEFaturaProvider implements EFaturaProvider {
       userId: auth.userId,
       source: "PORTAL",
       prefix,
-      notes: [],
+      notes,
       recipientInfo,
       invoiceInfo: {
         invoiceType: isEArchive ? "EARSIVFATURA" : "TEMELFATURA",
@@ -354,8 +353,10 @@ export class TrendyolEFaturaProvider implements EFaturaProvider {
     }
 
     const result = await res.json();
+    console.log("[efatura] submitInvoice response:", JSON.stringify(result));
     return {
       gibInvoiceId: result.invoiceUuid || result.id?.toString(),
+      gibInvoiceNumber: result.invoiceId || undefined,
       status: "SENT",
     };
   }
@@ -430,7 +431,7 @@ export class TrendyolEFaturaProvider implements EFaturaProvider {
       body: JSON.stringify({
         documentType: "EARCHIVE",
         fileExtension,
-        documentUuid: invoiceUuid,
+        invoiceUuid,
         companyId: auth.companyId,
       }),
     });
@@ -443,7 +444,7 @@ export class TrendyolEFaturaProvider implements EFaturaProvider {
         body: JSON.stringify({
           documentType: "EINVOICE",
           fileExtension,
-          documentUuid: invoiceUuid,
+          invoiceUuid,
           companyId: auth.companyId,
         }),
       });
@@ -453,11 +454,21 @@ export class TrendyolEFaturaProvider implements EFaturaProvider {
         throw new Error(`Doküman indirme başarısız: ${res2.status} — ${errorText}`);
       }
 
-      const data2 = await res2.json();
-      return { url: data2.url || data2 };
+      const text2 = await res2.text();
+      try {
+        const data2 = JSON.parse(text2);
+        return { url: data2.url || text2 };
+      } catch {
+        return { url: text2 };
+      }
     }
 
-    const data = await res.json();
-    return { url: data.url || data };
+    const text = await res.text();
+    try {
+      const data = JSON.parse(text);
+      return { url: data.url || text };
+    } catch {
+      return { url: text };
+    }
   }
 }

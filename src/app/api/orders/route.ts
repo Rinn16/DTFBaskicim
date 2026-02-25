@@ -5,6 +5,7 @@ import { createOrder } from "@/services/order.service";
 import { checkoutSchema } from "@/validations/checkout";
 import { addToCartSchema } from "@/validations/cart";
 import { db } from "@/lib/db";
+import type { GangSheetLayout, GangSheetItem } from "@/types/canvas";
 
 const guestCartItemsSchema = z.array(addToCartSchema).min(1, "Sepetiniz boş");
 
@@ -64,8 +65,8 @@ export async function POST(request: Request) {
       }
       cartItems = dbItems.map((item) => ({
         id: item.id,
-        layout: item.layout as any,
-        items: item.items as any,
+        layout: item.layout as unknown as GangSheetLayout,
+        items: item.items as unknown as GangSheetItem[],
         totalMeters: Number(item.totalMeters),
       }));
     } else {
@@ -87,7 +88,7 @@ export async function POST(request: Request) {
       guestPhone: guestInfo?.guestPhone,
       addressId,
       guestAddress,
-      paymentMethod: paymentMethod as any,
+      paymentMethod: paymentMethod as "CREDIT_CARD" | "BANK_TRANSFER",
       cartItems,
       discountCode,
       customerNote,

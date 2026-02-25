@@ -60,10 +60,21 @@ export async function submitInvoiceToGib(invoiceId: string) {
 
   const lineItems = invoice.lineItems as { description: string; quantity: number; unitPrice: number; total: number }[];
 
+  // Load site settings for website & notes
+  const siteSettings = await db.siteSettings.findUnique({ where: { id: "default" } });
+
   // When billingSameAddress=true, billing fields on Invoice are null.
   // Fall back to shipping address from order.address relation.
   const shippingAddr = invoice.order.address;
   const user = invoice.order.user;
+
+  const notes: string[] = [];
+  if (siteSettings?.invoiceNotes) {
+    const rendered = siteSettings.invoiceNotes
+      .replace(/\{siparisNo\}/gi, invoice.order.orderNumber)
+      .replace(/\{faturaNo\}/gi, invoice.invoiceNumber);
+    notes.push(rendered);
+  }
 
   const submitData: EFaturaSubmitData = {
     invoiceNumber: invoice.invoiceNumber,
@@ -75,9 +86,19 @@ export async function submitInvoiceToGib(invoiceId: string) {
     sellerTaxOffice: invoice.sellerTaxOffice,
     sellerAddress: invoice.sellerAddress || undefined,
     sellerCity: invoice.sellerCity || undefined,
+    sellerWebsite: siteSettings?.invoiceCompanyWebsite || undefined,
 
-    buyerName: invoice.billingCompanyName || invoice.billingFullName || shippingAddr?.fullName || user?.name || "",
-    buyerSurname: user?.surname || "",
+    earsivPrefix: siteSettings?.efaturaEarsivPrefix || "DAP",
+    efaturaPrefix: siteSettings?.efaturaEfaturaPrefix || "DIP",
+
+    notes: notes.length > 0 ? notes : undefined,
+
+    buyerName: invoice.billingType === "CORPORATE"
+      ? (invoice.billingCompanyName || "")
+      : (invoice.billingFirstName || user?.name || ""),
+    buyerSurname: invoice.billingType === "CORPORATE"
+      ? ""
+      : (invoice.billingLastName || user?.surname || ""),
     buyerTaxNumber: invoice.billingTaxNumber || undefined,
     buyerTaxOffice: invoice.billingTaxOffice || undefined,
     buyerAddress: invoice.billingAddress || shippingAddr?.address || undefined,
@@ -100,13 +121,14 @@ export async function submitInvoiceToGib(invoiceId: string) {
 
   const result = await provider.submitInvoice(submitData);
 
-  // Update invoice with GIB info
+  // Update invoice with GIB info and real invoice number
   await db.invoice.update({
     where: { id: invoiceId },
     data: {
       gibInvoiceId: result.gibInvoiceId,
       gibStatus: result.status,
       status: "SENT_TO_GIB",
+      ...(result.gibInvoiceNumber && { invoiceNumber: result.gibInvoiceNumber }),
     },
   });
 
@@ -157,6 +179,56 @@ export async function checkGibStatus(invoiceId: string) {
       ...(statusMap[result.status] && { status: statusMap[result.status] as "ACCEPTED" | "REJECTED" | "SENT_TO_GIB" }),
     },
   });
+
+  return result;
+}
+
+/**
+ * Cancel an e-archive invoice on GIB.
+ * Only e-arşiv invoices can be cancelled. E-fatura invoices cannot be cancelled via API.
+ */
+export async function cancelGibInvoice(invoiceId: string) {
+  const provider = await getProvider();
+  if (!provider) {
+    throw new Error("E-Fatura sistemi aktif değil");
+  }
+
+  const invoice = await db.invoice.findUniqueOrThrow({
+    where: { id: invoiceId },
+    include: { order: true },
+  });
+
+  if (!invoice.gibInvoiceId) {
+    throw new Error("Bu fatura henüz GİB'e gönderilmemiş");
+  }
+
+  if (invoice.billingType === "CORPORATE") {
+    // Check if it was actually sent as e-fatura (registered recipient)
+    // For safety, we still attempt cancel — Trendyol will reject if it's e-fatura
+  }
+
+  const result = await provider.cancelInvoice(invoice.gibInvoiceId, "İptal");
+
+  if (result.success) {
+    await db.invoice.update({
+      where: { id: invoiceId },
+      data: {
+        status: "CANCELLED",
+        gibStatus: "CANCELLED",
+      },
+    });
+
+    // Audit trail
+    await db.orderStatusHistory.create({
+      data: {
+        orderId: invoice.orderId,
+        fromStatus: invoice.order.status,
+        toStatus: invoice.order.status,
+        note: `E-Fatura iptal edildi: ${invoice.invoiceNumber}`,
+        eventType: "INVOICE",
+      },
+    });
+  }
 
   return result;
 }

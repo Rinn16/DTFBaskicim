@@ -41,7 +41,8 @@ interface CreateOrderParams {
   billingSameAddress?: boolean;
   billingInfo?: {
     billingType: BillingType;
-    billingFullName?: string;
+    billingFirstName?: string;
+    billingLastName?: string;
     billingCompanyName?: string;
     billingTaxOffice?: string;
     billingTaxNumber?: string;
@@ -163,7 +164,11 @@ export async function createOrder(params: CreateOrderParams) {
         customerNote: customerNote || null,
         billingType: billingInfo?.billingType ?? "INDIVIDUAL",
         billingSameAddress: billingSameAddress ?? true,
-        billingFullName: billingInfo?.billingFullName || null,
+        billingFirstName: billingInfo?.billingFirstName || null,
+        billingLastName: billingInfo?.billingLastName || null,
+        billingFullName: billingInfo?.billingFirstName && billingInfo?.billingLastName
+          ? `${billingInfo.billingFirstName} ${billingInfo.billingLastName}`
+          : null,
         billingCompanyName: billingInfo?.billingCompanyName || null,
         billingTaxOffice: billingInfo?.billingTaxOffice || null,
         billingTaxNumber: billingInfo?.billingTaxNumber || null,

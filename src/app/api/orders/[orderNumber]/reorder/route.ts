@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import type { Prisma } from "@/generated/prisma/client";
 
 export async function POST(
   _request: Request,
@@ -41,14 +42,14 @@ export async function POST(
       imageName: item.imageName,
       originalWidthPx: item.imageWidth,
       originalHeightPx: item.imageHeight,
-      placements: item.placements as any,
+      placements: item.placements as Record<string, unknown>[],
     }));
 
     const cartItem = await db.cartItem.create({
       data: {
         userId: session.user.id,
-        layout: order.gangSheetLayout as any,
-        items: items as any,
+        layout: order.gangSheetLayout ?? {},
+        items: items as unknown as Prisma.InputJsonValue,
         totalMeters: order.totalMeters,
       },
     });

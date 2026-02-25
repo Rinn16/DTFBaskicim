@@ -35,7 +35,7 @@ export function AddressForm({ isGuest, onSubmit, onCancel, isSubmitting }: Addre
   const err = errors as Record<string, { message?: string } | undefined>;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
+    <form onSubmit={handleSubmit((data) => onSubmit(data as GuestAddressData | MemberAddressData))} className="space-y-4">
       {isGuest && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

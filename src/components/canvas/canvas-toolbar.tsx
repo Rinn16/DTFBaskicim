@@ -259,6 +259,7 @@ export function CanvasToolbar() {
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label="Uzaklaştır"
                 className="h-7 w-7 text-slate-400"
                 onClick={handleZoomOut}
                 disabled={zoom <= ZOOM_MIN}
@@ -286,6 +287,7 @@ export function CanvasToolbar() {
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label="Yakınlaştır"
                 className="h-7 w-7 text-slate-400"
                 onClick={handleZoomIn}
                 disabled={zoom >= ZOOM_MAX}
@@ -309,6 +311,7 @@ export function CanvasToolbar() {
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label="Geri Al"
                 className="h-7 w-7 text-slate-400"
                 onClick={handleUndo}
                 disabled={pastLength === 0}
@@ -324,6 +327,7 @@ export function CanvasToolbar() {
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label="İleri Al"
                 className="h-7 w-7 text-slate-400"
                 onClick={handleRedo}
                 disabled={futureLength === 0}
@@ -375,6 +379,7 @@ export function CanvasToolbar() {
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label="Seçili Sil"
                 className="h-7 w-7 text-slate-400"
                 onClick={handleDeleteSelected}
                 disabled={!canvas}
@@ -390,6 +395,7 @@ export function CanvasToolbar() {
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label="Tümünü Temizle"
                 className="h-7 w-7 text-red-400 hover:text-red-300"
                 onClick={handleClearAll}
                 disabled={placements.length === 0}

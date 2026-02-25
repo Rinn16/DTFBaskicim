@@ -39,6 +39,16 @@ import { billingInfoSchema, billingInfoStrictSchema } from "@/validations/checko
 
 type CheckoutStep = "form" | "payment";
 
+interface GuestFormData {
+  guestName: string;
+  guestEmail: string;
+  guestPhone: string;
+  city: string;
+  district: string;
+  address: string;
+  zipCode?: string;
+}
+
 export default function OdemePage() {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -57,7 +67,7 @@ export default function OdemePage() {
   const [paytrToken, setPaytrToken] = useState<string | null>(null);
 
   // Guest form state
-  const [guestData, setGuestData] = useState<any>(null);
+  const [guestData, setGuestData] = useState<GuestFormData | null>(null);
 
   // Billing state
   const [billingSameAddress, setBillingSameAddress] = useState(true);
@@ -90,7 +100,7 @@ export default function OdemePage() {
           if (data.shippingConfig) setShippingConfig(data.shippingConfig);
         }
       } catch {
-        /* */
+        // Pricing fetch failed — page still usable, prices shown as 0
       }
     }
     fetchPricing();
@@ -152,13 +162,13 @@ export default function OdemePage() {
     );
   }
 
-  const handleGuestAddressSubmit = (data: any) => {
-    setGuestData(data);
+  const handleGuestAddressSubmit = (data: Record<string, unknown>) => {
+    setGuestData(data as unknown as GuestFormData);
     setShowAddressForm(false);
     toast.success("Adres bilgileri kaydedildi");
   };
 
-  const handleNewAddressSaved = async (data: any) => {
+  const handleNewAddressSaved = async (data: Record<string, unknown>) => {
     try {
       const res = await fetch("/api/addresses", {
         method: "POST",
@@ -208,7 +218,7 @@ export default function OdemePage() {
 
     setIsSubmitting(true);
     try {
-      const body: any = {
+      const body: Record<string, unknown> = {
         paymentMethod,
         customerNote: customerNote || undefined,
         billingSameAddress,
@@ -218,18 +228,19 @@ export default function OdemePage() {
       if (isAuthenticated) {
         body.addressId = addressId;
       } else {
+        const guest = guestData!;
         body.guestInfo = {
-          guestName: guestData.guestName,
-          guestEmail: guestData.guestEmail,
-          guestPhone: guestData.guestPhone,
+          guestName: guest.guestName,
+          guestEmail: guest.guestEmail,
+          guestPhone: guest.guestPhone,
         };
         body.guestAddress = {
-          fullName: guestData.guestName,
-          phone: guestData.guestPhone,
-          city: guestData.city,
-          district: guestData.district,
-          address: guestData.address,
-          zipCode: guestData.zipCode,
+          fullName: guest.guestName,
+          phone: guest.guestPhone,
+          city: guest.city,
+          district: guest.district,
+          address: guest.address,
+          zipCode: guest.zipCode,
         };
         body.cartItems = cartItems.map((item) => ({
           layout: item.layout,

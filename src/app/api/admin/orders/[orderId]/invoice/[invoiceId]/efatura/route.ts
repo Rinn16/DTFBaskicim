@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { submitInvoiceToGib, checkGibStatus } from "@/services/efatura";
+import { submitInvoiceToGib, checkGibStatus, cancelGibInvoice } from "@/services/efatura";
 
 // POST: Submit invoice to GIB
 export async function POST(
@@ -58,6 +58,39 @@ export async function GET(
   } catch (error) {
     console.error("E-Fatura status error:", error);
     const message = error instanceof Error ? error.message : "Durum sorgulanamadı";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+// DELETE: Cancel e-archive invoice
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ orderId: string; invoiceId: string }> }
+) {
+  try {
+    const session = await auth();
+    if (session?.user?.role !== "ADMIN") {
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 403 });
+    }
+
+    const { orderId, invoiceId } = await params;
+
+    const invoice = await db.invoice.findFirst({
+      where: { id: invoiceId, orderId },
+    });
+    if (!invoice) {
+      return NextResponse.json({ error: "Fatura bulunamadı" }, { status: 404 });
+    }
+
+    if (!invoice.gibInvoiceId) {
+      return NextResponse.json({ error: "Bu fatura henüz GİB'e gönderilmemiş" }, { status: 400 });
+    }
+
+    const result = await cancelGibInvoice(invoiceId);
+    return NextResponse.json({ result });
+  } catch (error) {
+    console.error("E-Fatura cancel error:", error);
+    const message = error instanceof Error ? error.message : "Fatura iptal edilemedi";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

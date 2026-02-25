@@ -113,6 +113,8 @@ export async function createInvoiceForOrder(
       sellerPhone: settings.invoiceCompanyPhone,
 
       billingType: order.billingType,
+      billingFirstName: order.billingFirstName || (order.billingSameAddress ? (order.user?.name || null) : null),
+      billingLastName: order.billingLastName || (order.billingSameAddress ? (order.user?.surname || null) : null),
       billingFullName: order.billingFullName || (order.billingSameAddress ? (order.address?.fullName || order.user?.name || null) : null),
       billingCompanyName: order.billingCompanyName,
       billingTaxOffice: order.billingTaxOffice,

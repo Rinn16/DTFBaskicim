@@ -9,6 +9,14 @@ export interface EFaturaSubmitData {
   sellerTaxOffice: string;
   sellerAddress?: string;
   sellerCity?: string;
+  sellerWebsite?: string;
+
+  // E-fatura seri ön ekleri
+  earsivPrefix?: string;
+  efaturaPrefix?: string;
+
+  // Notes (fatura altı açıklama)
+  notes?: string[];
 
   // Buyer
   buyerName: string;
@@ -47,6 +55,7 @@ export interface EFaturaRecipientResult {
 
 export interface EFaturaSubmitResult {
   gibInvoiceId: string;
+  gibInvoiceNumber?: string;
   status: string;
 }
 

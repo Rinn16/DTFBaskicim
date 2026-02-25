@@ -182,6 +182,7 @@ export function DraftListSheet({ open, onOpenChange, onSaveCurrentBeforeLoad }: 
                             <Button
                               variant="ghost"
                               size="sm"
+                              aria-label="Taslağı yükle"
                               className="h-7 w-7 p-0 text-slate-300 hover:text-white"
                               onClick={() => handleLoadDraft(draft.id)}
                               disabled={loadingDraft === draft.id}
@@ -196,6 +197,7 @@ export function DraftListSheet({ open, onOpenChange, onSaveCurrentBeforeLoad }: 
                           <Button
                             variant="ghost"
                             size="sm"
+                            aria-label="Taslağı sil"
                             className="h-7 w-7 p-0 text-slate-400 hover:text-destructive"
                             onClick={() => setDeleteTarget(draft.id)}
                           >

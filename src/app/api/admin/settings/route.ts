@@ -49,6 +49,8 @@ const updateSchema = z.object({
   invoiceCompanyPhone: z.string().optional(),
   invoiceCompanyEmail: z.string().optional(),
   invoiceCompanyIban: z.string().optional(),
+  invoiceCompanyWebsite: z.string().optional(),
+  invoiceNotes: z.string().optional(),
   invoicePrefix: z.string().optional(),
 
   // E-fatura ayarları (Trendyol E-Faturam)
@@ -56,6 +58,8 @@ const updateSchema = z.object({
   efaturaEnvironment: z.enum(["test", "production"]).optional(),
   efaturaEmail: z.string().optional(),
   efaturaPassword: z.string().optional(),
+  efaturaEarsivPrefix: z.string().length(3).regex(/^[A-Za-z]/, "Rakam ile başlayamaz").optional(),
+  efaturaEfaturaPrefix: z.string().length(3).regex(/^[A-Za-z]/, "Rakam ile başlayamaz").optional(),
 });
 
 export async function PATCH(request: Request) {
@@ -86,7 +90,7 @@ export async function PATCH(request: Request) {
   } catch (error) {
     console.error("Settings PATCH error:", error);
     return NextResponse.json(
-      { error: "Ayarlar güncellenemedi" },
+      { error: "Ayarlar güncellenemedi", detail: String(error) },
       { status: 500 },
     );
   }

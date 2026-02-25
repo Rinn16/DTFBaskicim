@@ -51,13 +51,17 @@ export type SiteSettingsMinAggregateOutputType = {
   invoiceCompanyPhone: string | null
   invoiceCompanyEmail: string | null
   invoiceCompanyIban: string | null
+  invoiceCompanyWebsite: string | null
   invoiceCompanyLogoKey: string | null
+  invoiceNotes: string | null
   invoicePrefix: string | null
   invoiceNextNumber: number | null
   efaturaEnabled: boolean | null
-  efaturaCompanyCode: string | null
-  efaturaUsername: string | null
+  efaturaEnvironment: string | null
+  efaturaEmail: string | null
   efaturaPassword: string | null
+  efaturaEarsivPrefix: string | null
+  efaturaEfaturaPrefix: string | null
   updatedAt: Date | null
 }
 
@@ -78,13 +82,17 @@ export type SiteSettingsMaxAggregateOutputType = {
   invoiceCompanyPhone: string | null
   invoiceCompanyEmail: string | null
   invoiceCompanyIban: string | null
+  invoiceCompanyWebsite: string | null
   invoiceCompanyLogoKey: string | null
+  invoiceNotes: string | null
   invoicePrefix: string | null
   invoiceNextNumber: number | null
   efaturaEnabled: boolean | null
-  efaturaCompanyCode: string | null
-  efaturaUsername: string | null
+  efaturaEnvironment: string | null
+  efaturaEmail: string | null
   efaturaPassword: string | null
+  efaturaEarsivPrefix: string | null
+  efaturaEfaturaPrefix: string | null
   updatedAt: Date | null
 }
 
@@ -105,13 +113,17 @@ export type SiteSettingsCountAggregateOutputType = {
   invoiceCompanyPhone: number
   invoiceCompanyEmail: number
   invoiceCompanyIban: number
+  invoiceCompanyWebsite: number
   invoiceCompanyLogoKey: number
+  invoiceNotes: number
   invoicePrefix: number
   invoiceNextNumber: number
   efaturaEnabled: number
-  efaturaCompanyCode: number
-  efaturaUsername: number
+  efaturaEnvironment: number
+  efaturaEmail: number
   efaturaPassword: number
+  efaturaEarsivPrefix: number
+  efaturaEfaturaPrefix: number
   updatedAt: number
   _all: number
 }
@@ -142,13 +154,17 @@ export type SiteSettingsMinAggregateInputType = {
   invoiceCompanyPhone?: true
   invoiceCompanyEmail?: true
   invoiceCompanyIban?: true
+  invoiceCompanyWebsite?: true
   invoiceCompanyLogoKey?: true
+  invoiceNotes?: true
   invoicePrefix?: true
   invoiceNextNumber?: true
   efaturaEnabled?: true
-  efaturaCompanyCode?: true
-  efaturaUsername?: true
+  efaturaEnvironment?: true
+  efaturaEmail?: true
   efaturaPassword?: true
+  efaturaEarsivPrefix?: true
+  efaturaEfaturaPrefix?: true
   updatedAt?: true
 }
 
@@ -169,13 +185,17 @@ export type SiteSettingsMaxAggregateInputType = {
   invoiceCompanyPhone?: true
   invoiceCompanyEmail?: true
   invoiceCompanyIban?: true
+  invoiceCompanyWebsite?: true
   invoiceCompanyLogoKey?: true
+  invoiceNotes?: true
   invoicePrefix?: true
   invoiceNextNumber?: true
   efaturaEnabled?: true
-  efaturaCompanyCode?: true
-  efaturaUsername?: true
+  efaturaEnvironment?: true
+  efaturaEmail?: true
   efaturaPassword?: true
+  efaturaEarsivPrefix?: true
+  efaturaEfaturaPrefix?: true
   updatedAt?: true
 }
 
@@ -196,13 +216,17 @@ export type SiteSettingsCountAggregateInputType = {
   invoiceCompanyPhone?: true
   invoiceCompanyEmail?: true
   invoiceCompanyIban?: true
+  invoiceCompanyWebsite?: true
   invoiceCompanyLogoKey?: true
+  invoiceNotes?: true
   invoicePrefix?: true
   invoiceNextNumber?: true
   efaturaEnabled?: true
-  efaturaCompanyCode?: true
-  efaturaUsername?: true
+  efaturaEnvironment?: true
+  efaturaEmail?: true
   efaturaPassword?: true
+  efaturaEarsivPrefix?: true
+  efaturaEfaturaPrefix?: true
   updatedAt?: true
   _all?: true
 }
@@ -310,13 +334,17 @@ export type SiteSettingsGroupByOutputType = {
   invoiceCompanyPhone: string | null
   invoiceCompanyEmail: string | null
   invoiceCompanyIban: string | null
+  invoiceCompanyWebsite: string | null
   invoiceCompanyLogoKey: string | null
+  invoiceNotes: string | null
   invoicePrefix: string
   invoiceNextNumber: number
   efaturaEnabled: boolean
-  efaturaCompanyCode: string | null
-  efaturaUsername: string | null
+  efaturaEnvironment: string
+  efaturaEmail: string | null
   efaturaPassword: string | null
+  efaturaEarsivPrefix: string
+  efaturaEfaturaPrefix: string
   updatedAt: Date
   _count: SiteSettingsCountAggregateOutputType | null
   _avg: SiteSettingsAvgAggregateOutputType | null
@@ -360,13 +388,17 @@ export type SiteSettingsWhereInput = {
   invoiceCompanyPhone?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   invoiceCompanyEmail?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   invoiceCompanyIban?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  invoiceCompanyWebsite?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   invoiceCompanyLogoKey?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  invoiceNotes?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   invoicePrefix?: Prisma.StringFilter<"SiteSettings"> | string
   invoiceNextNumber?: Prisma.IntFilter<"SiteSettings"> | number
   efaturaEnabled?: Prisma.BoolFilter<"SiteSettings"> | boolean
-  efaturaCompanyCode?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
-  efaturaUsername?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  efaturaEnvironment?: Prisma.StringFilter<"SiteSettings"> | string
+  efaturaEmail?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   efaturaPassword?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  efaturaEarsivPrefix?: Prisma.StringFilter<"SiteSettings"> | string
+  efaturaEfaturaPrefix?: Prisma.StringFilter<"SiteSettings"> | string
   updatedAt?: Prisma.DateTimeFilter<"SiteSettings"> | Date | string
 }
 
@@ -387,13 +419,17 @@ export type SiteSettingsOrderByWithRelationInput = {
   invoiceCompanyPhone?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceCompanyEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceCompanyIban?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceCompanyWebsite?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceCompanyLogoKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   invoicePrefix?: Prisma.SortOrder
   invoiceNextNumber?: Prisma.SortOrder
   efaturaEnabled?: Prisma.SortOrder
-  efaturaCompanyCode?: Prisma.SortOrderInput | Prisma.SortOrder
-  efaturaUsername?: Prisma.SortOrderInput | Prisma.SortOrder
+  efaturaEnvironment?: Prisma.SortOrder
+  efaturaEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   efaturaPassword?: Prisma.SortOrderInput | Prisma.SortOrder
+  efaturaEarsivPrefix?: Prisma.SortOrder
+  efaturaEfaturaPrefix?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -417,13 +453,17 @@ export type SiteSettingsWhereUniqueInput = Prisma.AtLeast<{
   invoiceCompanyPhone?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   invoiceCompanyEmail?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   invoiceCompanyIban?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  invoiceCompanyWebsite?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   invoiceCompanyLogoKey?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  invoiceNotes?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   invoicePrefix?: Prisma.StringFilter<"SiteSettings"> | string
   invoiceNextNumber?: Prisma.IntFilter<"SiteSettings"> | number
   efaturaEnabled?: Prisma.BoolFilter<"SiteSettings"> | boolean
-  efaturaCompanyCode?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
-  efaturaUsername?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  efaturaEnvironment?: Prisma.StringFilter<"SiteSettings"> | string
+  efaturaEmail?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   efaturaPassword?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  efaturaEarsivPrefix?: Prisma.StringFilter<"SiteSettings"> | string
+  efaturaEfaturaPrefix?: Prisma.StringFilter<"SiteSettings"> | string
   updatedAt?: Prisma.DateTimeFilter<"SiteSettings"> | Date | string
 }, "id">
 
@@ -444,13 +484,17 @@ export type SiteSettingsOrderByWithAggregationInput = {
   invoiceCompanyPhone?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceCompanyEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceCompanyIban?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceCompanyWebsite?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceCompanyLogoKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   invoicePrefix?: Prisma.SortOrder
   invoiceNextNumber?: Prisma.SortOrder
   efaturaEnabled?: Prisma.SortOrder
-  efaturaCompanyCode?: Prisma.SortOrderInput | Prisma.SortOrder
-  efaturaUsername?: Prisma.SortOrderInput | Prisma.SortOrder
+  efaturaEnvironment?: Prisma.SortOrder
+  efaturaEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   efaturaPassword?: Prisma.SortOrderInput | Prisma.SortOrder
+  efaturaEarsivPrefix?: Prisma.SortOrder
+  efaturaEfaturaPrefix?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SiteSettingsCountOrderByAggregateInput
   _avg?: Prisma.SiteSettingsAvgOrderByAggregateInput
@@ -479,13 +523,17 @@ export type SiteSettingsScalarWhereWithAggregatesInput = {
   invoiceCompanyPhone?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   invoiceCompanyEmail?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   invoiceCompanyIban?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  invoiceCompanyWebsite?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   invoiceCompanyLogoKey?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  invoiceNotes?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   invoicePrefix?: Prisma.StringWithAggregatesFilter<"SiteSettings"> | string
   invoiceNextNumber?: Prisma.IntWithAggregatesFilter<"SiteSettings"> | number
   efaturaEnabled?: Prisma.BoolWithAggregatesFilter<"SiteSettings"> | boolean
-  efaturaCompanyCode?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
-  efaturaUsername?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  efaturaEnvironment?: Prisma.StringWithAggregatesFilter<"SiteSettings"> | string
+  efaturaEmail?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   efaturaPassword?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  efaturaEarsivPrefix?: Prisma.StringWithAggregatesFilter<"SiteSettings"> | string
+  efaturaEfaturaPrefix?: Prisma.StringWithAggregatesFilter<"SiteSettings"> | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"SiteSettings"> | Date | string
 }
 
@@ -506,13 +554,17 @@ export type SiteSettingsCreateInput = {
   invoiceCompanyPhone?: string | null
   invoiceCompanyEmail?: string | null
   invoiceCompanyIban?: string | null
+  invoiceCompanyWebsite?: string | null
   invoiceCompanyLogoKey?: string | null
+  invoiceNotes?: string | null
   invoicePrefix?: string
   invoiceNextNumber?: number
   efaturaEnabled?: boolean
-  efaturaCompanyCode?: string | null
-  efaturaUsername?: string | null
+  efaturaEnvironment?: string
+  efaturaEmail?: string | null
   efaturaPassword?: string | null
+  efaturaEarsivPrefix?: string
+  efaturaEfaturaPrefix?: string
   updatedAt?: Date | string
 }
 
@@ -533,13 +585,17 @@ export type SiteSettingsUncheckedCreateInput = {
   invoiceCompanyPhone?: string | null
   invoiceCompanyEmail?: string | null
   invoiceCompanyIban?: string | null
+  invoiceCompanyWebsite?: string | null
   invoiceCompanyLogoKey?: string | null
+  invoiceNotes?: string | null
   invoicePrefix?: string
   invoiceNextNumber?: number
   efaturaEnabled?: boolean
-  efaturaCompanyCode?: string | null
-  efaturaUsername?: string | null
+  efaturaEnvironment?: string
+  efaturaEmail?: string | null
   efaturaPassword?: string | null
+  efaturaEarsivPrefix?: string
+  efaturaEfaturaPrefix?: string
   updatedAt?: Date | string
 }
 
@@ -560,13 +616,17 @@ export type SiteSettingsUpdateInput = {
   invoiceCompanyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceCompanyEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceCompanyIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceCompanyWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceCompanyLogoKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoicePrefix?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceNextNumber?: Prisma.IntFieldUpdateOperationsInput | number
   efaturaEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  efaturaCompanyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  efaturaUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  efaturaEnvironment?: Prisma.StringFieldUpdateOperationsInput | string
+  efaturaEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   efaturaPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  efaturaEarsivPrefix?: Prisma.StringFieldUpdateOperationsInput | string
+  efaturaEfaturaPrefix?: Prisma.StringFieldUpdateOperationsInput | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -587,13 +647,17 @@ export type SiteSettingsUncheckedUpdateInput = {
   invoiceCompanyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceCompanyEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceCompanyIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceCompanyWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceCompanyLogoKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoicePrefix?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceNextNumber?: Prisma.IntFieldUpdateOperationsInput | number
   efaturaEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  efaturaCompanyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  efaturaUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  efaturaEnvironment?: Prisma.StringFieldUpdateOperationsInput | string
+  efaturaEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   efaturaPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  efaturaEarsivPrefix?: Prisma.StringFieldUpdateOperationsInput | string
+  efaturaEfaturaPrefix?: Prisma.StringFieldUpdateOperationsInput | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -614,13 +678,17 @@ export type SiteSettingsCreateManyInput = {
   invoiceCompanyPhone?: string | null
   invoiceCompanyEmail?: string | null
   invoiceCompanyIban?: string | null
+  invoiceCompanyWebsite?: string | null
   invoiceCompanyLogoKey?: string | null
+  invoiceNotes?: string | null
   invoicePrefix?: string
   invoiceNextNumber?: number
   efaturaEnabled?: boolean
-  efaturaCompanyCode?: string | null
-  efaturaUsername?: string | null
+  efaturaEnvironment?: string
+  efaturaEmail?: string | null
   efaturaPassword?: string | null
+  efaturaEarsivPrefix?: string
+  efaturaEfaturaPrefix?: string
   updatedAt?: Date | string
 }
 
@@ -641,13 +709,17 @@ export type SiteSettingsUpdateManyMutationInput = {
   invoiceCompanyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceCompanyEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceCompanyIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceCompanyWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceCompanyLogoKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoicePrefix?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceNextNumber?: Prisma.IntFieldUpdateOperationsInput | number
   efaturaEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  efaturaCompanyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  efaturaUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  efaturaEnvironment?: Prisma.StringFieldUpdateOperationsInput | string
+  efaturaEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   efaturaPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  efaturaEarsivPrefix?: Prisma.StringFieldUpdateOperationsInput | string
+  efaturaEfaturaPrefix?: Prisma.StringFieldUpdateOperationsInput | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -668,13 +740,17 @@ export type SiteSettingsUncheckedUpdateManyInput = {
   invoiceCompanyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceCompanyEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceCompanyIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceCompanyWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceCompanyLogoKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoicePrefix?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceNextNumber?: Prisma.IntFieldUpdateOperationsInput | number
   efaturaEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  efaturaCompanyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  efaturaUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  efaturaEnvironment?: Prisma.StringFieldUpdateOperationsInput | string
+  efaturaEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   efaturaPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  efaturaEarsivPrefix?: Prisma.StringFieldUpdateOperationsInput | string
+  efaturaEfaturaPrefix?: Prisma.StringFieldUpdateOperationsInput | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -695,13 +771,17 @@ export type SiteSettingsCountOrderByAggregateInput = {
   invoiceCompanyPhone?: Prisma.SortOrder
   invoiceCompanyEmail?: Prisma.SortOrder
   invoiceCompanyIban?: Prisma.SortOrder
+  invoiceCompanyWebsite?: Prisma.SortOrder
   invoiceCompanyLogoKey?: Prisma.SortOrder
+  invoiceNotes?: Prisma.SortOrder
   invoicePrefix?: Prisma.SortOrder
   invoiceNextNumber?: Prisma.SortOrder
   efaturaEnabled?: Prisma.SortOrder
-  efaturaCompanyCode?: Prisma.SortOrder
-  efaturaUsername?: Prisma.SortOrder
+  efaturaEnvironment?: Prisma.SortOrder
+  efaturaEmail?: Prisma.SortOrder
   efaturaPassword?: Prisma.SortOrder
+  efaturaEarsivPrefix?: Prisma.SortOrder
+  efaturaEfaturaPrefix?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -726,13 +806,17 @@ export type SiteSettingsMaxOrderByAggregateInput = {
   invoiceCompanyPhone?: Prisma.SortOrder
   invoiceCompanyEmail?: Prisma.SortOrder
   invoiceCompanyIban?: Prisma.SortOrder
+  invoiceCompanyWebsite?: Prisma.SortOrder
   invoiceCompanyLogoKey?: Prisma.SortOrder
+  invoiceNotes?: Prisma.SortOrder
   invoicePrefix?: Prisma.SortOrder
   invoiceNextNumber?: Prisma.SortOrder
   efaturaEnabled?: Prisma.SortOrder
-  efaturaCompanyCode?: Prisma.SortOrder
-  efaturaUsername?: Prisma.SortOrder
+  efaturaEnvironment?: Prisma.SortOrder
+  efaturaEmail?: Prisma.SortOrder
   efaturaPassword?: Prisma.SortOrder
+  efaturaEarsivPrefix?: Prisma.SortOrder
+  efaturaEfaturaPrefix?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -753,13 +837,17 @@ export type SiteSettingsMinOrderByAggregateInput = {
   invoiceCompanyPhone?: Prisma.SortOrder
   invoiceCompanyEmail?: Prisma.SortOrder
   invoiceCompanyIban?: Prisma.SortOrder
+  invoiceCompanyWebsite?: Prisma.SortOrder
   invoiceCompanyLogoKey?: Prisma.SortOrder
+  invoiceNotes?: Prisma.SortOrder
   invoicePrefix?: Prisma.SortOrder
   invoiceNextNumber?: Prisma.SortOrder
   efaturaEnabled?: Prisma.SortOrder
-  efaturaCompanyCode?: Prisma.SortOrder
-  efaturaUsername?: Prisma.SortOrder
+  efaturaEnvironment?: Prisma.SortOrder
+  efaturaEmail?: Prisma.SortOrder
   efaturaPassword?: Prisma.SortOrder
+  efaturaEarsivPrefix?: Prisma.SortOrder
+  efaturaEfaturaPrefix?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -786,13 +874,17 @@ export type SiteSettingsSelect<ExtArgs extends runtime.Types.Extensions.Internal
   invoiceCompanyPhone?: boolean
   invoiceCompanyEmail?: boolean
   invoiceCompanyIban?: boolean
+  invoiceCompanyWebsite?: boolean
   invoiceCompanyLogoKey?: boolean
+  invoiceNotes?: boolean
   invoicePrefix?: boolean
   invoiceNextNumber?: boolean
   efaturaEnabled?: boolean
-  efaturaCompanyCode?: boolean
-  efaturaUsername?: boolean
+  efaturaEnvironment?: boolean
+  efaturaEmail?: boolean
   efaturaPassword?: boolean
+  efaturaEarsivPrefix?: boolean
+  efaturaEfaturaPrefix?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["siteSettings"]>
 
@@ -813,13 +905,17 @@ export type SiteSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   invoiceCompanyPhone?: boolean
   invoiceCompanyEmail?: boolean
   invoiceCompanyIban?: boolean
+  invoiceCompanyWebsite?: boolean
   invoiceCompanyLogoKey?: boolean
+  invoiceNotes?: boolean
   invoicePrefix?: boolean
   invoiceNextNumber?: boolean
   efaturaEnabled?: boolean
-  efaturaCompanyCode?: boolean
-  efaturaUsername?: boolean
+  efaturaEnvironment?: boolean
+  efaturaEmail?: boolean
   efaturaPassword?: boolean
+  efaturaEarsivPrefix?: boolean
+  efaturaEfaturaPrefix?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["siteSettings"]>
 
@@ -840,13 +936,17 @@ export type SiteSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   invoiceCompanyPhone?: boolean
   invoiceCompanyEmail?: boolean
   invoiceCompanyIban?: boolean
+  invoiceCompanyWebsite?: boolean
   invoiceCompanyLogoKey?: boolean
+  invoiceNotes?: boolean
   invoicePrefix?: boolean
   invoiceNextNumber?: boolean
   efaturaEnabled?: boolean
-  efaturaCompanyCode?: boolean
-  efaturaUsername?: boolean
+  efaturaEnvironment?: boolean
+  efaturaEmail?: boolean
   efaturaPassword?: boolean
+  efaturaEarsivPrefix?: boolean
+  efaturaEfaturaPrefix?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["siteSettings"]>
 
@@ -867,17 +967,21 @@ export type SiteSettingsSelectScalar = {
   invoiceCompanyPhone?: boolean
   invoiceCompanyEmail?: boolean
   invoiceCompanyIban?: boolean
+  invoiceCompanyWebsite?: boolean
   invoiceCompanyLogoKey?: boolean
+  invoiceNotes?: boolean
   invoicePrefix?: boolean
   invoiceNextNumber?: boolean
   efaturaEnabled?: boolean
-  efaturaCompanyCode?: boolean
-  efaturaUsername?: boolean
+  efaturaEnvironment?: boolean
+  efaturaEmail?: boolean
   efaturaPassword?: boolean
+  efaturaEarsivPrefix?: boolean
+  efaturaEfaturaPrefix?: boolean
   updatedAt?: boolean
 }
 
-export type SiteSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "smsEnabled" | "emailEnabled" | "emailWelcome" | "emailOrderConfirm" | "emailShipped" | "invoiceCompanyName" | "invoiceCompanyTaxNumber" | "invoiceCompanyTaxOffice" | "invoiceCompanyAddress" | "invoiceCompanyCity" | "invoiceCompanyDistrict" | "invoiceCompanyZipCode" | "invoiceCompanyPhone" | "invoiceCompanyEmail" | "invoiceCompanyIban" | "invoiceCompanyLogoKey" | "invoicePrefix" | "invoiceNextNumber" | "efaturaEnabled" | "efaturaCompanyCode" | "efaturaUsername" | "efaturaPassword" | "updatedAt", ExtArgs["result"]["siteSettings"]>
+export type SiteSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "smsEnabled" | "emailEnabled" | "emailWelcome" | "emailOrderConfirm" | "emailShipped" | "invoiceCompanyName" | "invoiceCompanyTaxNumber" | "invoiceCompanyTaxOffice" | "invoiceCompanyAddress" | "invoiceCompanyCity" | "invoiceCompanyDistrict" | "invoiceCompanyZipCode" | "invoiceCompanyPhone" | "invoiceCompanyEmail" | "invoiceCompanyIban" | "invoiceCompanyWebsite" | "invoiceCompanyLogoKey" | "invoiceNotes" | "invoicePrefix" | "invoiceNextNumber" | "efaturaEnabled" | "efaturaEnvironment" | "efaturaEmail" | "efaturaPassword" | "efaturaEarsivPrefix" | "efaturaEfaturaPrefix" | "updatedAt", ExtArgs["result"]["siteSettings"]>
 
 export type $SiteSettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SiteSettings"
@@ -899,13 +1003,17 @@ export type $SiteSettingsPayload<ExtArgs extends runtime.Types.Extensions.Intern
     invoiceCompanyPhone: string | null
     invoiceCompanyEmail: string | null
     invoiceCompanyIban: string | null
+    invoiceCompanyWebsite: string | null
     invoiceCompanyLogoKey: string | null
+    invoiceNotes: string | null
     invoicePrefix: string
     invoiceNextNumber: number
     efaturaEnabled: boolean
-    efaturaCompanyCode: string | null
-    efaturaUsername: string | null
+    efaturaEnvironment: string
+    efaturaEmail: string | null
     efaturaPassword: string | null
+    efaturaEarsivPrefix: string
+    efaturaEfaturaPrefix: string
     updatedAt: Date
   }, ExtArgs["result"]["siteSettings"]>
   composites: {}
@@ -1346,13 +1454,17 @@ export interface SiteSettingsFieldRefs {
   readonly invoiceCompanyPhone: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly invoiceCompanyEmail: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly invoiceCompanyIban: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly invoiceCompanyWebsite: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly invoiceCompanyLogoKey: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly invoiceNotes: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly invoicePrefix: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly invoiceNextNumber: Prisma.FieldRef<"SiteSettings", 'Int'>
   readonly efaturaEnabled: Prisma.FieldRef<"SiteSettings", 'Boolean'>
-  readonly efaturaCompanyCode: Prisma.FieldRef<"SiteSettings", 'String'>
-  readonly efaturaUsername: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly efaturaEnvironment: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly efaturaEmail: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly efaturaPassword: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly efaturaEarsivPrefix: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly efaturaEfaturaPrefix: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly updatedAt: Prisma.FieldRef<"SiteSettings", 'DateTime'>
 }
     

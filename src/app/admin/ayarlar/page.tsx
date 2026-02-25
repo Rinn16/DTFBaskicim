@@ -37,7 +37,9 @@ interface SiteSettings {
   invoiceCompanyPhone: string | null;
   invoiceCompanyEmail: string | null;
   invoiceCompanyIban: string | null;
+  invoiceCompanyWebsite: string | null;
   invoiceCompanyLogoKey: string | null;
+  invoiceNotes: string | null;
   invoicePrefix: string;
   invoiceNextNumber: number;
   // E-fatura (Trendyol E-Faturam)
@@ -45,6 +47,8 @@ interface SiteSettings {
   efaturaEnvironment: string;
   efaturaEmail: string | null;
   efaturaPassword: string | null;
+  efaturaEarsivPrefix: string;
+  efaturaEfaturaPrefix: string;
 }
 
 export default function SettingsPage() {
@@ -64,6 +68,8 @@ export default function SettingsPage() {
     invoiceCompanyPhone: "",
     invoiceCompanyEmail: "",
     invoiceCompanyIban: "",
+    invoiceCompanyWebsite: "",
+    invoiceNotes: "",
     invoicePrefix: "DTF-F",
   });
 
@@ -72,6 +78,8 @@ export default function SettingsPage() {
     efaturaEnvironment: "test" as "test" | "production",
     efaturaEmail: "",
     efaturaPassword: "",
+    efaturaEarsivPrefix: "DAP",
+    efaturaEfaturaPrefix: "DIP",
   });
 
   const [savingInvoice, setSavingInvoice] = useState(false);
@@ -97,12 +105,16 @@ export default function SettingsPage() {
           invoiceCompanyPhone: s.invoiceCompanyPhone || "",
           invoiceCompanyEmail: s.invoiceCompanyEmail || "",
           invoiceCompanyIban: s.invoiceCompanyIban || "",
+          invoiceCompanyWebsite: s.invoiceCompanyWebsite || "",
+          invoiceNotes: s.invoiceNotes || "",
           invoicePrefix: s.invoicePrefix || "DTF-F",
         });
         setEfaturaForm({
           efaturaEnvironment: s.efaturaEnvironment || "test",
           efaturaEmail: s.efaturaEmail || "",
           efaturaPassword: s.efaturaPassword || "",
+          efaturaEarsivPrefix: s.efaturaEarsivPrefix || "DAP",
+          efaturaEfaturaPrefix: s.efaturaEfaturaPrefix || "DIP",
         });
       }
     } catch {
@@ -173,9 +185,12 @@ export default function SettingsPage() {
         setSettings(data.settings);
         toast.success("Fatura firma bilgileri kaydedildi");
       } else {
-        toast.error("Bilgiler kaydedilemedi");
+        const err = await res.json().catch(() => null);
+        console.error("Invoice save error:", err);
+        toast.error(err?.detail || "Bilgiler kaydedilemedi");
       }
-    } catch {
+    } catch (e) {
+      console.error("Invoice save exception:", e);
       toast.error("Bir hata oluştu");
     } finally {
       setSavingInvoice(false);
@@ -455,13 +470,38 @@ export default function SettingsPage() {
             />
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">IBAN</Label>
+              <Input
+                placeholder="TR00 0000 0000 0000 0000 0000 00"
+                value={invoiceForm.invoiceCompanyIban}
+                onChange={(e) => setInvoiceForm((p) => ({ ...p, invoiceCompanyIban: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Web Sitesi</Label>
+              <Input
+                placeholder="Örn: www.dtfbaskicim.com"
+                value={invoiceForm.invoiceCompanyWebsite}
+                onChange={(e) => setInvoiceForm((p) => ({ ...p, invoiceCompanyWebsite: e.target.value }))}
+              />
+              <p className="text-xs text-muted-foreground">
+                E-faturada görünecek web sitesi adresi
+              </p>
+            </div>
+          </div>
+
           <div className="space-y-2">
-            <Label className="text-sm font-medium">IBAN</Label>
+            <Label className="text-sm font-medium">Fatura Notu</Label>
             <Input
-              placeholder="TR00 0000 0000 0000 0000 0000 00"
-              value={invoiceForm.invoiceCompanyIban}
-              onChange={(e) => setInvoiceForm((p) => ({ ...p, invoiceCompanyIban: e.target.value }))}
+              placeholder="Örn: Sipariş No: {siparisNo} — İade koşulları için web sitemizi ziyaret ediniz."
+              value={invoiceForm.invoiceNotes}
+              onChange={(e) => setInvoiceForm((p) => ({ ...p, invoiceNotes: e.target.value }))}
             />
+            <p className="text-xs text-muted-foreground">
+              E-faturanın altında görünecek açıklama notu. Kullanılabilir değişkenler: <code className="bg-muted px-1 rounded">{"{siparisNo}"}</code> <code className="bg-muted px-1 rounded">{"{faturaNo}"}</code>
+            </p>
           </div>
 
           <Separator />
@@ -617,6 +657,35 @@ export default function SettingsPage() {
                     value={efaturaForm.efaturaPassword}
                     onChange={(e) => setEfaturaForm((p) => ({ ...p, efaturaPassword: e.target.value }))}
                   />
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">E-Arşiv Seri Ön Eki</Label>
+                  <Input
+                    placeholder="DAP"
+                    maxLength={3}
+                    value={efaturaForm.efaturaEarsivPrefix}
+                    onChange={(e) => setEfaturaForm((p) => ({ ...p, efaturaEarsivPrefix: e.target.value.toUpperCase().slice(0, 3) }))}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Bireysel müşteriler için (3 harf, rakamla başlayamaz)
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">E-Fatura Seri Ön Eki</Label>
+                  <Input
+                    placeholder="DIP"
+                    maxLength={3}
+                    value={efaturaForm.efaturaEfaturaPrefix}
+                    onChange={(e) => setEfaturaForm((p) => ({ ...p, efaturaEfaturaPrefix: e.target.value.toUpperCase().slice(0, 3) }))}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    E-Fatura kayıtlı kurumsal müşteriler için (3 harf, rakamla başlayamaz)
+                  </p>
                 </div>
               </div>
 

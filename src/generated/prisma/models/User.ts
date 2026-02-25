@@ -39,6 +39,8 @@ export type UserMinAggregateOutputType = {
   phoneVerified: boolean | null
   image: string | null
   billingType: $Enums.BillingType | null
+  billingFirstName: string | null
+  billingLastName: string | null
   billingFullName: string | null
   billingCompanyName: string | null
   billingTaxOffice: string | null
@@ -66,6 +68,8 @@ export type UserMaxAggregateOutputType = {
   phoneVerified: boolean | null
   image: string | null
   billingType: $Enums.BillingType | null
+  billingFirstName: string | null
+  billingLastName: string | null
   billingFullName: string | null
   billingCompanyName: string | null
   billingTaxOffice: string | null
@@ -93,6 +97,8 @@ export type UserCountAggregateOutputType = {
   phoneVerified: number
   image: number
   billingType: number
+  billingFirstName: number
+  billingLastName: number
   billingFullName: number
   billingCompanyName: number
   billingTaxOffice: number
@@ -122,6 +128,8 @@ export type UserMinAggregateInputType = {
   phoneVerified?: true
   image?: true
   billingType?: true
+  billingFirstName?: true
+  billingLastName?: true
   billingFullName?: true
   billingCompanyName?: true
   billingTaxOffice?: true
@@ -149,6 +157,8 @@ export type UserMaxAggregateInputType = {
   phoneVerified?: true
   image?: true
   billingType?: true
+  billingFirstName?: true
+  billingLastName?: true
   billingFullName?: true
   billingCompanyName?: true
   billingTaxOffice?: true
@@ -176,6 +186,8 @@ export type UserCountAggregateInputType = {
   phoneVerified?: true
   image?: true
   billingType?: true
+  billingFirstName?: true
+  billingLastName?: true
   billingFullName?: true
   billingCompanyName?: true
   billingTaxOffice?: true
@@ -276,6 +288,8 @@ export type UserGroupByOutputType = {
   phoneVerified: boolean
   image: string | null
   billingType: $Enums.BillingType
+  billingFirstName: string | null
+  billingLastName: string | null
   billingFullName: string | null
   billingCompanyName: string | null
   billingTaxOffice: string | null
@@ -324,6 +338,8 @@ export type UserWhereInput = {
   phoneVerified?: Prisma.BoolFilter<"User"> | boolean
   image?: Prisma.StringNullableFilter<"User"> | string | null
   billingType?: Prisma.EnumBillingTypeFilter<"User"> | $Enums.BillingType
+  billingFirstName?: Prisma.StringNullableFilter<"User"> | string | null
+  billingLastName?: Prisma.StringNullableFilter<"User"> | string | null
   billingFullName?: Prisma.StringNullableFilter<"User"> | string | null
   billingCompanyName?: Prisma.StringNullableFilter<"User"> | string | null
   billingTaxOffice?: Prisma.StringNullableFilter<"User"> | string | null
@@ -358,6 +374,8 @@ export type UserOrderByWithRelationInput = {
   phoneVerified?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   billingType?: Prisma.SortOrder
+  billingFirstName?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingLastName?: Prisma.SortOrderInput | Prisma.SortOrder
   billingFullName?: Prisma.SortOrderInput | Prisma.SortOrder
   billingCompanyName?: Prisma.SortOrderInput | Prisma.SortOrder
   billingTaxOffice?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -395,6 +413,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   phoneVerified?: Prisma.BoolFilter<"User"> | boolean
   image?: Prisma.StringNullableFilter<"User"> | string | null
   billingType?: Prisma.EnumBillingTypeFilter<"User"> | $Enums.BillingType
+  billingFirstName?: Prisma.StringNullableFilter<"User"> | string | null
+  billingLastName?: Prisma.StringNullableFilter<"User"> | string | null
   billingFullName?: Prisma.StringNullableFilter<"User"> | string | null
   billingCompanyName?: Prisma.StringNullableFilter<"User"> | string | null
   billingTaxOffice?: Prisma.StringNullableFilter<"User"> | string | null
@@ -429,6 +449,8 @@ export type UserOrderByWithAggregationInput = {
   phoneVerified?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   billingType?: Prisma.SortOrder
+  billingFirstName?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingLastName?: Prisma.SortOrderInput | Prisma.SortOrder
   billingFullName?: Prisma.SortOrderInput | Prisma.SortOrder
   billingCompanyName?: Prisma.SortOrderInput | Prisma.SortOrder
   billingTaxOffice?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -462,6 +484,8 @@ export type UserScalarWhereWithAggregatesInput = {
   phoneVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   image?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   billingType?: Prisma.EnumBillingTypeWithAggregatesFilter<"User"> | $Enums.BillingType
+  billingFirstName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  billingLastName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   billingFullName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   billingCompanyName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   billingTaxOffice?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -489,6 +513,8 @@ export type UserCreateInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -523,6 +549,8 @@ export type UserUncheckedCreateInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -557,6 +585,8 @@ export type UserUpdateInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -591,6 +621,8 @@ export type UserUncheckedUpdateInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -625,6 +657,8 @@ export type UserCreateManyInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -652,6 +686,8 @@ export type UserUpdateManyMutationInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -679,6 +715,8 @@ export type UserUncheckedUpdateManyInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -706,6 +744,8 @@ export type UserCountOrderByAggregateInput = {
   phoneVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   billingType?: Prisma.SortOrder
+  billingFirstName?: Prisma.SortOrder
+  billingLastName?: Prisma.SortOrder
   billingFullName?: Prisma.SortOrder
   billingCompanyName?: Prisma.SortOrder
   billingTaxOffice?: Prisma.SortOrder
@@ -733,6 +773,8 @@ export type UserMaxOrderByAggregateInput = {
   phoneVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   billingType?: Prisma.SortOrder
+  billingFirstName?: Prisma.SortOrder
+  billingLastName?: Prisma.SortOrder
   billingFullName?: Prisma.SortOrder
   billingCompanyName?: Prisma.SortOrder
   billingTaxOffice?: Prisma.SortOrder
@@ -760,6 +802,8 @@ export type UserMinOrderByAggregateInput = {
   phoneVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   billingType?: Prisma.SortOrder
+  billingFirstName?: Prisma.SortOrder
+  billingLastName?: Prisma.SortOrder
   billingFullName?: Prisma.SortOrder
   billingCompanyName?: Prisma.SortOrder
   billingTaxOffice?: Prisma.SortOrder
@@ -925,6 +969,8 @@ export type UserCreateWithoutAccountsInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -958,6 +1004,8 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1007,6 +1055,8 @@ export type UserUpdateWithoutAccountsInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1040,6 +1090,8 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1073,6 +1125,8 @@ export type UserCreateWithoutSessionsInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1106,6 +1160,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1155,6 +1211,8 @@ export type UserUpdateWithoutSessionsInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1188,6 +1246,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1221,6 +1281,8 @@ export type UserCreateWithoutAddressesInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1254,6 +1316,8 @@ export type UserUncheckedCreateWithoutAddressesInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1303,6 +1367,8 @@ export type UserUpdateWithoutAddressesInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1336,6 +1402,8 @@ export type UserUncheckedUpdateWithoutAddressesInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1369,6 +1437,8 @@ export type UserCreateWithoutSpecialPricingInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1402,6 +1472,8 @@ export type UserUncheckedCreateWithoutSpecialPricingInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1451,6 +1523,8 @@ export type UserUpdateWithoutSpecialPricingInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1484,6 +1558,8 @@ export type UserUncheckedUpdateWithoutSpecialPricingInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1517,6 +1593,8 @@ export type UserCreateWithoutOrdersInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1550,6 +1628,8 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1599,6 +1679,8 @@ export type UserUpdateWithoutOrdersInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1632,6 +1714,8 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1665,6 +1749,8 @@ export type UserCreateWithoutDesignDraftsInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1698,6 +1784,8 @@ export type UserUncheckedCreateWithoutDesignDraftsInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1747,6 +1835,8 @@ export type UserUpdateWithoutDesignDraftsInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1780,6 +1870,8 @@ export type UserUncheckedUpdateWithoutDesignDraftsInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1813,6 +1905,8 @@ export type UserCreateWithoutCartItemsInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1846,6 +1940,8 @@ export type UserUncheckedCreateWithoutCartItemsInput = {
   phoneVerified?: boolean
   image?: string | null
   billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
   billingFullName?: string | null
   billingCompanyName?: string | null
   billingTaxOffice?: string | null
@@ -1895,6 +1991,8 @@ export type UserUpdateWithoutCartItemsInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1928,6 +2026,8 @@ export type UserUncheckedUpdateWithoutCartItemsInput = {
   phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2037,6 +2137,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   phoneVerified?: boolean
   image?: boolean
   billingType?: boolean
+  billingFirstName?: boolean
+  billingLastName?: boolean
   billingFullName?: boolean
   billingCompanyName?: boolean
   billingTaxOffice?: boolean
@@ -2072,6 +2174,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   phoneVerified?: boolean
   image?: boolean
   billingType?: boolean
+  billingFirstName?: boolean
+  billingLastName?: boolean
   billingFullName?: boolean
   billingCompanyName?: boolean
   billingTaxOffice?: boolean
@@ -2099,6 +2203,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   phoneVerified?: boolean
   image?: boolean
   billingType?: boolean
+  billingFirstName?: boolean
+  billingLastName?: boolean
   billingFullName?: boolean
   billingCompanyName?: boolean
   billingTaxOffice?: boolean
@@ -2126,6 +2232,8 @@ export type UserSelectScalar = {
   phoneVerified?: boolean
   image?: boolean
   billingType?: boolean
+  billingFirstName?: boolean
+  billingLastName?: boolean
   billingFullName?: boolean
   billingCompanyName?: boolean
   billingTaxOffice?: boolean
@@ -2138,7 +2246,7 @@ export type UserSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "phone" | "passwordHash" | "name" | "surname" | "companyName" | "taxNumber" | "authProvider" | "role" | "emailVerified" | "phoneVerified" | "image" | "billingType" | "billingFullName" | "billingCompanyName" | "billingTaxOffice" | "billingTaxNumber" | "billingAddress" | "billingCity" | "billingDistrict" | "billingZipCode" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "phone" | "passwordHash" | "name" | "surname" | "companyName" | "taxNumber" | "authProvider" | "role" | "emailVerified" | "phoneVerified" | "image" | "billingType" | "billingFirstName" | "billingLastName" | "billingFullName" | "billingCompanyName" | "billingTaxOffice" | "billingTaxNumber" | "billingAddress" | "billingCity" | "billingDistrict" | "billingZipCode" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   addresses?: boolean | Prisma.User$addressesArgs<ExtArgs>
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>
@@ -2178,6 +2286,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     phoneVerified: boolean
     image: string | null
     billingType: $Enums.BillingType
+    billingFirstName: string | null
+    billingLastName: string | null
     billingFullName: string | null
     billingCompanyName: string | null
     billingTaxOffice: string | null
@@ -2632,6 +2742,8 @@ export interface UserFieldRefs {
   readonly phoneVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly image: Prisma.FieldRef<"User", 'String'>
   readonly billingType: Prisma.FieldRef<"User", 'BillingType'>
+  readonly billingFirstName: Prisma.FieldRef<"User", 'String'>
+  readonly billingLastName: Prisma.FieldRef<"User", 'String'>
   readonly billingFullName: Prisma.FieldRef<"User", 'String'>
   readonly billingCompanyName: Prisma.FieldRef<"User", 'String'>
   readonly billingTaxOffice: Prisma.FieldRef<"User", 'String'>
