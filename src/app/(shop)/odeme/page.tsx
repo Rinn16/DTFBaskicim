@@ -53,6 +53,7 @@ export default function OdemePage() {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [customerNote, setCustomerNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contractAccepted, setContractAccepted] = useState(false);
   const [paytrToken, setPaytrToken] = useState<string | null>(null);
 
   // Guest form state
@@ -635,10 +636,29 @@ export default function OdemePage() {
                     </span>
                   </div>
 
+                  <label className="flex items-start gap-3 cursor-pointer select-none rounded-lg border border-border bg-muted/50 p-3">
+                    <input
+                      type="checkbox"
+                      checked={contractAccepted}
+                      onChange={(e) => setContractAccepted(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border-border accent-primary"
+                    />
+                    <span className="text-sm text-muted-foreground leading-snug">
+                      <Link
+                        href="/mesafeli-satis-sozlesmesi"
+                        target="_blank"
+                        className="font-medium text-foreground underline underline-offset-2 hover:text-primary"
+                      >
+                        Mesafeli Satış Sözleşmesi
+                      </Link>
+                      &apos;ni okudum ve kabul ediyorum.
+                    </span>
+                  </label>
+
                   <button
                     className="group relative w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground text-lg font-bold uppercase tracking-wider rounded-lg overflow-hidden transition-all duration-300 shadow-primary/20 dark:shadow-[0_0_25px_rgba(0,240,255,0.4)] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none"
                     onClick={handleSubmitOrder}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !contractAccepted}
                   >
                     <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
                     <span className="relative flex items-center justify-center gap-2">
@@ -650,18 +670,6 @@ export default function OdemePage() {
                       Siparişi Tamamla
                     </span>
                   </button>
-
-                  <p className="text-center text-[10px] text-muted-foreground/70 mt-2">
-                    &quot;Siparişi Tamamla&quot; butonuna tıklayarak{" "}
-                    <Link
-                      href="/mesafeli-satis-sozlesmesi"
-                      target="_blank"
-                      className="text-muted-foreground underline hover:text-primary"
-                    >
-                      Mesafeli Satış Sözleşmesi
-                    </Link>
-                    &apos;ni kabul etmiş olursunuz.
-                  </p>
                 </div>
               </div>
             </div>
