@@ -24,6 +24,39 @@ function cleanPhone(phone: string): string {
   return phone.replace(/[\s\-\(\)]/g, "").replace(/^\+90/, "").replace(/^0/, "");
 }
 
+const SMS_MAX_RETRIES = 3;
+const SMS_RETRY_BASE_MS = 1000; // 1s, 2s, 4s
+
+async function sendSmsOnce(
+  creds: { api_id: string; api_key: string; sender: string },
+  phone: string,
+  message: string,
+): Promise<SendSmsResult> {
+  const response = await fetch(VATANSMS_1TON_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ...creds,
+      message_type: "turkce",
+      message,
+      message_content_type: "bilgi",
+      phones: [cleanPhone(phone)],
+    }),
+  });
+
+  const body = await response.json();
+
+  if (body.status === "success") {
+    return { success: true };
+  }
+
+  return { success: false, error: `SMS gönderilemedi: ${body.message}` };
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function sendSms(phone: string, message: string): Promise<SendSmsResult> {
   const creds = getCredentials();
   if (!creds) {
@@ -31,31 +64,25 @@ export async function sendSms(phone: string, message: string): Promise<SendSmsRe
     return { success: false, error: "SMS yapılandırması eksik" };
   }
 
-  try {
-    const response = await fetch(VATANSMS_1TON_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...creds,
-        message_type: "turkce",
-        message,
-        message_content_type: "bilgi",
-        phones: [cleanPhone(phone)],
-      }),
-    });
-
-    const body = await response.json();
-
-    if (body.status === "success") {
-      return { success: true };
+  let lastError = "";
+  for (let attempt = 1; attempt <= SMS_MAX_RETRIES; attempt++) {
+    try {
+      const result = await sendSmsOnce(creds, phone, message);
+      if (result.success) return result;
+      lastError = result.error || "Bilinmeyen hata";
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : "SMS servisi ile bağlantı kurulamadı";
     }
 
-    console.error(`VatanSMS error: ${body.message}`);
-    return { success: false, error: `SMS gönderilemedi: ${body.message}` };
-  } catch (error) {
-    console.error("SMS send error:", error);
-    return { success: false, error: "SMS servisi ile bağlantı kurulamadı" };
+    if (attempt < SMS_MAX_RETRIES) {
+      const delayMs = SMS_RETRY_BASE_MS * Math.pow(2, attempt - 1);
+      console.warn(`[sms] Attempt ${attempt}/${SMS_MAX_RETRIES} failed, retrying in ${delayMs}ms...`);
+      await sleep(delayMs);
+    }
   }
+
+  console.error(`[sms] All ${SMS_MAX_RETRIES} attempts failed: ${lastError}`);
+  return { success: false, error: lastError };
 }
 
 export async function sendBulkSms(
@@ -205,7 +232,7 @@ export async function sendOrderEventSms(
     await db.smsLog.create({
       data: {
         templateId: template.id,
-        message,
+        message: result.success ? message : `[HATA: ${result.error}] ${message}`,
         recipientCount: 1,
         successCount: result.success ? 1 : 0,
         failCount: result.success ? 0 : 1,
@@ -213,7 +240,11 @@ export async function sendOrderEventSms(
       },
     });
 
-    console.log(`[sms] ${trigger} SMS for order ${order.orderNumber}: ${result.success ? "OK" : result.error}`);
+    if (!result.success) {
+      console.error(`[sms] ${trigger} SMS FAILED for order ${order.orderNumber} after retries: ${result.error}`);
+    } else {
+      console.log(`[sms] ${trigger} SMS sent for order ${order.orderNumber}`);
+    }
   } catch (err) {
     console.error(`[sms] sendOrderEventSms failed for ${trigger}:`, err);
   }

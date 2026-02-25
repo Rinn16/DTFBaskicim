@@ -28,6 +28,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  RefreshCw,
   CheckCircle2,
   Play,
   FileText,
@@ -162,6 +163,27 @@ function OrdersContent() {
         <h1 className="text-2xl font-bold">Siparişler</h1>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">{total} sipariş</span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              try {
+                const res = await fetch("/api/admin/efatura/check-status", { method: "POST" });
+                const data = await res.json();
+                if (res.ok) {
+                  toast.success(data.message);
+                  if (data.updated > 0) fetchOrders();
+                } else {
+                  toast.error(data.error || "Kontrol başarısız");
+                }
+              } catch {
+                toast.error("E-Fatura durum kontrolü başarısız");
+              }
+            }}
+          >
+            <RefreshCw className="h-4 w-4 mr-1.5" />
+            E-Fatura Durum
+          </Button>
           <Button variant="outline" size="sm" asChild>
             <a href="/api/admin/export?type=orders" download>
               <Download className="h-4 w-4 mr-1.5" />
