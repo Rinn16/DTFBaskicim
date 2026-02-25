@@ -1,11 +1,27 @@
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 import { resetPasswordSchema } from "@/validations/auth";
 import { ZodError } from "zod";
 
 export async function POST(request: Request) {
   try {
+    const headersList = await headers();
+    const ip =
+      headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      headersList.get("x-real-ip") ||
+      "127.0.0.1";
+
+    const { success } = await rateLimit(`reset-password:${ip}`, 10, 3600);
+    if (!success) {
+      return NextResponse.json(
+        { error: "Çok fazla deneme. Lütfen 1 saat sonra tekrar deneyin." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { token, password } = resetPasswordSchema.parse(body);
 

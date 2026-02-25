@@ -1,9 +1,25 @@
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function GET() {
   try {
+    const headersList = await headers();
+    const ip =
+      headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      headersList.get("x-real-ip") ||
+      "127.0.0.1";
+
+    const { success } = await rateLimit(`pricing-tiers:${ip}`, 60, 3600);
+    if (!success) {
+      return NextResponse.json(
+        { error: "Çok fazla istek. Lütfen daha sonra tekrar deneyin." },
+        { status: 429 }
+      );
+    }
+
     const session = await auth();
 
     // Get active pricing tiers (public — guests need this too)
