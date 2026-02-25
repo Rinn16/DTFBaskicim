@@ -40,10 +40,10 @@ interface SiteSettings {
   invoiceCompanyLogoKey: string | null;
   invoicePrefix: string;
   invoiceNextNumber: number;
-  // E-fatura
+  // E-fatura (Trendyol E-Faturam)
   efaturaEnabled: boolean;
-  efaturaCompanyCode: string | null;
-  efaturaUsername: string | null;
+  efaturaEnvironment: string;
+  efaturaEmail: string | null;
   efaturaPassword: string | null;
 }
 
@@ -69,8 +69,8 @@ export default function SettingsPage() {
 
   // E-fatura form state
   const [efaturaForm, setEfaturaForm] = useState({
-    efaturaCompanyCode: "",
-    efaturaUsername: "",
+    efaturaEnvironment: "test" as "test" | "production",
+    efaturaEmail: "",
     efaturaPassword: "",
   });
 
@@ -100,8 +100,8 @@ export default function SettingsPage() {
           invoicePrefix: s.invoicePrefix || "DTF-F",
         });
         setEfaturaForm({
-          efaturaCompanyCode: s.efaturaCompanyCode || "",
-          efaturaUsername: s.efaturaUsername || "",
+          efaturaEnvironment: s.efaturaEnvironment || "test",
+          efaturaEmail: s.efaturaEmail || "",
           efaturaPassword: s.efaturaPassword || "",
         });
       }
@@ -568,33 +568,58 @@ export default function SettingsPage() {
 
           {settings?.efaturaEnabled && (
             <div className="space-y-4 border-t pt-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Ortam</Label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="efaturaEnv"
+                      checked={efaturaForm.efaturaEnvironment === "test"}
+                      onChange={() => setEfaturaForm((p) => ({ ...p, efaturaEnvironment: "test" }))}
+                      className="accent-primary"
+                    />
+                    <span className="text-sm">Test (Stage)</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="efaturaEnv"
+                      checked={efaturaForm.efaturaEnvironment === "production"}
+                      onChange={() => setEfaturaForm((p) => ({ ...p, efaturaEnvironment: "production" }))}
+                      className="accent-primary"
+                    />
+                    <span className="text-sm">Production (Canlı)</span>
+                  </label>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Test: stage-apigateway.trendyolefaturam.com — Canlı: apigateway.trendyolecozum.com
+                </p>
+              </div>
+
+              <Separator />
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Firma Kısa Kodu</Label>
+                  <Label className="text-sm font-medium">E-posta</Label>
                   <Input
-                    placeholder="Trendyol'dan aldığınız firma kodu"
-                    value={efaturaForm.efaturaCompanyCode}
-                    onChange={(e) => setEfaturaForm((p) => ({ ...p, efaturaCompanyCode: e.target.value }))}
+                    type="email"
+                    placeholder="Trendyol E-Faturam hesap e-postası"
+                    value={efaturaForm.efaturaEmail}
+                    onChange={(e) => setEfaturaForm((p) => ({ ...p, efaturaEmail: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Web Servis Kullanıcı Kodu</Label>
+                  <Label className="text-sm font-medium">Şifre</Label>
                   <Input
-                    placeholder="Web servis kullanıcı kodu"
-                    value={efaturaForm.efaturaUsername}
-                    onChange={(e) => setEfaturaForm((p) => ({ ...p, efaturaUsername: e.target.value }))}
+                    type="password"
+                    placeholder="Hesap şifresi"
+                    value={efaturaForm.efaturaPassword}
+                    onChange={(e) => setEfaturaForm((p) => ({ ...p, efaturaPassword: e.target.value }))}
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Web Servis Şifresi</Label>
-                <Input
-                  type="password"
-                  placeholder="Web servis şifresi"
-                  value={efaturaForm.efaturaPassword}
-                  onChange={(e) => setEfaturaForm((p) => ({ ...p, efaturaPassword: e.target.value }))}
-                />
-              </div>
+
               <div className="flex justify-end">
                 <Button onClick={handleSaveEfatura} disabled={savingEfatura}>
                   {savingEfatura ? (

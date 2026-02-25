@@ -270,9 +270,9 @@ model SiteSettings {
 
   // E-fatura ayarları (Trendyol E-Faturam)
   efaturaEnabled     Boolean @default(false)
-  efaturaCompanyCode String?
-  efaturaUsername    String?
-  efaturaPassword   String?
+  efaturaEnvironment String  @default("test") // "test" veya "production"
+  efaturaEmail       String?
+  efaturaPassword    String?
 
   updatedAt DateTime @updatedAt
 }

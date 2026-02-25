@@ -5,6 +5,7 @@ import type {
   EFaturaSubmitResult,
   EFaturaStatusResult,
   EFaturaCancelResult,
+  EFaturaDownloadResult,
 } from "../types";
 
 /**
@@ -39,5 +40,10 @@ export class MockEFaturaProvider implements EFaturaProvider {
   async cancelInvoice(gibInvoiceId: string, reason: string): Promise<EFaturaCancelResult> {
     console.log(`[efatura-mock] Cancel: ${gibInvoiceId} — ${reason}`);
     return { success: true };
+  }
+
+  async downloadDocument(invoiceUuid: string, _fileExtension?: string): Promise<EFaturaDownloadResult> {
+    console.log(`[efatura-mock] Download: ${invoiceUuid}`);
+    return { url: `https://mock-efatura.example.com/download/${invoiceUuid}.pdf` };
   }
 }

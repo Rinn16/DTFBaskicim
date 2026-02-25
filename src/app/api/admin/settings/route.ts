@@ -51,10 +51,10 @@ const updateSchema = z.object({
   invoiceCompanyIban: z.string().optional(),
   invoicePrefix: z.string().optional(),
 
-  // E-fatura ayarları
+  // E-fatura ayarları (Trendyol E-Faturam)
   efaturaEnabled: z.boolean().optional(),
-  efaturaCompanyCode: z.string().optional(),
-  efaturaUsername: z.string().optional(),
+  efaturaEnvironment: z.enum(["test", "production"]).optional(),
+  efaturaEmail: z.string().optional(),
   efaturaPassword: z.string().optional(),
 });
 

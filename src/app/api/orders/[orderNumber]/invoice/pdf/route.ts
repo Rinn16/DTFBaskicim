@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { downloadFromS3 } from "@/lib/s3";
+import { getInvoicePdfUrl } from "@/services/efatura";
 
-// Public endpoint: customer downloads their invoice PDF by order number
+// Public endpoint: customer gets their invoice PDF URL by order number
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ orderNumber: string }> }
@@ -25,18 +25,12 @@ export async function GET(
     }
 
     const invoice = order.invoices[0];
-    if (!invoice.pdfKey) {
-      return NextResponse.json({ error: "Fatura PDF henüz oluşturulmamış" }, { status: 404 });
+    if (!invoice.gibInvoiceId) {
+      return NextResponse.json({ error: "Fatura henüz oluşturulmamış" }, { status: 404 });
     }
 
-    const pdfBuffer = await downloadFromS3(invoice.pdfKey);
-
-    return new Response(new Uint8Array(pdfBuffer), {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename="${invoice.invoiceNumber}.pdf"`,
-      },
-    });
+    const pdfUrl = await getInvoicePdfUrl(invoice.id);
+    return NextResponse.redirect(pdfUrl);
   } catch (error) {
     console.error("Customer invoice PDF error:", error);
     return NextResponse.json({ error: "PDF indirilemedi" }, { status: 500 });

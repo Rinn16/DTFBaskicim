@@ -13,7 +13,7 @@ async function getProvider(): Promise<EFaturaProvider | null> {
   const settings = await db.siteSettings.findUnique({ where: { id: "default" } });
   if (!settings?.efaturaEnabled) return null;
 
-  if (!settings.efaturaCompanyCode || !settings.efaturaUsername || !settings.efaturaPassword) {
+  if (!settings.efaturaEmail || !settings.efaturaPassword) {
     console.warn("[efatura] E-fatura enabled but credentials missing");
     return null;
   }
@@ -26,8 +26,8 @@ async function getProvider(): Promise<EFaturaProvider | null> {
   // Cache the provider instance
   if (!_provider) {
     _provider = new TrendyolEFaturaProvider({
-      companyCode: settings.efaturaCompanyCode,
-      username: settings.efaturaUsername,
+      environment: (settings.efaturaEnvironment as "test" | "production") || "test",
+      email: settings.efaturaEmail,
       password: settings.efaturaPassword,
     });
   }
@@ -51,7 +51,7 @@ export async function submitInvoiceToGib(invoiceId: string) {
 
   const invoice = await db.invoice.findUniqueOrThrow({
     where: { id: invoiceId },
-    include: { order: true },
+    include: { order: { include: { user: true, address: true } } },
   });
 
   if (invoice.gibInvoiceId) {
@@ -59,6 +59,11 @@ export async function submitInvoiceToGib(invoiceId: string) {
   }
 
   const lineItems = invoice.lineItems as { description: string; quantity: number; unitPrice: number; total: number }[];
+
+  // When billingSameAddress=true, billing fields on Invoice are null.
+  // Fall back to shipping address from order.address relation.
+  const shippingAddr = invoice.order.address;
+  const user = invoice.order.user;
 
   const submitData: EFaturaSubmitData = {
     invoiceNumber: invoice.invoiceNumber,
@@ -71,11 +76,16 @@ export async function submitInvoiceToGib(invoiceId: string) {
     sellerAddress: invoice.sellerAddress || undefined,
     sellerCity: invoice.sellerCity || undefined,
 
-    buyerName: invoice.billingCompanyName || invoice.billingFullName || "",
+    buyerName: invoice.billingCompanyName || invoice.billingFullName || shippingAddr?.fullName || user?.name || "",
+    buyerSurname: user?.surname || "",
     buyerTaxNumber: invoice.billingTaxNumber || undefined,
     buyerTaxOffice: invoice.billingTaxOffice || undefined,
-    buyerAddress: invoice.billingAddress || undefined,
-    buyerCity: invoice.billingCity || undefined,
+    buyerAddress: invoice.billingAddress || shippingAddr?.address || undefined,
+    buyerCity: invoice.billingCity || shippingAddr?.city || undefined,
+    buyerDistrict: invoice.billingDistrict || shippingAddr?.district || undefined,
+    buyerPostalCode: invoice.billingZipCode || shippingAddr?.zipCode || undefined,
+    buyerEmail: user?.email || invoice.order.guestEmail || undefined,
+    buyerPhone: user?.phone || shippingAddr?.phone || invoice.order.guestPhone || undefined,
     isCorporate: invoice.billingType === "CORPORATE",
 
     subtotal: Number(invoice.subtotal),
@@ -149,4 +159,25 @@ export async function checkGibStatus(invoiceId: string) {
   });
 
   return result;
+}
+
+/**
+ * Get permanent PDF download URL for an invoice from Trendyol.
+ */
+export async function getInvoicePdfUrl(invoiceId: string) {
+  const provider = await getProvider();
+  if (!provider) {
+    throw new Error("E-Fatura sistemi aktif değil");
+  }
+
+  const invoice = await db.invoice.findUniqueOrThrow({
+    where: { id: invoiceId },
+  });
+
+  if (!invoice.gibInvoiceId) {
+    throw new Error("Bu fatura henüz GİB'e gönderilmemiş");
+  }
+
+  const result = await provider.downloadDocument(invoice.gibInvoiceId, "pdf");
+  return result.url;
 }

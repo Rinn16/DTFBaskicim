@@ -1,7 +1,6 @@
-import PDFDocument from "pdfkit";
 import { db } from "@/lib/db";
-import { uploadToS3, downloadFromS3 } from "@/lib/s3";
 import { INVOICE } from "@/lib/constants";
+import { submitInvoiceToGib } from "@/services/efatura";
 import type { InvoiceType } from "@/generated/prisma/client";
 import type { Prisma } from "@/generated/prisma/client";
 
@@ -36,10 +35,10 @@ export async function createInvoiceForOrder(
 ) {
   const client = tx || db;
 
-  // Load order
+  // Load order with address for billingSameAddress fallback
   const order = await client.order.findUniqueOrThrow({
     where: { id: orderId },
-    include: { items: true, gangSheets: true },
+    include: { items: true, gangSheets: true, address: true, user: true },
   });
 
   // Idempotency: check if a SATIS invoice already exists
@@ -114,14 +113,14 @@ export async function createInvoiceForOrder(
       sellerPhone: settings.invoiceCompanyPhone,
 
       billingType: order.billingType,
-      billingFullName: order.billingFullName,
+      billingFullName: order.billingFullName || (order.billingSameAddress ? (order.address?.fullName || order.user?.name || null) : null),
       billingCompanyName: order.billingCompanyName,
       billingTaxOffice: order.billingTaxOffice,
       billingTaxNumber: order.billingTaxNumber,
-      billingAddress: order.billingAddress,
-      billingCity: order.billingCity,
-      billingDistrict: order.billingDistrict,
-      billingZipCode: order.billingZipCode,
+      billingAddress: order.billingAddress || (order.billingSameAddress ? (order.address?.address || null) : null),
+      billingCity: order.billingCity || (order.billingSameAddress ? (order.address?.city || null) : null),
+      billingDistrict: order.billingDistrict || (order.billingSameAddress ? (order.address?.district || null) : null),
+      billingZipCode: order.billingZipCode || (order.billingSameAddress ? (order.address?.zipCode || null) : null),
 
       subtotal,
       discountAmount,
@@ -137,209 +136,8 @@ export async function createInvoiceForOrder(
 }
 
 /**
- * Generate a Turkish invoice PDF using PDFKit.
- */
-export async function generateInvoicePdf(invoiceId: string): Promise<Buffer> {
-  const invoice = await db.invoice.findUniqueOrThrow({
-    where: { id: invoiceId },
-    include: { order: true },
-  });
-
-  // Try to load company logo
-  let logoBuffer: Buffer | null = null;
-  const settings = await db.siteSettings.findUnique({ where: { id: "default" } });
-  if (settings?.invoiceCompanyLogoKey) {
-    try {
-      logoBuffer = await downloadFromS3(settings.invoiceCompanyLogoKey);
-    } catch {
-      // Logo not found, proceed without it
-    }
-  }
-
-  const lineItems = invoice.lineItems as { description: string; quantity: number; unitPrice: number; total: number }[];
-
-  return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({
-      size: "A4",
-      margin: 40,
-      bufferPages: true,
-    });
-
-    const chunks: Buffer[] = [];
-    doc.on("data", (chunk: Buffer) => chunks.push(chunk));
-    doc.on("end", () => resolve(Buffer.concat(chunks)));
-    doc.on("error", reject);
-
-    const pageWidth = doc.page.width - 80; // margins
-    const leftCol = 40;
-    const rightCol = 320;
-
-    // ── Header ──
-    let yPos = 40;
-
-    // Logo + Seller info (left)
-    if (logoBuffer) {
-      try {
-        doc.image(logoBuffer, leftCol, yPos, { width: 80 });
-      } catch {
-        // Skip if image format is unsupported
-      }
-    }
-
-    const sellerX = logoBuffer ? leftCol + 90 : leftCol;
-    doc.font("Helvetica-Bold").fontSize(11).text(invoice.sellerName, sellerX, yPos);
-    yPos += 16;
-    doc.font("Helvetica").fontSize(8);
-    doc.text(`V.D.: ${invoice.sellerTaxOffice}  V.N.: ${invoice.sellerTaxNumber}`, sellerX, yPos);
-    yPos += 11;
-    if (invoice.sellerAddress) {
-      doc.text(invoice.sellerAddress, sellerX, yPos, { width: 200 });
-      yPos += 11;
-    }
-    if (invoice.sellerCity) {
-      doc.text(invoice.sellerCity, sellerX, yPos);
-      yPos += 11;
-    }
-    if (invoice.sellerPhone) {
-      doc.text(`Tel: ${invoice.sellerPhone}`, sellerX, yPos);
-      yPos += 11;
-    }
-
-    // Invoice info (right)
-    const typeLabel = invoice.type === "IADE" ? "IADE FATURASI" : "SATIS FATURASI";
-    doc.font("Helvetica-Bold").fontSize(14).text(typeLabel, rightCol, 40, { width: 220, align: "right" });
-    doc.font("Helvetica").fontSize(9);
-    doc.text(`Fatura No: ${invoice.invoiceNumber}`, rightCol, 60, { width: 220, align: "right" });
-    doc.text(
-      `Tarih: ${(invoice.issuedAt || invoice.createdAt).toLocaleDateString("tr-TR")}`,
-      rightCol, 72, { width: 220, align: "right" }
-    );
-    doc.text(`Siparis No: ${invoice.order.orderNumber}`, rightCol, 84, { width: 220, align: "right" });
-
-    // ── Buyer Info ──
-    yPos = Math.max(yPos, 110) + 15;
-    doc.moveTo(leftCol, yPos).lineTo(leftCol + pageWidth, yPos).stroke("#cccccc");
-    yPos += 10;
-
-    doc.font("Helvetica-Bold").fontSize(9).text("ALICI BILGILERI", leftCol, yPos);
-    yPos += 14;
-    doc.font("Helvetica").fontSize(8);
-
-    if (invoice.billingType === "CORPORATE") {
-      if (invoice.billingCompanyName) {
-        doc.font("Helvetica-Bold").text(invoice.billingCompanyName, leftCol, yPos);
-        doc.font("Helvetica");
-        yPos += 12;
-      }
-      if (invoice.billingTaxOffice && invoice.billingTaxNumber) {
-        doc.text(`V.D.: ${invoice.billingTaxOffice}  V.N.: ${invoice.billingTaxNumber}`, leftCol, yPos);
-        yPos += 12;
-      }
-    } else {
-      if (invoice.billingFullName) {
-        doc.font("Helvetica-Bold").text(invoice.billingFullName, leftCol, yPos);
-        doc.font("Helvetica");
-        yPos += 12;
-      }
-    }
-    if (invoice.billingAddress) {
-      doc.text(invoice.billingAddress, leftCol, yPos, { width: 300 });
-      yPos += 12;
-    }
-    if (invoice.billingCity || invoice.billingDistrict) {
-      const loc = [invoice.billingDistrict, invoice.billingCity].filter(Boolean).join("/");
-      doc.text(loc + (invoice.billingZipCode ? ` ${invoice.billingZipCode}` : ""), leftCol, yPos);
-      yPos += 12;
-    }
-
-    // ── Line Items Table ──
-    yPos += 10;
-    doc.moveTo(leftCol, yPos).lineTo(leftCol + pageWidth, yPos).stroke("#cccccc");
-    yPos += 8;
-
-    // Table header
-    const colDesc = leftCol;
-    const colQty = leftCol + 280;
-    const colUnit = leftCol + 330;
-    const colTotal = leftCol + 420;
-
-    doc.font("Helvetica-Bold").fontSize(8);
-    doc.text("ACIKLAMA", colDesc, yPos, { width: 270 });
-    doc.text("ADET", colQty, yPos, { width: 40, align: "right" });
-    doc.text("BIRIM FIYAT", colUnit, yPos, { width: 80, align: "right" });
-    doc.text("TUTAR", colTotal, yPos, { width: 80, align: "right" });
-
-    yPos += 14;
-    doc.moveTo(leftCol, yPos).lineTo(leftCol + pageWidth, yPos).stroke("#eeeeee");
-    yPos += 6;
-
-    // Table rows
-    doc.font("Helvetica").fontSize(8);
-    for (const item of lineItems) {
-      doc.text(item.description, colDesc, yPos, { width: 270 });
-      doc.text(String(item.quantity), colQty, yPos, { width: 40, align: "right" });
-      doc.text(formatCurrency(item.unitPrice), colUnit, yPos, { width: 80, align: "right" });
-      doc.text(formatCurrency(item.total), colTotal, yPos, { width: 80, align: "right" });
-      yPos += 16;
-    }
-
-    // Shipping line
-    if (Number(invoice.shippingCost) > 0) {
-      doc.text("Kargo", colDesc, yPos, { width: 270 });
-      doc.text("1", colQty, yPos, { width: 40, align: "right" });
-      doc.text(formatCurrency(Number(invoice.shippingCost)), colUnit, yPos, { width: 80, align: "right" });
-      doc.text(formatCurrency(Number(invoice.shippingCost)), colTotal, yPos, { width: 80, align: "right" });
-      yPos += 16;
-    }
-
-    // ── Totals ──
-    yPos += 5;
-    doc.moveTo(leftCol, yPos).lineTo(leftCol + pageWidth, yPos).stroke("#cccccc");
-    yPos += 10;
-
-    const totalsX = colUnit;
-    const totalsValX = colTotal;
-
-    doc.font("Helvetica").fontSize(8);
-    doc.text("Ara Toplam:", totalsX, yPos, { width: 80, align: "right" });
-    doc.text(formatCurrency(Number(invoice.subtotal)), totalsValX, yPos, { width: 80, align: "right" });
-    yPos += 14;
-
-    if (Number(invoice.discountAmount) > 0) {
-      doc.text("Indirim:", totalsX, yPos, { width: 80, align: "right" });
-      doc.text(`-${formatCurrency(Number(invoice.discountAmount))}`, totalsValX, yPos, { width: 80, align: "right" });
-      yPos += 14;
-    }
-
-    doc.text(`KDV (%${Number(invoice.taxRate)})`, totalsX, yPos, { width: 80, align: "right" });
-    doc.text(formatCurrency(Number(invoice.taxAmount)), totalsValX, yPos, { width: 80, align: "right" });
-    yPos += 14;
-
-    if (Number(invoice.shippingCost) > 0) {
-      doc.text("Kargo:", totalsX, yPos, { width: 80, align: "right" });
-      doc.text(formatCurrency(Number(invoice.shippingCost)), totalsValX, yPos, { width: 80, align: "right" });
-      yPos += 14;
-    }
-
-    doc.moveTo(totalsX, yPos).lineTo(totalsValX + 80, yPos).stroke("#cccccc");
-    yPos += 8;
-    doc.font("Helvetica-Bold").fontSize(11);
-    doc.text("GENEL TOPLAM:", totalsX - 40, yPos, { width: 120, align: "right" });
-    doc.text(`${formatCurrency(Number(invoice.totalAmount))} TL`, totalsValX, yPos, { width: 80, align: "right" });
-
-    // ── IBAN ──
-    if (settings?.invoiceCompanyIban) {
-      yPos += 35;
-      doc.font("Helvetica").fontSize(8);
-      doc.text(`IBAN: ${settings.invoiceCompanyIban}`, leftCol, yPos);
-    }
-
-    doc.end();
-  });
-}
-
-/**
- * Full pipeline: create invoice record → generate PDF → upload to S3 → mark as ISSUED
+ * Full pipeline: create invoice record → submit to Trendyol → mark as ISSUED.
+ * PDF is available via Trendyol's permanent download URL (see downloadInvoicePdf).
  */
 export async function issueInvoice(orderId: string, type: InvoiceType = "SATIS") {
   // Create invoice record (handles idempotency)
@@ -347,37 +145,25 @@ export async function issueInvoice(orderId: string, type: InvoiceType = "SATIS")
     return createInvoiceForOrder(orderId, type, tx);
   });
 
-  // Generate PDF
-  const pdfBuffer = await generateInvoicePdf(invoice.id);
+  // If already sent to GIB, skip
+  if (invoice.gibInvoiceId) {
+    return invoice;
+  }
 
-  // Upload to S3
-  const pdfKey = `${INVOICE.S3_PREFIX}/${invoice.invoiceNumber}.pdf`;
-  await uploadToS3(pdfKey, pdfBuffer, "application/pdf");
-
-  // Update invoice status
-  const updated = await db.invoice.update({
-    where: { id: invoice.id },
-    data: {
-      pdfKey,
-      status: "ISSUED",
-      issuedAt: new Date(),
-    },
-  });
+  // Submit to Trendyol E-Faturam
+  const result = await submitInvoiceToGib(invoice.id);
 
   // Create audit trail
+  const order = await db.order.findUniqueOrThrow({ where: { id: orderId } });
   await db.orderStatusHistory.create({
     data: {
       orderId,
-      fromStatus: (await db.order.findUnique({ where: { id: orderId } }))!.status,
-      toStatus: (await db.order.findUnique({ where: { id: orderId } }))!.status,
-      note: `Fatura olusturuldu: ${invoice.invoiceNumber}`,
+      fromStatus: order.status,
+      toStatus: order.status,
+      note: `Fatura oluşturuldu ve GİB'e gönderildi: ${invoice.invoiceNumber}`,
       eventType: "INVOICE",
     },
   });
 
-  return updated;
-}
-
-function formatCurrency(amount: number): string {
-  return amount.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return result;
 }

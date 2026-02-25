@@ -12,10 +12,15 @@ export interface EFaturaSubmitData {
 
   // Buyer
   buyerName: string;
+  buyerSurname?: string;
   buyerTaxNumber?: string;
   buyerTaxOffice?: string;
   buyerAddress?: string;
   buyerCity?: string;
+  buyerDistrict?: string;
+  buyerPostalCode?: string;
+  buyerEmail?: string;
+  buyerPhone?: string;
   isCorporate: boolean;
 
   // Amounts
@@ -54,6 +59,10 @@ export interface EFaturaCancelResult {
   success: boolean;
 }
 
+export interface EFaturaDownloadResult {
+  url: string;
+}
+
 export interface EFaturaProvider {
   /** Check if recipient is an e-fatura registered taxpayer */
   checkRecipient(taxNumber: string): Promise<EFaturaRecipientResult>;
@@ -63,10 +72,12 @@ export interface EFaturaProvider {
   getInvoiceStatus(gibInvoiceId: string): Promise<EFaturaStatusResult>;
   /** Cancel an invoice on GIB */
   cancelInvoice(gibInvoiceId: string, reason: string): Promise<EFaturaCancelResult>;
+  /** Get permanent PDF download URL */
+  downloadDocument(invoiceUuid: string, fileExtension?: string): Promise<EFaturaDownloadResult>;
 }
 
 export interface EFaturaConfig {
-  companyCode: string;
-  username: string;
+  environment: "test" | "production";
+  email: string;
   password: string;
 }

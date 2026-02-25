@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Receipt, Download, Loader2 } from "lucide-react";
 import { INVOICE_STATUSES } from "@/lib/constants";
+import { toast } from "sonner";
 
 interface InvoiceInfo {
   id: string;
@@ -13,7 +14,7 @@ interface InvoiceInfo {
   type: string;
   status: string;
   totalAmount: number;
-  pdfKey: string | null;
+  gibInvoiceId: string | null;
   gibStatus: string | null;
   issuedAt: string | null;
   createdAt: string;
@@ -103,14 +104,24 @@ export function OrderInvoiceCard({ orderId, refreshKey }: OrderInvoiceCardProps)
                     ? new Date(inv.issuedAt).toLocaleString("tr-TR")
                     : new Date(inv.createdAt).toLocaleString("tr-TR")}
                 </p>
-                {inv.pdfKey && (
+                {inv.gibInvoiceId && (
                   <Button
                     size="sm"
                     variant="outline"
                     className="h-7 text-xs gap-1"
-                    onClick={() =>
-                      window.open(`/api/admin/orders/${orderId}/invoice/${inv.id}/pdf`, "_blank")
-                    }
+                    onClick={async () => {
+                      try {
+                        const res = await fetch(`/api/admin/orders/${orderId}/invoice/${inv.id}/pdf`);
+                        const data = await res.json();
+                        if (res.ok && data.url) {
+                          window.open(data.url, "_blank");
+                        } else {
+                          toast.error(data.error || "PDF indirilemedi");
+                        }
+                      } catch {
+                        toast.error("PDF indirilemedi");
+                      }
+                    }}
                   >
                     <Download className="h-3 w-3" />
                     PDF İndir

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { downloadFromS3 } from "@/lib/s3";
+import { getInvoicePdfUrl } from "@/services/efatura";
 
 export async function GET(
   _request: Request,
@@ -18,20 +18,19 @@ export async function GET(
       where: { id: invoiceId, orderId },
     });
 
-    if (!invoice || !invoice.pdfKey) {
-      return NextResponse.json({ error: "Fatura PDF bulunamadı" }, { status: 404 });
+    if (!invoice) {
+      return NextResponse.json({ error: "Fatura bulunamadı" }, { status: 404 });
     }
 
-    const pdfBuffer = await downloadFromS3(invoice.pdfKey);
+    if (!invoice.gibInvoiceId) {
+      return NextResponse.json({ error: "Fatura henüz GİB'e gönderilmemiş" }, { status: 400 });
+    }
 
-    return new Response(new Uint8Array(pdfBuffer), {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename="${invoice.invoiceNumber}.pdf"`,
-      },
-    });
+    const pdfUrl = await getInvoicePdfUrl(invoiceId);
+    return NextResponse.json({ url: pdfUrl });
   } catch (error) {
     console.error("Invoice PDF download error:", error);
-    return NextResponse.json({ error: "PDF indirilemedi" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "PDF indirilemedi";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

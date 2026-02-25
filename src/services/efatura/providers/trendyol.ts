@@ -6,55 +6,142 @@ import type {
   EFaturaSubmitResult,
   EFaturaStatusResult,
   EFaturaCancelResult,
+  EFaturaDownloadResult,
 } from "../types";
+
+const BASE_URLS = {
+  test: "https://stage-apigateway.trendyolefaturam.com",
+  production: "https://apigateway.trendyolecozum.com",
+} as const;
+
+interface AuthSession {
+  accessToken: string;
+  userId: number;
+  companyId: number;
+}
 
 /**
  * Trendyol E-Faturam adapter.
  *
- * Auth: Company short code + web service username + web service password.
- * Supports both E-Fatura (B2B) and E-Arşiv (B2C).
+ * Auth: Single-step signIn with email/password.
+ * - x-access-token header → JWT (Bearer token for all requests)
+ * - JWT sub → userId
+ * - JWT privs first key → companyId
+ * - Response body → userId
  *
- * NOTE: This is a stub implementation. Real API endpoints and request/response
- * formats will be filled in once Trendyol credentials are obtained and their
- * developer documentation is consulted.
+ * All amounts are in kuruş (cents): 114.55 TL → 11455
  */
 export class TrendyolEFaturaProvider implements EFaturaProvider {
   private config: EFaturaConfig;
-  private baseUrl = "https://efatura.trendyol.com/api/v1"; // placeholder
+  private baseUrl: string;
+  private session: AuthSession | null = null;
+  private tokenExpiresAt = 0;
 
   constructor(config: EFaturaConfig) {
     this.config = config;
+    this.baseUrl = BASE_URLS[config.environment] || BASE_URLS.test;
   }
 
-  private getAuthHeaders(): Record<string, string> {
-    const credentials = Buffer.from(
-      `${this.config.username}:${this.config.password}`
-    ).toString("base64");
+  /**
+   * Sign in and extract userId + companyId.
+   * Response headers contain x-access-token, x-refresh-token, etc.
+   * Response body contains userId, companyId directly.
+   */
+  private async signIn(): Promise<AuthSession> {
+    const res = await fetch(`${this.baseUrl}/api/auth/signin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: this.config.email,
+        password: this.config.password,
+      }),
+    });
 
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Trendyol giriş başarısız: ${res.status} — ${errorText}`);
+    }
+
+    const accessToken = res.headers.get("x-access-token");
+    if (!accessToken) {
+      throw new Error("Trendyol giriş: x-access-token header bulunamadı");
+    }
+
+    // Parse response body — may contain userId, companyId directly
+    const body = await res.json().catch(() => null);
+
+    // Parse JWT payload to extract userId and companyId
+    const payloadBase64 = accessToken.split(".")[1];
+    const jwtPayload = JSON.parse(Buffer.from(payloadBase64, "base64").toString("utf-8"));
+
+    // Prefer body values, fallback to JWT
+    const userId = body?.userId ?? parseInt(jwtPayload.sub, 10);
+    const companyId = body?.companyId ?? parseInt(Object.keys(jwtPayload.privs || {})[0], 10);
+
+    if (!userId || !companyId) {
+      throw new Error("Trendyol giriş: userId veya companyId alınamadı");
+    }
+
+    return { accessToken, userId, companyId };
+  }
+
+  /**
+   * Ensure we have a valid session.
+   * Re-authenticates if token is expired (JWT exp ~24h, refresh at 50 min).
+   */
+  private async ensureAuth(): Promise<AuthSession> {
+    const now = Date.now();
+    if (this.session && now < this.tokenExpiresAt) {
+      return this.session;
+    }
+
+    this.session = await this.signIn();
+    this.tokenExpiresAt = now + 50 * 60 * 1000;
+    return this.session;
+  }
+
+  private getAuthHeaders(accessToken: string): Record<string, string> {
     return {
-      Authorization: `Basic ${credentials}`,
       "Content-Type": "application/json",
-      "X-Company-Code": this.config.companyCode,
+      Authorization: `Bearer ${accessToken}`,
     };
+  }
+
+  /** Convert TL amount to kuruş: 114.55 → 11455 */
+  private toKurus(amount: number): number {
+    return Math.round(amount * 100);
+  }
+
+  /** Format phone to match Trendyol pattern: +905XXXXXXXXX */
+  private formatPhone(phone: string): string {
+    const digits = phone.replace(/\D/g, "");
+    if (digits.startsWith("90") && digits.length >= 12) return `+${digits}`;
+    if (digits.startsWith("0") && digits.length >= 11) return `+90${digits.slice(1)}`;
+    if (digits.length === 10) return `+90${digits}`;
+    return phone.startsWith("+") ? phone : `+${digits}`;
   }
 
   async checkRecipient(taxNumber: string): Promise<EFaturaRecipientResult> {
     try {
+      const auth = await this.ensureAuth();
       const res = await fetch(
-        `${this.baseUrl}/recipient/check?taxNumber=${encodeURIComponent(taxNumber)}`,
-        { headers: this.getAuthHeaders() }
+        `${this.baseUrl}/api/invoice/taxpayers/${encodeURIComponent(taxNumber)}`,
+        { headers: this.getAuthHeaders(auth.accessToken) }
       );
 
       if (!res.ok) {
-        console.error("[efatura] checkRecipient failed:", res.status);
         return { registered: false };
       }
 
       const data = await res.json();
-      return {
-        registered: data.registered ?? false,
-        alias: data.alias,
-      };
+      // API returns array — non-empty means registered
+      if (Array.isArray(data) && data.length > 0) {
+        return {
+          registered: true,
+          alias: data[0]?.alias || data[0]?.defaultAlias,
+        };
+      }
+      return { registered: false };
     } catch (error) {
       console.error("[efatura] checkRecipient error:", error);
       return { registered: false };
@@ -62,104 +149,315 @@ export class TrendyolEFaturaProvider implements EFaturaProvider {
   }
 
   async submitInvoice(data: EFaturaSubmitData): Promise<EFaturaSubmitResult> {
-    // Determine if this should be E-Fatura (B2B) or E-Arşiv (B2C)
+    const auth = await this.ensureAuth();
+
+    // Check if buyer is e-fatura registered (B2B vs B2C)
     let recipientRegistered = false;
+    let targetAlias: string | undefined;
     if (data.isCorporate && data.buyerTaxNumber) {
       const check = await this.checkRecipient(data.buyerTaxNumber);
       recipientRegistered = check.registered;
+      targetAlias = check.alias;
     }
 
-    const endpoint = recipientRegistered
-      ? `${this.baseUrl}/einvoice/submit`
-      : `${this.baseUrl}/earchive/submit`;
+    const taxPercent = data.taxRate;
+    const discountKurus = this.toKurus(data.discountAmount);
+    const shippingKurus = this.toKurus(data.shippingCost);
 
-    const payload = {
-      companyCode: this.config.companyCode,
-      invoiceNumber: data.invoiceNumber,
-      invoiceDate: data.invoiceDate.toISOString(),
-      invoiceType: data.invoiceType === "IADE" ? "IADE" : "SATIS",
+    // --- 1. Collect raw line amounts (pre-tax) ---
+    interface RawLine {
+      grossAmount: number;
+      quantity: number;
+      unitPrice: number;
+      description: string;
+    }
 
-      seller: {
-        name: data.sellerName,
-        taxNumber: data.sellerTaxNumber,
-        taxOffice: data.sellerTaxOffice,
-        address: data.sellerAddress,
-        city: data.sellerCity,
-      },
-      buyer: {
-        name: data.buyerName,
-        taxNumber: data.buyerTaxNumber,
-        taxOffice: data.buyerTaxOffice,
-        address: data.buyerAddress,
-        city: data.buyerCity,
-      },
+    const rawLines: RawLine[] = data.lineItems.map((item) => ({
+      grossAmount: this.toKurus(item.total),
+      quantity: item.quantity,
+      unitPrice: this.toKurus(item.unitPrice),
+      description: item.description,
+    }));
 
-      amounts: {
-        subtotal: data.subtotal,
-        discount: data.discountAmount,
-        taxRate: data.taxRate,
-        taxAmount: data.taxAmount,
-        total: data.totalAmount,
-        shipping: data.shippingCost,
-      },
+    // Add shipping as a separate line item for UBL consistency
+    if (shippingKurus > 0) {
+      rawLines.push({
+        grossAmount: shippingKurus,
+        quantity: 1,
+        unitPrice: shippingKurus,
+        description: "Kargo / Teslimat",
+      });
+    }
 
-      lineItems: data.lineItems.map((item, idx) => ({
-        lineNumber: idx + 1,
-        description: item.description,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-        lineTotal: item.total,
-        taxRate: data.taxRate,
-        taxAmount: (item.total * data.taxRate) / 100,
-      })),
+    // --- 2. Distribute discount proportionally across lines ---
+    const grossTotal = rawLines.reduce((s, l) => s + l.grossAmount, 0);
+    const lineDiscounts: number[] = [];
+    if (discountKurus > 0 && grossTotal > 0) {
+      let remaining = discountKurus;
+      for (let i = 0; i < rawLines.length; i++) {
+        if (i === rawLines.length - 1) {
+          lineDiscounts.push(remaining);
+        } else {
+          const share = Math.round(discountKurus * rawLines[i].grossAmount / grossTotal);
+          lineDiscounts.push(share);
+          remaining -= share;
+        }
+      }
+    } else {
+      rawLines.forEach(() => lineDiscounts.push(0));
+    }
+
+    // --- 3. Build final invoice lines with correct tax ---
+    const invoiceLines = rawLines.map((raw, i) => {
+      const discount = lineDiscounts[i];
+      const taxableAmount = raw.grossAmount - discount;
+      const taxAmount = Math.round(taxableAmount * taxPercent / 100);
+
+      return {
+        unitCode: "C62",
+        quantity: raw.quantity,
+        totalAmount: raw.grossAmount,
+        taxAmount,
+        taxableAmount,
+        taxPercent,
+        taxName: "KDV",
+        taxCode: "0015",
+        itemName: raw.description,
+        unitPriceAmount: raw.unitPrice,
+        totalDiscountAmount: discount,
+        totalTax: {
+          totalTaxAmount: taxAmount,
+          subTotalTaxes: [{
+            taxableAmount,
+            taxAmount,
+            taxType: "KDV",
+            percent: taxPercent,
+            name: "KDV",
+          }],
+        },
+      };
+    });
+
+    // --- 4. Calculate invoice totals from line items (ensures UBL consistency) ---
+    const lineExtensionAmount = grossTotal;
+    const allowanceTotalAmount = lineDiscounts.reduce((s, d) => s + d, 0);
+    const taxExclusiveAmount = lineExtensionAmount - allowanceTotalAmount;
+    const totalTaxAmount = invoiceLines.reduce((s, l) => s + l.taxAmount, 0);
+    const taxInclusiveAmount = taxExclusiveAmount + totalTaxAmount;
+
+    const totalTax = {
+      totalTaxAmount,
+      subTotalTaxes: [{
+        taxableAmount: taxExclusiveAmount,
+        taxAmount: totalTaxAmount,
+        taxType: "KDV",
+        percent: taxPercent,
+        name: "KDV",
+      }],
     };
+
+    // --- 5. Build recipientInfo with proper field validation ---
+    // For individuals: Trendyol concatenates name + surname, so strip surname
+    // from name to avoid duplication (e.g. "Ercan Akcan" + "Akcan" → "Ercan Akcan Akcan")
+    let buyerDisplayName = data.buyerName && data.buyerName.length >= 2 ? data.buyerName : "Müşteri";
+    if (!data.isCorporate && data.buyerSurname && data.buyerSurname.length >= 2) {
+      if (buyerDisplayName.endsWith(data.buyerSurname)) {
+        const firstName = buyerDisplayName.slice(0, -data.buyerSurname.length).trim();
+        if (firstName.length >= 2) {
+          buyerDisplayName = firstName;
+        }
+      }
+    }
+
+    const recipientInfo: Record<string, unknown> = {
+      taxId: data.buyerTaxNumber || "11111111111",
+      countryCode: "TR",
+      city: data.buyerCity && data.buyerCity.length >= 2 ? data.buyerCity : "İstanbul",
+      name: buyerDisplayName,
+    };
+    // surname only for individuals, must be ≥ 2 chars
+    if (!data.isCorporate && data.buyerSurname && data.buyerSurname.length >= 2) {
+      recipientInfo.surname = data.buyerSurname;
+    }
+    if (data.buyerDistrict && data.buyerDistrict.length >= 2) {
+      recipientInfo.district = data.buyerDistrict;
+    }
+    if (data.buyerAddress && data.buyerAddress.length >= 2) {
+      recipientInfo.address = data.buyerAddress;
+    }
+    if (data.buyerPostalCode && /^\d{5}$/.test(data.buyerPostalCode)) {
+      recipientInfo.postalCode = data.buyerPostalCode;
+    }
+    if (data.buyerPhone) {
+      const formatted = this.formatPhone(data.buyerPhone);
+      if (/^\+?[0-9]{7,15}$/.test(formatted)) {
+        recipientInfo.phone = formatted;
+      }
+    }
+    if (data.buyerEmail && data.buyerEmail.length >= 2 && data.buyerEmail.includes("@")) {
+      recipientInfo.email = data.buyerEmail;
+    }
+    if (data.buyerTaxOffice && data.buyerTaxOffice.length >= 2) {
+      recipientInfo.taxOffice = data.buyerTaxOffice;
+    }
+
+    // --- 6. Build payload ---
+    const isEArchive = !recipientRegistered;
+    // E-Arşiv prefix: DAP, E-Fatura prefix: DIP
+    const prefix = isEArchive ? "DAP" : "DIP";
+
+    const payload: Record<string, unknown> = {
+      autoInvoiceId: true,
+      companyId: auth.companyId,
+      userId: auth.userId,
+      source: "PORTAL",
+      prefix,
+      notes: [],
+      recipientInfo,
+      invoiceInfo: {
+        invoiceType: isEArchive ? "EARSIVFATURA" : "TEMELFATURA",
+        invoiceTypeCode: data.invoiceType === "IADE" ? "IADE" : "SATIS",
+      },
+      invoiceLines,
+      totalTax,
+      invoiceTotal: {
+        lineExtensionAmount,
+        taxExclusiveAmount,
+        taxInclusiveAmount,
+        payableAmount: taxInclusiveAmount,
+        allowanceTotalAmount,
+      },
+      issuedAt: data.invoiceDate.toISOString(),
+    };
+
+    // targetAlias is a top-level field, not inside invoiceInfo
+    if (recipientRegistered && targetAlias) {
+      payload.targetAlias = targetAlias;
+    }
+
+    const endpoint = isEArchive
+      ? `${this.baseUrl}/api/invoice/documents/earchive`
+      : `${this.baseUrl}/api/invoice/documents/outgoing-einvoice`;
+
+    console.log("[efatura] submitInvoice →", endpoint, JSON.stringify(payload, null, 2));
 
     const res = await fetch(endpoint, {
       method: "POST",
-      headers: this.getAuthHeaders(),
+      headers: this.getAuthHeaders(auth.accessToken),
       body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
       const errorText = await res.text();
+      console.error("[efatura] submitInvoice error:", res.status, errorText);
       throw new Error(`E-Fatura gönderimi başarısız: ${res.status} — ${errorText}`);
     }
 
     const result = await res.json();
     return {
-      gibInvoiceId: result.gibInvoiceId || result.id,
-      status: result.status || "SENT",
+      gibInvoiceId: result.invoiceUuid || result.id?.toString(),
+      status: "SENT",
     };
   }
 
   async getInvoiceStatus(gibInvoiceId: string): Promise<EFaturaStatusResult> {
-    const res = await fetch(
-      `${this.baseUrl}/invoice/status/${encodeURIComponent(gibInvoiceId)}`,
-      { headers: this.getAuthHeaders() }
+    const auth = await this.ensureAuth();
+
+    // Try e-arşiv status first, then e-fatura
+    let res = await fetch(
+      `${this.baseUrl}/api/invoice/documents/earchive/status/${encodeURIComponent(gibInvoiceId)}`,
+      { headers: this.getAuthHeaders(auth.accessToken) }
     );
+
+    if (!res.ok) {
+      res = await fetch(
+        `${this.baseUrl}/api/invoice/documents/outgoing-einvoice/status/${encodeURIComponent(gibInvoiceId)}`,
+        { headers: this.getAuthHeaders(auth.accessToken) }
+      );
+    }
 
     if (!res.ok) {
       throw new Error(`E-Fatura durum sorgusu başarısız: ${res.status}`);
     }
 
     const data = await res.json();
-    return {
-      status: data.status,
-      rejectionReason: data.rejectionReason,
+
+    const statusMap: Record<number, string> = {
+      10: "PROCESSING",
+      20: "PROCESSING",
+      29: "ERROR",
+      30: "CREATED",
+      40: "SENT",
+      50: "WAITING_RESPONSE",
+      100: "REJECTING",
+      105: "REJECTED",
+      200: "APPROVING",
+      205: "ACCEPTED",
+      305: "CANCELLED",
+      405: "ERROR",
     };
+
+    const status = statusMap[data.status] || data.gibStatus || "SENT";
+    return { status, rejectionReason: data.rejectionReason };
   }
 
-  async cancelInvoice(gibInvoiceId: string, reason: string): Promise<EFaturaCancelResult> {
-    const res = await fetch(`${this.baseUrl}/invoice/cancel`, {
+  async cancelInvoice(gibInvoiceId: string, _reason: string): Promise<EFaturaCancelResult> {
+    const auth = await this.ensureAuth();
+
+    const res = await fetch(`${this.baseUrl}/api/invoice/documents/earchive/cancel`, {
       method: "POST",
-      headers: this.getAuthHeaders(),
-      body: JSON.stringify({ gibInvoiceId, reason }),
+      headers: this.getAuthHeaders(auth.accessToken),
+      body: JSON.stringify({
+        invoiceUuid: gibInvoiceId,
+        companyId: auth.companyId,
+      }),
     });
 
     if (!res.ok) {
-      throw new Error(`E-Fatura iptal başarısız: ${res.status}`);
+      const errorText = await res.text();
+      throw new Error(`E-Fatura iptal başarısız: ${res.status} — ${errorText}`);
     }
 
     return { success: true };
+  }
+
+  async downloadDocument(invoiceUuid: string, fileExtension: string = "pdf"): Promise<EFaturaDownloadResult> {
+    const auth = await this.ensureAuth();
+
+    const res = await fetch(`${this.baseUrl}/api/invoice/documents/download/permanent-url`, {
+      method: "POST",
+      headers: this.getAuthHeaders(auth.accessToken),
+      body: JSON.stringify({
+        documentType: "EARCHIVE",
+        fileExtension,
+        documentUuid: invoiceUuid,
+        companyId: auth.companyId,
+      }),
+    });
+
+    if (!res.ok) {
+      // Try EINVOICE if EARCHIVE fails
+      const res2 = await fetch(`${this.baseUrl}/api/invoice/documents/download/permanent-url`, {
+        method: "POST",
+        headers: this.getAuthHeaders(auth.accessToken),
+        body: JSON.stringify({
+          documentType: "EINVOICE",
+          fileExtension,
+          documentUuid: invoiceUuid,
+          companyId: auth.companyId,
+        }),
+      });
+
+      if (!res2.ok) {
+        const errorText = await res2.text();
+        throw new Error(`Doküman indirme başarısız: ${res2.status} — ${errorText}`);
+      }
+
+      const data2 = await res2.json();
+      return { url: data2.url || data2 };
+    }
+
+    const data = await res.json();
+    return { url: data.url || data };
   }
 }
