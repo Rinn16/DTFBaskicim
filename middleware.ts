@@ -13,6 +13,10 @@ const publicPages = [
   "/mesafeli-satis-sozlesmesi",
   "/iptal-ve-iade-politikasi",
   "/cerez-politikasi",
+  "/iletisim",
+  "/yardim",
+  "/sifremi-unuttum",
+  "/sifremi-sifirla",
 ];
 
 export default async function middleware(request: NextRequest) {

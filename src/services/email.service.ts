@@ -4,6 +4,7 @@ import {
   welcomeHtml,
   orderConfirmationHtml,
   orderShippedHtml,
+  passwordResetHtml,
 } from "@/lib/email-templates";
 import { db } from "@/lib/db";
 
@@ -60,6 +61,12 @@ export async function sendWelcomeEmail(to: string, customerName: string) {
 export async function sendOrderConfirmation(to: string, data: OrderEmailData) {
   if (!(await isEmailTypeEnabled("emailOrderConfirm"))) return;
   const { subject, html } = await orderConfirmationHtml(data);
+  await sendEmail({ to, subject, html });
+}
+
+/** Şifre sıfırlama e-postası (settings kontrolü yok — her zaman gönder) */
+export async function sendPasswordResetEmail(to: string, resetUrl: string) {
+  const { subject, html } = await passwordResetHtml(resetUrl);
   await sendEmail({ to, subject, html });
 }
 

@@ -189,6 +189,14 @@ function LoginPageContent() {
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
               </Button>
+              <div className="text-right">
+                <Link
+                  href="/sifremi-unuttum"
+                  className="text-xs text-muted-foreground hover:text-primary hover:underline"
+                >
+                  Şifremi Unuttum
+                </Link>
+              </div>
             </form>
           </TabsContent>
 

@@ -185,6 +185,30 @@ function orderShippedHtmlFallback(data: OrderEmailData): string {
   return baseLayout(content);
 }
 
+function passwordResetHtmlFallback(resetUrl: string): string {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:18px;color:#18181b;">Şifre Sıfırlama</h2>
+    <p style="margin:0 0 24px;font-size:14px;color:#52525b;">
+      Hesabınız için bir şifre sıfırlama talebi aldık. Şifrenizi sıfırlamak için aşağıdaki butona tıklayın.
+    </p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+      <tr>
+        <td align="center">
+          <a href="${resetUrl}" style="display:inline-block;padding:12px 32px;background-color:#18181b;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;border-radius:6px;">
+            Şifremi Sıfırla
+          </a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0 0 8px;font-size:13px;color:#71717a;">
+      Bu link 1 saat süreyle geçerlidir.
+    </p>
+    <p style="margin:0;font-size:13px;color:#71717a;">
+      Eğer bu talebi siz yapmadıysanız, bu emaili görmezden gelebilirsiniz.
+    </p>`;
+  return baseLayout(content);
+}
+
 // ========== Public API (DB-first, fallback to hardcoded) ==========
 
 export async function welcomeHtml(customerName: string): Promise<{ subject: string; html: string }> {
@@ -214,6 +238,13 @@ export async function orderConfirmationHtml(data: OrderEmailData): Promise<{ sub
   return {
     subject: `Sipariş Onay - ${data.orderNumber}`,
     html: orderConfirmationHtmlFallback(data),
+  };
+}
+
+export async function passwordResetHtml(resetUrl: string): Promise<{ subject: string; html: string }> {
+  return {
+    subject: "Şifre Sıfırlama - DTF Baskıcım",
+    html: passwordResetHtmlFallback(resetUrl),
   };
 }
 

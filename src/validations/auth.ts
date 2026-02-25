@@ -52,7 +52,30 @@ export const otpVerifySchema = z.object({
     .length(6, "Doğrulama kodu 6 haneli olmalı"),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email adresi gerekli")
+    .email("Geçerli bir email adresi girin"),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1, "Token gerekli"),
+    password: z
+      .string()
+      .min(1, "Şifre gerekli")
+      .min(6, "Şifre en az 6 karakter olmalı"),
+    confirmPassword: z.string().min(1, "Şifre tekrarı gerekli"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Şifreler eşleşmedi",
+    path: ["confirmPassword"],
+  });
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type PhoneLoginInput = z.infer<typeof phoneLoginSchema>;
 export type OtpVerifyInput = z.infer<typeof otpVerifySchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
