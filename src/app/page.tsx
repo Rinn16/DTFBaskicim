@@ -11,6 +11,7 @@ import {
 import { ProcessSection } from "@/components/home/process-section";
 import { HomeAuthButtons } from "@/components/home/home-auth-buttons";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { Footer } from "@/components/layout/footer";
 
 export const metadata: Metadata = {
   title: "DTF Baskıcım — Tech-Forward Factory",
@@ -372,67 +373,7 @@ export default function HomePage() {
       </main>
 
       {/* ═══════════ Footer ═══════════ */}
-      <footer className="relative z-10 border-t border-border bg-card py-16 px-6">
-        <div className="max-w-[1400px] mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
-            <div className="flex items-center gap-2">
-              <div className="size-6 text-primary dark:text-neon">
-                <LogoSvg className="w-full h-full" />
-              </div>
-              <span className="text-xl font-bold text-foreground tracking-tight">
-                DTF Baskıcım
-              </span>
-            </div>
-            <div className="flex gap-8">
-              <a
-                href="https://instagram.com/dtfbaskicim"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary dark:hover:text-accent-brand transition-colors"
-              >
-                Instagram
-              </a>
-              <a
-                href="https://twitter.com/dtfbaskicim"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary dark:hover:text-accent-brand transition-colors"
-              >
-                Twitter
-              </a>
-              <a
-                href="https://linkedin.com/company/dtfbaskicim"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary dark:hover:text-accent-brand transition-colors"
-              >
-                LinkedIn
-              </a>
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground/70 border-t border-border pt-8">
-            <p>
-              &copy; {new Date().getFullYear()} DTF Baskıcım Tech Labs. All
-              rights reserved.
-            </p>
-            <div className="flex gap-6">
-              <a
-                href="#"
-                className="hover:text-muted-foreground transition-colors"
-              >
-                Gizlilik Politikası
-              </a>
-              <a
-                href="#"
-                className="hover:text-muted-foreground transition-colors"
-              >
-                Kullanım Şartları
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
