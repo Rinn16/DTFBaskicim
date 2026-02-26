@@ -86,15 +86,17 @@ export function Header() {
           </Link>
           <Link
             href="/sepet"
-            className="relative flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-muted text-sm font-medium transition-colors text-muted-foreground hover:text-foreground"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-muted text-sm font-medium transition-colors text-muted-foreground hover:text-foreground"
           >
-            <ShoppingCart className="h-4 w-4" />
+            <span className="relative">
+              <ShoppingCart className="h-4 w-4" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 min-w-4 flex items-center justify-center px-1">
+                  {cartCount}
+                </span>
+              )}
+            </span>
             Sepet
-            {cartCount > 0 && (
-              <span className="absolute top-0.5 left-[52px] bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 min-w-4 flex items-center justify-center px-1">
-                {cartCount}
-              </span>
-            )}
           </Link>
         </nav>
 
