@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  ShoppingCart,
-  FileUp,
   ArrowRight,
   ShieldCheck,
   Waypoints,
   Settings,
 } from "lucide-react";
 import { ProcessSection } from "@/components/home/process-section";
-import { HomeAuthButtons } from "@/components/home/home-auth-buttons";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 
 export const metadata: Metadata = {
@@ -33,23 +30,6 @@ const jsonLd = {
     availableLanguage: "Turkish",
   },
 };
-
-/* ─── SVG Logo (shared between header & footer) ─── */
-function LogoSvg({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      viewBox="0 0 48 48"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
 
 export default function HomePage() {
   return (
@@ -105,39 +85,10 @@ export default function HomePage() {
       </nav>
 
       {/* ═══════════ Header ═══════════ */}
-      <header className="fixed top-0 left-0 right-0 z-40 px-6 py-6 transition-all duration-300">
-        <div className="max-w-[1400px] mx-auto glass-panel rounded-2xl px-6 h-16 flex items-center justify-between shadow-2xl shadow-black/20">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="size-8 text-primary dark:text-neon neon-glow">
-              <LogoSvg className="w-full h-full" />
-            </div>
-            <h2 className="text-foreground text-lg font-bold tracking-tight">
-              DTF<span className="text-primary">Baskıcım</span>
-            </h2>
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href="/tasarim"
-              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-muted text-sm font-medium transition-colors text-muted-foreground"
-            >
-              <FileUp className="h-[18px] w-[18px]" />
-              Dosya Yükle
-            </Link>
-            <ThemeToggle />
-            <Link
-              href="/sepet"
-              className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/80 transition-all shadow-primary/20 dark:shadow-[0_0_15px_rgba(19,127,236,0.4)]"
-            >
-              <ShoppingCart className="h-5 w-5" />
-            </Link>
-            <HomeAuthButtons />
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* ═══════════ Main Content ═══════════ */}
-      <main className="relative z-10 pt-32 pb-20">
+      <main className="relative z-10 pb-20">
         {/* ── Hero Section ── */}
         <section
           className="relative w-full min-h-[85vh] flex flex-col items-center justify-center px-4 overflow-hidden"
