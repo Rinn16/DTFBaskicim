@@ -1,5 +1,6 @@
 import { ORDER_STATUSES } from "@/lib/constants";
 import { db } from "@/lib/db";
+import { getBaseUrl } from "@/lib/env";
 import type { EmailTemplateType } from "@/generated/prisma/client";
 
 export interface OrderEmailItem {
@@ -108,6 +109,7 @@ function orderEmailDataToVars(data: OrderEmailData): Record<string, string> {
     siparisDetayUrl: data.orderUrl,
     kargoUcreti: data.shippingCost.toFixed(2),
     takipKodu: data.trackingCode || "",
+    siteUrl: getBaseUrl(),
   };
 }
 
@@ -214,7 +216,7 @@ function passwordResetHtmlFallback(resetUrl: string): string {
 export async function welcomeHtml(customerName: string): Promise<{ subject: string; html: string }> {
   const tpl = await getDbTemplate("WELCOME");
   if (tpl) {
-    const vars = { musteriAdi: customerName };
+    const vars = { musteriAdi: customerName, siteUrl: getBaseUrl() };
     return {
       subject: replaceVariables(tpl.subject, vars),
       html: renderTemplate(tpl.content, vars),

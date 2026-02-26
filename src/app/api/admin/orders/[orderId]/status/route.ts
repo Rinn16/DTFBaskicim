@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getBaseUrl } from "@/lib/env";
 import { sendOrderShipped } from "@/services/email.service";
 
 const statusUpdateSchema = z.object({
@@ -109,7 +110,7 @@ export async function PATCH(
         const customerName = order.user?.name || order.guestName || "Müşterimiz";
 
         if (email) {
-          const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://dtfbaskicim.ercanakcan.online";
+          const siteUrl = getBaseUrl();
           const addr = order.address;
           const deliveryAddress = addr
             ? [addr.address, addr.district, addr.city, addr.zipCode].filter(Boolean).join(", ")

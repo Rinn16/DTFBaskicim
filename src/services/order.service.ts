@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { getBaseUrl } from "@/lib/env";
 import { calculatePrice } from "@/services/pricing.service";
 import { sendOrderConfirmation } from "@/services/email.service";
 import { ROLL_CONFIG } from "@/lib/constants";
@@ -38,6 +39,7 @@ interface CreateOrderParams {
   }>;
   discountCode?: string;
   customerNote?: string;
+  termsAcceptedAt: string;
   billingSameAddress?: boolean;
   billingInfo?: {
     billingType: BillingType;
@@ -58,7 +60,7 @@ export async function createOrder(params: CreateOrderParams) {
     userId, guestEmail, guestName, guestPhone,
     addressId, paymentMethod,
     cartItems, discountCode, customerNote,
-    billingSameAddress, billingInfo,
+    termsAcceptedAt, billingSameAddress, billingInfo,
   } = params;
 
   // Toplam metre hesapla
@@ -162,6 +164,7 @@ export async function createOrder(params: CreateOrderParams) {
         gangSheetWidth: ROLL_CONFIG.CANVAS_WIDTH_PX,
         gangSheetHeight: Math.round(totalHeightCm * ROLL_CONFIG.PX_PER_CM),
         customerNote: customerNote || null,
+        termsAcceptedAt: new Date(termsAcceptedAt),
         billingType: billingInfo?.billingType ?? "INDIVIDUAL",
         billingSameAddress: billingSameAddress ?? true,
         billingFirstName: billingInfo?.billingFirstName || null,
@@ -254,7 +257,7 @@ export async function createOrder(params: CreateOrderParams) {
         deliveryAddress = [ga.address, ga.district, ga.city, ga.zipCode].filter(Boolean).join(", ");
       }
 
-      const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://dtfbaskicim.ercanakcan.online";
+      const siteUrl = getBaseUrl();
 
       sendOrderConfirmation(email, {
         orderNumber: order.orderNumber,

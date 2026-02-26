@@ -10,7 +10,10 @@ import {
   Ruler,
   ShoppingCart,
   ArrowRight,
+  AlertTriangle,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { STATUS_COLORS, STATUS_DOT_COLORS, statusLabel } from "@/lib/order-utils";
 
 interface OrderSummary {
@@ -36,13 +39,22 @@ export default function AccountDashboard() {
   const { data: session } = useSession();
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [emailVerified, setEmailVerified] = useState(true);
+  const [resendLoading, setResendLoading] = useState(false);
 
   useEffect(() => {
     async function fetchDashboard() {
       try {
-        const ordersRes = await fetch("/api/orders");
+        const [ordersRes, profileRes] = await Promise.all([
+          fetch("/api/orders"),
+          fetch("/api/user/profile"),
+        ]);
         const ordersData = ordersRes.ok ? await ordersRes.json() : { orders: [] };
         setData({ orders: ordersData.orders });
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          setEmailVerified(profileData.user.emailVerified ?? true);
+        }
       } catch {
         // silent
       } finally {
@@ -51,6 +63,23 @@ export default function AccountDashboard() {
     }
     fetchDashboard();
   }, []);
+
+  const handleResendVerification = async () => {
+    setResendLoading(true);
+    try {
+      const res = await fetch("/api/auth/resend-verification", { method: "POST" });
+      const resData = await res.json();
+      if (res.ok) {
+        toast.success("Doğrulama emaili gönderildi! Gelen kutunuzu kontrol edin.");
+      } else {
+        toast.error(resData.error || "Gönderilemedi");
+      }
+    } catch {
+      toast.error("Bir hata oluştu");
+    } finally {
+      setResendLoading(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -68,6 +97,32 @@ export default function AccountDashboard() {
 
   return (
     <div>
+      {/* Email Doğrulama Banner */}
+      {!emailVerified && (
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 mb-6 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+                Email adresiniz doğrulanmamış
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Hesabınızın güvenliği için email adresinizi doğrulayın.
+              </p>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="shrink-0 border-amber-500/30 text-amber-700 dark:text-amber-400 hover:bg-amber-500/10"
+            onClick={handleResendVerification}
+            disabled={resendLoading}
+          >
+            {resendLoading ? "Gönderiliyor..." : "Doğrulama Emaili Gönder"}
+          </Button>
+        </div>
+      )}
+
       {/* Welcome */}
       <div className="mb-10">
         <h2 className="text-3xl font-bold text-foreground tracking-tight mb-2">

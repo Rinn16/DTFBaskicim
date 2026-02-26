@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Geçersiz veri", details: parsed.error.flatten() }, { status: 400 });
     }
 
-    const { paymentMethod, addressId, guestAddress, guestInfo, discountCode, customerNote, billingSameAddress, billingInfo } = parsed.data;
+    const { paymentMethod, addressId, guestAddress, guestInfo, discountCode, customerNote, billingSameAddress, billingInfo, termsAcceptedAt } = parsed.data;
 
     // Sepet ögeleri — üye ise DB'den, misafir ise body'den
     let cartItems;
@@ -92,6 +92,7 @@ export async function POST(request: Request) {
       cartItems,
       discountCode,
       customerNote,
+      termsAcceptedAt,
       billingSameAddress,
       billingInfo,
     });

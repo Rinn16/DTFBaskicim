@@ -114,9 +114,9 @@ const ORDER_CONFIRMATION_HTML = `<!DOCTYPE html>
 <tr><td style="padding:20px 32px;background-color:#f8fafc;border-top:1px solid #f1f5f9;text-align:center;">
 <p style="margin:0 0 12px;font-size:13px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">Bir sorunuz mu var? Destek ekibimiz 7/24 hazır.</p>
 <p style="margin:0;font-size:13px;font-family:'Manrope',Arial,sans-serif;">
-<a href="https://dtfbaskicim.ercanakcan.online" style="color:#137fec;text-decoration:none;font-weight:500;">Yardım Merkezi</a>
+<a href="{siteUrl}" style="color:#137fec;text-decoration:none;font-weight:500;">Yardım Merkezi</a>
 <span style="color:#cbd5e1;margin:0 8px;">|</span>
-<a href="https://dtfbaskicim.ercanakcan.online" style="color:#137fec;text-decoration:none;font-weight:500;">Whatsapp Destek</a>
+<a href="{siteUrl}" style="color:#137fec;text-decoration:none;font-weight:500;">Whatsapp Destek</a>
 </p>
 </td></tr>
 
@@ -231,9 +231,9 @@ const SHIPPED_HTML = `<!DOCTYPE html>
 <tr><td style="padding:20px 32px;background-color:#f8fafc;border-top:1px solid #f1f5f9;text-align:center;">
 <p style="margin:0 0 12px;font-size:13px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">Bir sorunuz mu var? Destek ekibimiz 7/24 haz&#305;r.</p>
 <p style="margin:0;font-size:13px;font-family:'Manrope',Arial,sans-serif;">
-<a href="https://dtfbaskicim.ercanakcan.online" style="color:#137fec;text-decoration:none;font-weight:500;">Yard&#305;m Merkezi</a>
+<a href="{siteUrl}" style="color:#137fec;text-decoration:none;font-weight:500;">Yard&#305;m Merkezi</a>
 <span style="color:#cbd5e1;margin:0 8px;">|</span>
-<a href="https://dtfbaskicim.ercanakcan.online" style="color:#137fec;text-decoration:none;font-weight:500;">Whatsapp Destek</a>
+<a href="{siteUrl}" style="color:#137fec;text-decoration:none;font-weight:500;">Whatsapp Destek</a>
 </p>
 </td></tr>
 

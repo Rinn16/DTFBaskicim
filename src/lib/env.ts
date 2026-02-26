@@ -87,3 +87,8 @@ export function validateEnv() {
 
 // Validate on module load
 validateEnv();
+
+/** Site URL'i — tüm email linkleri ve dışa dönük URL'ler için tek kaynak */
+export function getBaseUrl(): string {
+  return process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+}

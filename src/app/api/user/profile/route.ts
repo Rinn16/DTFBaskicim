@@ -20,6 +20,7 @@ export async function GET() {
         phone: true,
         companyName: true,
         taxNumber: true,
+        emailVerified: true,
       },
     });
 

@@ -82,6 +82,7 @@ export const checkoutSchema = z.object({
   customerNote: z.string().max(500).optional(),
   billingSameAddress: z.boolean().default(true),
   billingInfo: billingInfoSchema,
+  termsAcceptedAt: z.string().datetime(),
 });
 
 export type GuestInfoInput = z.infer<typeof guestInfoSchema>;

@@ -326,8 +326,9 @@ model Order {
 
   trackingCode String?
 
-  customerNote String? @db.Text
-  adminNote    String? @db.Text
+  customerNote    String?   @db.Text
+  adminNote       String?   @db.Text
+  termsAcceptedAt DateTime?
 
   billingType        BillingType @default(INDIVIDUAL)
   billingSameAddress Boolean     @default(true)

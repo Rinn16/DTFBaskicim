@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { getBaseUrl } from "@/lib/env";
 import { baseLayout, replaceVariables } from "@/lib/email-templates";
 
 export async function POST(request: Request) {
@@ -62,9 +63,10 @@ export async function POST(request: Request) {
       siparisTarihi: "24 Şubat 2025",
       urunListesi: sampleItemsHtml,
       teslimatAdresi: "Teknoloji Mah. Sanayi Cad. No: 42<br/>Şişli / İstanbul",
-      siparisDetayUrl: "https://dtfbaskicim.ercanakcan.online/hesabim/siparisler",
+      siparisDetayUrl: `${getBaseUrl()}/hesabim/siparisler`,
       kargoUcreti: "49,90",
       takipKodu: "TR12345678901",
+      siteUrl: getBaseUrl(),
     };
 
     const processedContent = replaceVariables(content, sampleData);

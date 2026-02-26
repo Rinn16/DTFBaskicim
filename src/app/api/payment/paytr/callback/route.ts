@@ -143,6 +143,8 @@ export async function POST(request: Request) {
     return new Response("OK");
   } catch (error) {
     console.error("PayTR callback error:", error);
-    return new Response("OK"); // PayTR'ye her zaman OK dön ki tekrar denemesin
+    // Geçici hatalarda (DB bağlantı, timeout) FAIL dönüyoruz ki PayTR tekrar denesin.
+    // PayTR en fazla birkaç kez retry yapar.
+    return new Response("FAIL", { status: 500 });
   }
 }

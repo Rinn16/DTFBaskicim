@@ -5,7 +5,8 @@ import { ZodError } from "zod";
 import { db } from "@/lib/db";
 import { rateLimit } from "@/lib/rate-limit";
 import { registerSchema } from "@/validations/auth";
-import { sendWelcomeEmail } from "@/services/email.service";
+import { sendWelcomeEmail, sendVerificationEmail } from "@/services/email.service";
+import { createEmailVerificationToken } from "@/lib/verification";
 
 export async function POST(request: Request) {
   try {
@@ -54,8 +55,16 @@ export async function POST(request: Request) {
       },
     });
 
-    // Fire-and-forget welcome email
+    // Fire-and-forget: doğrulama emaili + hoşgeldin emaili
     if (user.email) {
+      createEmailVerificationToken(user.email).then((token) => {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+        const verifyUrl = `${baseUrl}/email-dogrula/${token}`;
+        sendVerificationEmail(user.email!, verifyUrl).catch((err) =>
+          console.error("[email] Verification email failed:", err)
+        );
+      }).catch((err) => console.error("[email] Token creation failed:", err));
+
       sendWelcomeEmail(user.email, user.name).catch((err) =>
         console.error("[email] Welcome email failed:", err),
       );

@@ -223,6 +223,7 @@ export default function OdemePage() {
         customerNote: customerNote || undefined,
         billingSameAddress,
         billingInfo: { billingType, ...billingFields },
+        termsAcceptedAt: new Date().toISOString(),
       };
 
       if (isAuthenticated) {

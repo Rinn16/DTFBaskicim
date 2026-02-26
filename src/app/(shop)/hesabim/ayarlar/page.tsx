@@ -11,11 +11,22 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Plus, Pencil, Trash2, Star } from "lucide-react";
 import { toast } from "sonner";
+import { signOut } from "next-auth/react";
 
 // ---- Schemas ----
 const profileSchema = z.object({
@@ -70,6 +81,10 @@ export default function SettingsPage() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+  // Account deletion state
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Address dialog state
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
@@ -245,6 +260,25 @@ export default function SettingsPage() {
       }
     } catch {
       toast.error("Bir hata oluştu");
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+    try {
+      const res = await fetch("/api/user/account", { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json();
+        toast.error(data.error || "Hesap silinemedi");
+        return;
+      }
+      toast.success("Hesabınız silindi");
+      await signOut({ callbackUrl: "/" });
+    } catch {
+      toast.error("Bir hata oluştu");
+    } finally {
+      setDeleteLoading(false);
+      setShowDeleteDialog(false);
     }
   };
 
@@ -575,6 +609,45 @@ export default function SettingsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Hesap Silme Bölümü */}
+      <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-6 md:p-8">
+        <h2 className="text-lg font-bold text-destructive mb-2">Tehlikeli Bölge</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Hesabınızı sildiğinizde tüm kişisel verileriniz anonimleştirilir.
+          Adresleriniz, taslaklarınız ve sepetiniz kalıcı olarak silinir.
+          Tamamlanmış siparişlerin fatura bilgileri yasal zorunluluk gereği saklanır.
+          Bu işlem geri alınamaz.
+        </p>
+        <Button
+          variant="destructive"
+          onClick={() => setShowDeleteDialog(true)}
+        >
+          Hesabımı Sil
+        </Button>
+      </div>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hesabınızı silmek istediğinize emin misiniz?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bu işlem geri alınamaz. Tüm kişisel verileriniz anonimleştirilecek,
+              adresleriniz ve taslaklarınız kalıcı olarak silinecektir.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteLoading}>İptal</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDeleteAccount}
+              disabled={deleteLoading}
+            >
+              {deleteLoading ? "Siliniyor..." : "Evet, Hesabımı Sil"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
