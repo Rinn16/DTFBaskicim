@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -47,7 +47,7 @@ export default function OrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchOrders = useCallback(async (page: number, search: string) => {
     setIsLoading(true);
@@ -75,14 +75,19 @@ export default function OrdersPage() {
     fetchOrders(currentPage, searchQuery);
   }, [currentPage, fetchOrders]); // searchQuery handled by debounce
 
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    };
+  }, []);
+
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    if (searchTimeout) clearTimeout(searchTimeout);
-    const timeout = setTimeout(() => {
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    searchTimeoutRef.current = setTimeout(() => {
       setCurrentPage(1);
       fetchOrders(1, value);
     }, 400);
-    setSearchTimeout(timeout);
   };
 
   const totalPages = pagination?.totalPages ?? 1;
@@ -255,19 +260,37 @@ export default function OrdersPage() {
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`w-8 h-8 flex items-center justify-center rounded text-sm font-bold transition-colors ${
-                  page === currentPage
-                    ? "bg-primary text-primary-foreground shadow-primary/20 dark:shadow-[0_0_10px_rgba(19,127,236,0.4)]"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
+            {(() => {
+              const pages: (number | "...")[] = [];
+              if (totalPages <= 7) {
+                for (let i = 1; i <= totalPages; i++) pages.push(i);
+              } else {
+                pages.push(1);
+                if (currentPage > 3) pages.push("...");
+                const start = Math.max(2, currentPage - 1);
+                const end = Math.min(totalPages - 1, currentPage + 1);
+                for (let i = start; i <= end; i++) pages.push(i);
+                if (currentPage < totalPages - 2) pages.push("...");
+                pages.push(totalPages);
+              }
+              return pages.map((page, idx) =>
+                page === "..." ? (
+                  <span key={`ellipsis-${idx}`} className="w-8 h-8 flex items-center justify-center text-muted-foreground text-sm">...</span>
+                ) : (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-8 h-8 flex items-center justify-center rounded text-sm font-bold transition-colors ${
+                      page === currentPage
+                        ? "bg-primary text-primary-foreground shadow-primary/20 dark:shadow-[0_0_10px_rgba(19,127,236,0.4)]"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              );
+            })()}
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}

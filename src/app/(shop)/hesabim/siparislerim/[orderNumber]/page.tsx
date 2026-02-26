@@ -178,7 +178,20 @@ export default function OrderDetailPage() {
       });
       if (res.ok) {
         toast.success("Sipariş iptal edildi");
-        setOrder({ ...order, status: "CANCELLED" });
+        setOrder({
+          ...order,
+          status: "CANCELLED",
+          statusHistory: [
+            ...order.statusHistory,
+            {
+              id: `local-${Date.now()}`,
+              fromStatus: order.status,
+              toStatus: "CANCELLED",
+              note: "Müşteri tarafından iptal edildi",
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        });
       } else {
         const data = await res.json();
         toast.error(data.error || "Sipariş iptal edilemedi");

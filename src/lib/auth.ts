@@ -212,7 +212,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (dbUser) {
           token.role = dbUser.role;
           token.name = `${dbUser.name} ${dbUser.surname}`.trim();
-          token.profileComplete = !!(dbUser.name && dbUser.surname);
+          token.profileComplete = !!(dbUser.name?.trim() && dbUser.surname?.trim());
         }
       }
       return token;

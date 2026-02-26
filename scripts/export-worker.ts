@@ -216,10 +216,14 @@ async function main() {
       switch (job.name) {
         case "cleanup-expired-otps": {
           // Delete expired verification tokens
-          const deleted = await db.verificationToken.deleteMany({
+          const deletedTokens = await db.verificationToken.deleteMany({
             where: { expires: { lt: now } },
           });
-          console.log(`[Cron] Deleted ${deleted.count} expired verification tokens`);
+          // Delete expired OTP codes
+          const deletedOtps = await db.otpCode.deleteMany({
+            where: { expiresAt: { lt: now } },
+          });
+          console.log(`[Cron] Deleted ${deletedTokens.count} expired verification tokens, ${deletedOtps.count} expired OTP codes`);
           break;
         }
 
