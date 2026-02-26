@@ -73,9 +73,11 @@ export async function POST(request: Request) {
     const session = await auth();
 
     // Rate limit: 10 orders per hour per user/IP
+    const rawIp = request.headers.get("x-forwarded-for") ?? "unknown";
+    const clientIp = rawIp.split(",")[0].trim();
     const rlKey = session?.user?.id
       ? `orders:${session.user.id}`
-      : `orders:ip:${request.headers.get("x-forwarded-for") ?? "unknown"}`;
+      : `orders:ip:${clientIp}`;
     const { success: rlOk } = await rateLimit(rlKey, 10, 3600);
     if (!rlOk) {
       return NextResponse.json({ error: "Çok fazla istek. Lütfen bekleyin." }, { status: 429 });

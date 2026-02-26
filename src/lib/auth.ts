@@ -207,6 +207,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           data: { userId: user.id },
         });
         token.sessionId = userSession.id;
+        // Keep at most 10 sessions per user — delete oldest excess rows
+        const allSessions = await db.userSession.findMany({
+          where: { userId: user.id },
+          orderBy: { createdAt: "desc" },
+          select: { id: true },
+        });
+        if (allSessions.length > 10) {
+          const toDelete = allSessions.slice(10).map((s) => s.id);
+          await db.userSession.deleteMany({ where: { id: { in: toDelete } } });
+        }
       }
       // Fetch role and session validity from database
       if (token.id) {

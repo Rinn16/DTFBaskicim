@@ -5,7 +5,7 @@ import { s3Client, S3_BUCKET } from "@/lib/s3";
 import { HeadBucketCommand } from "@aws-sdk/client-s3";
 
 export async function GET() {
-  const checks: Record<string, { ok: boolean; latencyMs?: number; error?: string }> = {};
+  const checks: Record<string, { ok: boolean; latencyMs?: number }> = {};
   let allOk = true;
 
   // DB check
@@ -14,7 +14,8 @@ export async function GET() {
     await db.$queryRaw`SELECT 1`;
     checks.db = { ok: true, latencyMs: Date.now() - dbStart };
   } catch (err) {
-    checks.db = { ok: false, error: String(err) };
+    console.error("[health] DB check failed:", err);
+    checks.db = { ok: false };
     allOk = false;
   }
 
@@ -24,7 +25,8 @@ export async function GET() {
     await redis.ping();
     checks.redis = { ok: true, latencyMs: Date.now() - redisStart };
   } catch (err) {
-    checks.redis = { ok: false, error: String(err) };
+    console.error("[health] Redis check failed:", err);
+    checks.redis = { ok: false };
     allOk = false;
   }
 
@@ -34,7 +36,8 @@ export async function GET() {
     await s3Client.send(new HeadBucketCommand({ Bucket: S3_BUCKET }));
     checks.s3 = { ok: true, latencyMs: Date.now() - s3Start };
   } catch (err) {
-    checks.s3 = { ok: false, error: String(err) };
+    console.error("[health] S3 check failed:", err);
+    checks.s3 = { ok: false };
     allOk = false;
   }
 

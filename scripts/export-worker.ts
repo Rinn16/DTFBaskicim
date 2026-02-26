@@ -223,7 +223,12 @@ async function main() {
           const deletedOtps = await db.otpCode.deleteMany({
             where: { expiresAt: { lt: now } },
           });
-          console.log(`[Cron] Deleted ${deletedTokens.count} expired verification tokens, ${deletedOtps.count} expired OTP codes`);
+          // Delete UserSession records older than 30 days (JWT max age is 30 days)
+          const sessionCutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          const deletedSessions = await db.userSession.deleteMany({
+            where: { createdAt: { lt: sessionCutoff } },
+          });
+          console.log(`[Cron] Deleted ${deletedTokens.count} expired verification tokens, ${deletedOtps.count} expired OTP codes, ${deletedSessions.count} old user sessions`);
           break;
         }
 

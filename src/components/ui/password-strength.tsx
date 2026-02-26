@@ -1,5 +1,7 @@
 "use client";
 
+import { Check, Circle } from "lucide-react";
+
 interface PasswordStrengthProps {
   password: string;
 }
@@ -42,21 +44,21 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
           <div
             key={level}
             className={`h-1 flex-1 rounded-full transition-colors ${
-              level <= strength
-                ? STRENGTH_COLORS[strength]
-                : "bg-border"
+              level <= strength ? STRENGTH_COLORS[strength] : "bg-border"
             }`}
           />
         ))}
       </div>
       {strength > 0 && (
-        <p className={`text-xs font-medium ${
-          strength === 4
-            ? "text-green-600 dark:text-green-400"
-            : strength >= 3
-            ? "text-yellow-600 dark:text-yellow-400"
-            : "text-red-600 dark:text-red-400"
-        }`}>
+        <p
+          className={`text-xs font-medium ${
+            strength === 4
+              ? "text-green-600 dark:text-green-400"
+              : strength >= 3
+              ? "text-yellow-600 dark:text-yellow-400"
+              : "text-red-600 dark:text-red-400"
+          }`}
+        >
           {STRENGTH_LABELS[strength]}
         </p>
       )}
@@ -65,8 +67,17 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
         {rules.map((rule) => {
           const passed = rule.test(password);
           return (
-            <li key={rule.label} className={`flex items-center gap-1.5 text-xs ${passed ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`}>
-              <span>{passed ? "✓" : "○"}</span>
+            <li
+              key={rule.label}
+              className={`flex items-center gap-1.5 text-xs ${
+                passed ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
+              }`}
+            >
+              {passed ? (
+                <Check className="h-3 w-3 shrink-0" />
+              ) : (
+                <Circle className="h-3 w-3 shrink-0" />
+              )}
               {rule.label}
             </li>
           );

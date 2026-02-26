@@ -2,7 +2,6 @@ import { z } from "zod";
 
 const strongPassword = z
   .string()
-  .min(1, "Şifre gerekli")
   .min(8, "Şifre en az 8 karakter olmalı")
   .regex(/[A-Z]/, "En az bir büyük harf içermeli")
   .regex(/[a-z]/, "En az bir küçük harf içermeli")
