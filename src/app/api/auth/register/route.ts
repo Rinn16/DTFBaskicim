@@ -41,13 +41,20 @@ export async function POST(request: Request) {
     // Hash password
     const passwordHash = await bcrypt.hash(validated.password, 12);
 
+    // Normalize phone to +90XXXXXXXXXX format before saving
+    let normalizedPhone: string | null = null;
+    if (validated.phone) {
+      const digits = validated.phone.replace(/^(\+90|0)/, "").replace(/\s/g, "");
+      normalizedPhone = `+90${digits}`;
+    }
+
     // Create user
     const user = await db.user.create({
       data: {
         email: validated.email,
         name: validated.name,
         surname: validated.surname,
-        phone: validated.phone || null,
+        phone: normalizedPhone,
         passwordHash,
         companyName: validated.companyName || null,
         taxNumber: validated.taxNumber || null,

@@ -103,10 +103,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           data: { verified: true },
         });
 
-        // Find or create user
-        let user = await db.user.findUnique({
-          where: { phone },
-        });
+        // Find user — try all phone formats for backwards compat with
+        // existing accounts that may have been stored unnormalized (e.g. "05XX" or "5XX")
+        let user =
+          (await db.user.findUnique({ where: { phone } })) ??
+          (await db.user.findUnique({ where: { phone: `0${normalized}` } })) ??
+          (await db.user.findUnique({ where: { phone: normalized } }));
 
         if (!user) {
           user = await db.user.create({
