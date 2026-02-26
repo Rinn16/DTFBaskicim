@@ -2193,6 +2193,10 @@ export const UserScalarFieldEnum = {
   billingDistrict: 'billingDistrict',
   billingZipCode: 'billingZipCode',
   sessionsInvalidatedAt: 'sessionsInvalidatedAt',
+  emailOptIn: 'emailOptIn',
+  smsOptIn: 'smsOptIn',
+  pendingEmail: 'pendingEmail',
+  pendingPhone: 'pendingPhone',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -2362,6 +2366,8 @@ export const SiteSettingsScalarFieldEnum = {
   efaturaPassword: 'efaturaPassword',
   efaturaEarsivPrefix: 'efaturaEarsivPrefix',
   efaturaEfaturaPrefix: 'efaturaEfaturaPrefix',
+  ordersPaused: 'ordersPaused',
+  ordersPausedMessage: 'ordersPausedMessage',
   updatedAt: 'updatedAt'
 } as const
 

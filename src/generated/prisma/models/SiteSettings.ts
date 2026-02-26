@@ -62,6 +62,8 @@ export type SiteSettingsMinAggregateOutputType = {
   efaturaPassword: string | null
   efaturaEarsivPrefix: string | null
   efaturaEfaturaPrefix: string | null
+  ordersPaused: boolean | null
+  ordersPausedMessage: string | null
   updatedAt: Date | null
 }
 
@@ -93,6 +95,8 @@ export type SiteSettingsMaxAggregateOutputType = {
   efaturaPassword: string | null
   efaturaEarsivPrefix: string | null
   efaturaEfaturaPrefix: string | null
+  ordersPaused: boolean | null
+  ordersPausedMessage: string | null
   updatedAt: Date | null
 }
 
@@ -124,6 +128,8 @@ export type SiteSettingsCountAggregateOutputType = {
   efaturaPassword: number
   efaturaEarsivPrefix: number
   efaturaEfaturaPrefix: number
+  ordersPaused: number
+  ordersPausedMessage: number
   updatedAt: number
   _all: number
 }
@@ -165,6 +171,8 @@ export type SiteSettingsMinAggregateInputType = {
   efaturaPassword?: true
   efaturaEarsivPrefix?: true
   efaturaEfaturaPrefix?: true
+  ordersPaused?: true
+  ordersPausedMessage?: true
   updatedAt?: true
 }
 
@@ -196,6 +204,8 @@ export type SiteSettingsMaxAggregateInputType = {
   efaturaPassword?: true
   efaturaEarsivPrefix?: true
   efaturaEfaturaPrefix?: true
+  ordersPaused?: true
+  ordersPausedMessage?: true
   updatedAt?: true
 }
 
@@ -227,6 +237,8 @@ export type SiteSettingsCountAggregateInputType = {
   efaturaPassword?: true
   efaturaEarsivPrefix?: true
   efaturaEfaturaPrefix?: true
+  ordersPaused?: true
+  ordersPausedMessage?: true
   updatedAt?: true
   _all?: true
 }
@@ -345,6 +357,8 @@ export type SiteSettingsGroupByOutputType = {
   efaturaPassword: string | null
   efaturaEarsivPrefix: string
   efaturaEfaturaPrefix: string
+  ordersPaused: boolean
+  ordersPausedMessage: string | null
   updatedAt: Date
   _count: SiteSettingsCountAggregateOutputType | null
   _avg: SiteSettingsAvgAggregateOutputType | null
@@ -399,6 +413,8 @@ export type SiteSettingsWhereInput = {
   efaturaPassword?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   efaturaEarsivPrefix?: Prisma.StringFilter<"SiteSettings"> | string
   efaturaEfaturaPrefix?: Prisma.StringFilter<"SiteSettings"> | string
+  ordersPaused?: Prisma.BoolFilter<"SiteSettings"> | boolean
+  ordersPausedMessage?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"SiteSettings"> | Date | string
 }
 
@@ -430,6 +446,8 @@ export type SiteSettingsOrderByWithRelationInput = {
   efaturaPassword?: Prisma.SortOrderInput | Prisma.SortOrder
   efaturaEarsivPrefix?: Prisma.SortOrder
   efaturaEfaturaPrefix?: Prisma.SortOrder
+  ordersPaused?: Prisma.SortOrder
+  ordersPausedMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -464,6 +482,8 @@ export type SiteSettingsWhereUniqueInput = Prisma.AtLeast<{
   efaturaPassword?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   efaturaEarsivPrefix?: Prisma.StringFilter<"SiteSettings"> | string
   efaturaEfaturaPrefix?: Prisma.StringFilter<"SiteSettings"> | string
+  ordersPaused?: Prisma.BoolFilter<"SiteSettings"> | boolean
+  ordersPausedMessage?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"SiteSettings"> | Date | string
 }, "id">
 
@@ -495,6 +515,8 @@ export type SiteSettingsOrderByWithAggregationInput = {
   efaturaPassword?: Prisma.SortOrderInput | Prisma.SortOrder
   efaturaEarsivPrefix?: Prisma.SortOrder
   efaturaEfaturaPrefix?: Prisma.SortOrder
+  ordersPaused?: Prisma.SortOrder
+  ordersPausedMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SiteSettingsCountOrderByAggregateInput
   _avg?: Prisma.SiteSettingsAvgOrderByAggregateInput
@@ -534,6 +556,8 @@ export type SiteSettingsScalarWhereWithAggregatesInput = {
   efaturaPassword?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   efaturaEarsivPrefix?: Prisma.StringWithAggregatesFilter<"SiteSettings"> | string
   efaturaEfaturaPrefix?: Prisma.StringWithAggregatesFilter<"SiteSettings"> | string
+  ordersPaused?: Prisma.BoolWithAggregatesFilter<"SiteSettings"> | boolean
+  ordersPausedMessage?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"SiteSettings"> | Date | string
 }
 
@@ -565,6 +589,8 @@ export type SiteSettingsCreateInput = {
   efaturaPassword?: string | null
   efaturaEarsivPrefix?: string
   efaturaEfaturaPrefix?: string
+  ordersPaused?: boolean
+  ordersPausedMessage?: string | null
   updatedAt?: Date | string
 }
 
@@ -596,6 +622,8 @@ export type SiteSettingsUncheckedCreateInput = {
   efaturaPassword?: string | null
   efaturaEarsivPrefix?: string
   efaturaEfaturaPrefix?: string
+  ordersPaused?: boolean
+  ordersPausedMessage?: string | null
   updatedAt?: Date | string
 }
 
@@ -627,6 +655,8 @@ export type SiteSettingsUpdateInput = {
   efaturaPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   efaturaEarsivPrefix?: Prisma.StringFieldUpdateOperationsInput | string
   efaturaEfaturaPrefix?: Prisma.StringFieldUpdateOperationsInput | string
+  ordersPaused?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ordersPausedMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -658,6 +688,8 @@ export type SiteSettingsUncheckedUpdateInput = {
   efaturaPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   efaturaEarsivPrefix?: Prisma.StringFieldUpdateOperationsInput | string
   efaturaEfaturaPrefix?: Prisma.StringFieldUpdateOperationsInput | string
+  ordersPaused?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ordersPausedMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -689,6 +721,8 @@ export type SiteSettingsCreateManyInput = {
   efaturaPassword?: string | null
   efaturaEarsivPrefix?: string
   efaturaEfaturaPrefix?: string
+  ordersPaused?: boolean
+  ordersPausedMessage?: string | null
   updatedAt?: Date | string
 }
 
@@ -720,6 +754,8 @@ export type SiteSettingsUpdateManyMutationInput = {
   efaturaPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   efaturaEarsivPrefix?: Prisma.StringFieldUpdateOperationsInput | string
   efaturaEfaturaPrefix?: Prisma.StringFieldUpdateOperationsInput | string
+  ordersPaused?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ordersPausedMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -751,6 +787,8 @@ export type SiteSettingsUncheckedUpdateManyInput = {
   efaturaPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   efaturaEarsivPrefix?: Prisma.StringFieldUpdateOperationsInput | string
   efaturaEfaturaPrefix?: Prisma.StringFieldUpdateOperationsInput | string
+  ordersPaused?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ordersPausedMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -782,6 +820,8 @@ export type SiteSettingsCountOrderByAggregateInput = {
   efaturaPassword?: Prisma.SortOrder
   efaturaEarsivPrefix?: Prisma.SortOrder
   efaturaEfaturaPrefix?: Prisma.SortOrder
+  ordersPaused?: Prisma.SortOrder
+  ordersPausedMessage?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -817,6 +857,8 @@ export type SiteSettingsMaxOrderByAggregateInput = {
   efaturaPassword?: Prisma.SortOrder
   efaturaEarsivPrefix?: Prisma.SortOrder
   efaturaEfaturaPrefix?: Prisma.SortOrder
+  ordersPaused?: Prisma.SortOrder
+  ordersPausedMessage?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -848,6 +890,8 @@ export type SiteSettingsMinOrderByAggregateInput = {
   efaturaPassword?: Prisma.SortOrder
   efaturaEarsivPrefix?: Prisma.SortOrder
   efaturaEfaturaPrefix?: Prisma.SortOrder
+  ordersPaused?: Prisma.SortOrder
+  ordersPausedMessage?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -885,6 +929,8 @@ export type SiteSettingsSelect<ExtArgs extends runtime.Types.Extensions.Internal
   efaturaPassword?: boolean
   efaturaEarsivPrefix?: boolean
   efaturaEfaturaPrefix?: boolean
+  ordersPaused?: boolean
+  ordersPausedMessage?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["siteSettings"]>
 
@@ -916,6 +962,8 @@ export type SiteSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   efaturaPassword?: boolean
   efaturaEarsivPrefix?: boolean
   efaturaEfaturaPrefix?: boolean
+  ordersPaused?: boolean
+  ordersPausedMessage?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["siteSettings"]>
 
@@ -947,6 +995,8 @@ export type SiteSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   efaturaPassword?: boolean
   efaturaEarsivPrefix?: boolean
   efaturaEfaturaPrefix?: boolean
+  ordersPaused?: boolean
+  ordersPausedMessage?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["siteSettings"]>
 
@@ -978,10 +1028,12 @@ export type SiteSettingsSelectScalar = {
   efaturaPassword?: boolean
   efaturaEarsivPrefix?: boolean
   efaturaEfaturaPrefix?: boolean
+  ordersPaused?: boolean
+  ordersPausedMessage?: boolean
   updatedAt?: boolean
 }
 
-export type SiteSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "smsEnabled" | "emailEnabled" | "emailWelcome" | "emailOrderConfirm" | "emailShipped" | "invoiceCompanyName" | "invoiceCompanyTaxNumber" | "invoiceCompanyTaxOffice" | "invoiceCompanyAddress" | "invoiceCompanyCity" | "invoiceCompanyDistrict" | "invoiceCompanyZipCode" | "invoiceCompanyPhone" | "invoiceCompanyEmail" | "invoiceCompanyIban" | "invoiceCompanyWebsite" | "invoiceCompanyLogoKey" | "invoiceNotes" | "invoicePrefix" | "invoiceNextNumber" | "efaturaEnabled" | "efaturaEnvironment" | "efaturaEmail" | "efaturaPassword" | "efaturaEarsivPrefix" | "efaturaEfaturaPrefix" | "updatedAt", ExtArgs["result"]["siteSettings"]>
+export type SiteSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "smsEnabled" | "emailEnabled" | "emailWelcome" | "emailOrderConfirm" | "emailShipped" | "invoiceCompanyName" | "invoiceCompanyTaxNumber" | "invoiceCompanyTaxOffice" | "invoiceCompanyAddress" | "invoiceCompanyCity" | "invoiceCompanyDistrict" | "invoiceCompanyZipCode" | "invoiceCompanyPhone" | "invoiceCompanyEmail" | "invoiceCompanyIban" | "invoiceCompanyWebsite" | "invoiceCompanyLogoKey" | "invoiceNotes" | "invoicePrefix" | "invoiceNextNumber" | "efaturaEnabled" | "efaturaEnvironment" | "efaturaEmail" | "efaturaPassword" | "efaturaEarsivPrefix" | "efaturaEfaturaPrefix" | "ordersPaused" | "ordersPausedMessage" | "updatedAt", ExtArgs["result"]["siteSettings"]>
 
 export type $SiteSettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SiteSettings"
@@ -1014,6 +1066,8 @@ export type $SiteSettingsPayload<ExtArgs extends runtime.Types.Extensions.Intern
     efaturaPassword: string | null
     efaturaEarsivPrefix: string
     efaturaEfaturaPrefix: string
+    ordersPaused: boolean
+    ordersPausedMessage: string | null
     updatedAt: Date
   }, ExtArgs["result"]["siteSettings"]>
   composites: {}
@@ -1465,6 +1519,8 @@ export interface SiteSettingsFieldRefs {
   readonly efaturaPassword: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly efaturaEarsivPrefix: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly efaturaEfaturaPrefix: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly ordersPaused: Prisma.FieldRef<"SiteSettings", 'Boolean'>
+  readonly ordersPausedMessage: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly updatedAt: Prisma.FieldRef<"SiteSettings", 'DateTime'>
 }
     

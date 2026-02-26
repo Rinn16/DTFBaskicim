@@ -60,6 +60,10 @@ const updateSchema = z.object({
   efaturaPassword: z.string().optional(),
   efaturaEarsivPrefix: z.string().length(3).regex(/^[A-Za-z]/, "Rakam ile başlayamaz").optional(),
   efaturaEfaturaPrefix: z.string().length(3).regex(/^[A-Za-z]/, "Rakam ile başlayamaz").optional(),
+
+  // Üretim duraklatma
+  ordersPaused: z.boolean().optional(),
+  ordersPausedMessage: z.string().optional(),
 });
 
 export async function PATCH(request: Request) {

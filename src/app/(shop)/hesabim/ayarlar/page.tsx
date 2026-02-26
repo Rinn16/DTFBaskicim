@@ -24,7 +24,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Plus, Pencil, Trash2, Star, MonitorSmartphone, LogOut } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Loader2, Plus, Pencil, Trash2, Star, MonitorSmartphone, LogOut, Lock, Bell, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { signOut, useSession } from "next-auth/react";
 
@@ -92,12 +93,37 @@ export default function SettingsPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
+  // Notification prefs state
+  const [notifPrefs, setNotifPrefs] = useState({ emailOptIn: true, smsOptIn: true });
+  const [isLoadingNotifs, setIsLoadingNotifs] = useState(true);
+
+  // Password change state
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
+  const [passwordErrors, setPasswordErrors] = useState<Record<string, string>>({});
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
+
   // Sessions state
   const [sessions, setSessions] = useState<UserSessionEntry[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | undefined>();
   const [isLoadingSessions, setIsLoadingSessions] = useState(true);
   const [signOutAllLoading, setSignOutAllLoading] = useState(false);
   const [showSignOutAllDialog, setShowSignOutAllDialog] = useState(false);
+
+  // Email change dialog state
+  const [emailChangeOpen, setEmailChangeOpen] = useState(false);
+  const [emailChangeValue, setEmailChangeValue] = useState("");
+  const [emailChangeSending, setEmailChangeSending] = useState(false);
+  const [emailChangeSent, setEmailChangeSent] = useState(false);
+  const [emailChangeError, setEmailChangeError] = useState("");
+
+  // Phone change dialog state
+  const [phoneChangeOpen, setPhoneChangeOpen] = useState(false);
+  const [phoneChangeStep, setPhoneChangeStep] = useState<"phone" | "otp">("phone");
+  const [phoneChangeValue, setPhoneChangeValue] = useState("");
+  const [phoneOtpValue, setPhoneOtpValue] = useState("");
+  const [phoneChangeSending, setPhoneChangeSending] = useState(false);
+  const [phoneChangeSuccess, setPhoneChangeSuccess] = useState(false);
+  const [phoneChangeError, setPhoneChangeError] = useState("");
 
   // Address dialog state
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
@@ -176,6 +202,117 @@ export default function SettingsPage() {
     fetchSessions();
   }, []);
 
+  // Fetch notification prefs
+  useEffect(() => {
+    async function fetchNotifs() {
+      try {
+        const res = await fetch("/api/user/notifications");
+        if (res.ok) {
+          const data = await res.json();
+          setNotifPrefs({ emailOptIn: data.emailOptIn, smsOptIn: data.smsOptIn });
+        }
+      } catch {
+        // silent
+      } finally {
+        setIsLoadingNotifs(false);
+      }
+    }
+    fetchNotifs();
+  }, []);
+
+  const handleToggleNotif = async (key: "emailOptIn" | "smsOptIn", value: boolean) => {
+    setNotifPrefs((p) => ({ ...p, [key]: value }));
+    try {
+      const res = await fetch("/api/user/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [key]: value }),
+      });
+      if (!res.ok) {
+        setNotifPrefs((p) => ({ ...p, [key]: !value }));
+        toast.error("Tercih güncellenemedi");
+      }
+    } catch {
+      setNotifPrefs((p) => ({ ...p, [key]: !value }));
+      toast.error("Bir hata oluştu");
+    }
+  };
+
+  const handleRequestEmailChange = async () => {
+    setEmailChangeError("");
+    if (!emailChangeValue || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailChangeValue)) {
+      setEmailChangeError("Geçerli bir email adresi girin");
+      return;
+    }
+    setEmailChangeSending(true);
+    try {
+      const res = await fetch("/api/user/change-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newEmail: emailChangeValue }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setEmailChangeSent(true);
+      } else {
+        setEmailChangeError(data.error || "İstek gönderilemedi");
+      }
+    } catch {
+      setEmailChangeError("Bir hata oluştu");
+    } finally {
+      setEmailChangeSending(false);
+    }
+  };
+
+  const handleRequestPhoneChange = async () => {
+    setPhoneChangeError("");
+    setPhoneChangeSending(true);
+    try {
+      const res = await fetch("/api/user/change-phone", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newPhone: phoneChangeValue }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPhoneChangeStep("otp");
+      } else {
+        setPhoneChangeError(data.error || "Kod gönderilemedi");
+      }
+    } catch {
+      setPhoneChangeError("Bir hata oluştu");
+    } finally {
+      setPhoneChangeSending(false);
+    }
+  };
+
+  const handleVerifyPhoneChange = async () => {
+    setPhoneChangeError("");
+    setPhoneChangeSending(true);
+    try {
+      const res = await fetch("/api/user/change-phone/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: phoneOtpValue }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPhoneChangeSuccess(true);
+        const profileRes = await fetch("/api/user/profile");
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          setProfile(profileData.user);
+        }
+      } else {
+        setPhoneChangeError(data.error || "Doğrulama başarısız");
+      }
+    } catch {
+      setPhoneChangeError("Bir hata oluştu");
+    } finally {
+      setPhoneChangeSending(false);
+    }
+  };
+
   const handleSignOutAll = async () => {
     setSignOutAllLoading(true);
     try {
@@ -214,6 +351,45 @@ export default function SettingsPage() {
       toast.error("Bir hata oluştu");
     } finally {
       setIsSavingProfile(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    setPasswordErrors({});
+    const { currentPassword, newPassword, confirmPassword } = passwordForm;
+    const errs: Record<string, string> = {};
+    if (!currentPassword) errs.currentPassword = "Mevcut şifre gerekli";
+    if (newPassword.length < 8) errs.newPassword = "En az 8 karakter olmalı";
+    else if (!/[A-Z]/.test(newPassword)) errs.newPassword = "En az bir büyük harf içermeli";
+    else if (!/[a-z]/.test(newPassword)) errs.newPassword = "En az bir küçük harf içermeli";
+    else if (!/[0-9]/.test(newPassword)) errs.newPassword = "En az bir rakam içermeli";
+    if (newPassword !== confirmPassword) errs.confirmPassword = "Şifreler eşleşmedi";
+    if (Object.keys(errs).length > 0) { setPasswordErrors(errs); return; }
+
+    setIsSavingPassword(true);
+    try {
+      const res = await fetch("/api/user/password", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(passwordForm),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Şifre başarıyla değiştirildi");
+        setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      } else {
+        if (data.details?.fieldErrors) {
+          setPasswordErrors(Object.fromEntries(
+            Object.entries(data.details.fieldErrors).map(([k, v]) => [k, (v as string[])[0]])
+          ));
+        } else {
+          toast.error(data.error || "Şifre değiştirilemedi");
+        }
+      }
+    } catch {
+      toast.error("Bir hata oluştu");
+    } finally {
+      setIsSavingPassword(false);
     }
   };
 
@@ -377,20 +553,50 @@ export default function SettingsPage() {
             </div>
             <div className="space-y-2">
               <label className={labelClass}>Email</label>
-              <input
-                className={`${inputClass} opacity-50 cursor-not-allowed`}
-                value={profile?.email || ""}
-                disabled
-              />
+              <div className="flex gap-2">
+                <input
+                  className={`${inputClass} opacity-50 cursor-not-allowed flex-1`}
+                  value={profile?.email || ""}
+                  disabled
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmailChangeValue("");
+                    setEmailChangeSent(false);
+                    setEmailChangeError("");
+                    setEmailChangeOpen(true);
+                  }}
+                  className="px-3 py-2 text-xs font-medium border border-border rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors whitespace-nowrap"
+                >
+                  Değiştir
+                </button>
+              </div>
             </div>
             <div className="space-y-2">
               <label className={labelClass}>Telefon</label>
-              <input
-                className={`${inputClass} opacity-50 cursor-not-allowed`}
-                value={profile?.phone || ""}
-                disabled
-                placeholder="+90 5XX XXX XX XX"
-              />
+              <div className="flex gap-2">
+                <input
+                  className={`${inputClass} opacity-50 cursor-not-allowed flex-1`}
+                  value={profile?.phone || ""}
+                  disabled
+                  placeholder="+90 5XX XXX XX XX"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPhoneChangeStep("phone");
+                    setPhoneChangeValue("");
+                    setPhoneOtpValue("");
+                    setPhoneChangeSuccess(false);
+                    setPhoneChangeError("");
+                    setPhoneChangeOpen(true);
+                  }}
+                  className="px-3 py-2 text-xs font-medium border border-border rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors whitespace-nowrap"
+                >
+                  Değiştir
+                </button>
+              </div>
             </div>
             <div className="space-y-2">
               <label className={labelClass}>Firma Adı</label>
@@ -422,6 +628,65 @@ export default function SettingsPage() {
             </div>
           </form>
         )}
+      </div>
+
+      {/* Password Change Section */}
+      <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <Lock className="h-5 w-5 text-muted-foreground" />
+          <h2 className="text-xl font-bold text-foreground">Şifre Değiştir</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <label className={labelClass}>Mevcut Şifre</label>
+            <input
+              type="password"
+              className={inputClass}
+              value={passwordForm.currentPassword}
+              onChange={(e) => setPasswordForm((p) => ({ ...p, currentPassword: e.target.value }))}
+              placeholder="••••••••"
+            />
+            {passwordErrors.currentPassword && (
+              <p className="text-xs text-red-400">{passwordErrors.currentPassword}</p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <label className={labelClass}>Yeni Şifre</label>
+            <input
+              type="password"
+              className={inputClass}
+              value={passwordForm.newPassword}
+              onChange={(e) => setPasswordForm((p) => ({ ...p, newPassword: e.target.value }))}
+              placeholder="En az 8 karakter"
+            />
+            {passwordErrors.newPassword && (
+              <p className="text-xs text-red-400">{passwordErrors.newPassword}</p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <label className={labelClass}>Yeni Şifre Tekrar</label>
+            <input
+              type="password"
+              className={inputClass}
+              value={passwordForm.confirmPassword}
+              onChange={(e) => setPasswordForm((p) => ({ ...p, confirmPassword: e.target.value }))}
+              placeholder="••••••••"
+            />
+            {passwordErrors.confirmPassword && (
+              <p className="text-xs text-red-400">{passwordErrors.confirmPassword}</p>
+            )}
+          </div>
+        </div>
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={handleChangePassword}
+            disabled={isSavingPassword}
+            className="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-bold text-sm transition-all shadow-primary/20 dark:shadow-[0_0_20px_rgba(19,127,236,0.3)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            {isSavingPassword && <Loader2 className="h-4 w-4 animate-spin" />}
+            Şifreyi Değiştir
+          </button>
+        </div>
       </div>
 
       {/* Addresses Section */}
@@ -748,6 +1013,46 @@ export default function SettingsPage() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Notification Preferences */}
+      <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <Bell className="h-5 w-5 text-muted-foreground" />
+          <h2 className="text-xl font-bold text-foreground">Bildirim Tercihleri</h2>
+        </div>
+
+        {isLoadingNotifs ? (
+          <div className="flex justify-center py-6">
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">E-posta bildirimleri</p>
+                <p className="text-xs text-muted-foreground">Sipariş durumu, kargo bilgisi ve kampanyalar</p>
+              </div>
+              <Switch
+                checked={notifPrefs.emailOptIn}
+                onCheckedChange={(v) => handleToggleNotif("emailOptIn", v)}
+              />
+            </div>
+            <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">SMS bildirimleri</p>
+                <p className="text-xs text-muted-foreground">Sipariş durumu ve kargo SMS'leri</p>
+              </div>
+              <Switch
+                checked={notifPrefs.smsOptIn}
+                onCheckedChange={(v) => handleToggleNotif("smsOptIn", v)}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground px-1">
+              Hesap güvenliği ve ödeme onayı gibi zorunlu bildirimler bu tercihten etkilenmez.
+            </p>
+          </div>
+        )}
+      </div>
+
       {/* Hesap Silme Bölümü */}
       <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-6 md:p-8">
         <h2 className="text-lg font-bold text-destructive mb-2">Tehlikeli Bölge</h2>
@@ -786,6 +1091,153 @@ export default function SettingsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Email Change Dialog */}
+      <Dialog
+        open={emailChangeOpen}
+        onOpenChange={(open) => { if (!open) setEmailChangeOpen(false); }}
+      >
+        <DialogContent className="sm:max-w-md bg-card border-border text-foreground">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">E-posta Adresini Değiştir</DialogTitle>
+          </DialogHeader>
+          {emailChangeSent ? (
+            <div className="py-4 text-center space-y-3">
+              <CheckCircle2 className="h-10 w-10 text-green-500 mx-auto" />
+              <p className="text-sm text-foreground font-medium">Doğrulama linki gönderildi!</p>
+              <p className="text-xs text-muted-foreground">
+                <strong>{emailChangeValue}</strong> adresine doğrulama linki gönderdik.
+                Linke tıklayarak email adresinizi değiştirebilirsiniz.
+              </p>
+              <Button onClick={() => setEmailChangeOpen(false)} className="w-full">
+                Tamam
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Yeni email adresinize bir doğrulama linki göndereceğiz.
+              </p>
+              <div className="space-y-2">
+                <Label className={labelClass}>Yeni E-posta Adresi</Label>
+                <Input
+                  type="email"
+                  value={emailChangeValue}
+                  onChange={(e) => setEmailChangeValue(e.target.value)}
+                  placeholder="yeni@email.com"
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground"
+                />
+                {emailChangeError && (
+                  <p className="text-xs text-destructive">{emailChangeError}</p>
+                )}
+              </div>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setEmailChangeOpen(false)}
+                  className="border-border text-muted-foreground hover:bg-muted"
+                >
+                  İptal
+                </Button>
+                <Button onClick={handleRequestEmailChange} disabled={emailChangeSending}>
+                  {emailChangeSending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                  Doğrulama Linki Gönder
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Phone Change Dialog */}
+      <Dialog
+        open={phoneChangeOpen}
+        onOpenChange={(open) => { if (!open) setPhoneChangeOpen(false); }}
+      >
+        <DialogContent className="sm:max-w-md bg-card border-border text-foreground">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Telefon Numarasını Değiştir</DialogTitle>
+          </DialogHeader>
+          {phoneChangeSuccess ? (
+            <div className="py-4 text-center space-y-3">
+              <CheckCircle2 className="h-10 w-10 text-green-500 mx-auto" />
+              <p className="text-sm text-foreground font-medium">Telefon numaranız güncellendi!</p>
+              <Button onClick={() => setPhoneChangeOpen(false)} className="w-full">
+                Tamam
+              </Button>
+            </div>
+          ) : phoneChangeStep === "phone" ? (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Yeni telefon numaranıza doğrulama kodu göndereceğiz.
+              </p>
+              <div className="space-y-2">
+                <Label className={labelClass}>Yeni Telefon Numarası</Label>
+                <Input
+                  type="tel"
+                  value={phoneChangeValue}
+                  onChange={(e) => setPhoneChangeValue(e.target.value)}
+                  placeholder="05XX XXX XX XX"
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground"
+                />
+                {phoneChangeError && (
+                  <p className="text-xs text-destructive">{phoneChangeError}</p>
+                )}
+              </div>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setPhoneChangeOpen(false)}
+                  className="border-border text-muted-foreground hover:bg-muted"
+                >
+                  İptal
+                </Button>
+                <Button onClick={handleRequestPhoneChange} disabled={phoneChangeSending}>
+                  {phoneChangeSending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                  Kod Gönder
+                </Button>
+              </DialogFooter>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                <strong>{phoneChangeValue}</strong> numarasına 6 haneli doğrulama kodu gönderdik.
+              </p>
+              <div className="space-y-2">
+                <Label className={labelClass}>Doğrulama Kodu</Label>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={phoneOtpValue}
+                  onChange={(e) => setPhoneOtpValue(e.target.value.replace(/\D/g, ""))}
+                  placeholder="123456"
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground tracking-widest text-center text-lg"
+                />
+                {phoneChangeError && (
+                  <p className="text-xs text-destructive">{phoneChangeError}</p>
+                )}
+              </div>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setPhoneChangeStep("phone")}
+                  className="border-border text-muted-foreground hover:bg-muted"
+                >
+                  Geri
+                </Button>
+                <Button
+                  onClick={handleVerifyPhoneChange}
+                  disabled={phoneChangeSending || phoneOtpValue.length !== 6}
+                >
+                  {phoneChangeSending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                  Doğrula
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

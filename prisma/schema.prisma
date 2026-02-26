@@ -102,6 +102,10 @@ model User {
   billingZipCode     String?
 
   sessionsInvalidatedAt DateTime?
+  emailOptIn            Boolean  @default(true)
+  smsOptIn              Boolean  @default(true)
+  pendingEmail          String?  // Email change: address awaiting verification
+  pendingPhone          String?  // Phone change: number awaiting OTP verification
 
   addresses      Address[]
   orders         Order[]
@@ -295,6 +299,10 @@ model SiteSettings {
   efaturaPassword      String?
   efaturaEarsivPrefix  String  @default("DAP") // E-Arşiv seri ön eki (3 harf)
   efaturaEfaturaPrefix String  @default("DIP") // E-Fatura seri ön eki (3 harf)
+
+  // Üretim duraklatma
+  ordersPaused        Boolean @default(false)
+  ordersPausedMessage String? @db.Text
 
   updatedAt DateTime @updatedAt
 }

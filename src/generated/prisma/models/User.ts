@@ -50,6 +50,10 @@ export type UserMinAggregateOutputType = {
   billingDistrict: string | null
   billingZipCode: string | null
   sessionsInvalidatedAt: Date | null
+  emailOptIn: boolean | null
+  smsOptIn: boolean | null
+  pendingEmail: string | null
+  pendingPhone: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -80,6 +84,10 @@ export type UserMaxAggregateOutputType = {
   billingDistrict: string | null
   billingZipCode: string | null
   sessionsInvalidatedAt: Date | null
+  emailOptIn: boolean | null
+  smsOptIn: boolean | null
+  pendingEmail: string | null
+  pendingPhone: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -110,6 +118,10 @@ export type UserCountAggregateOutputType = {
   billingDistrict: number
   billingZipCode: number
   sessionsInvalidatedAt: number
+  emailOptIn: number
+  smsOptIn: number
+  pendingEmail: number
+  pendingPhone: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -142,6 +154,10 @@ export type UserMinAggregateInputType = {
   billingDistrict?: true
   billingZipCode?: true
   sessionsInvalidatedAt?: true
+  emailOptIn?: true
+  smsOptIn?: true
+  pendingEmail?: true
+  pendingPhone?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -172,6 +188,10 @@ export type UserMaxAggregateInputType = {
   billingDistrict?: true
   billingZipCode?: true
   sessionsInvalidatedAt?: true
+  emailOptIn?: true
+  smsOptIn?: true
+  pendingEmail?: true
+  pendingPhone?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -202,6 +222,10 @@ export type UserCountAggregateInputType = {
   billingDistrict?: true
   billingZipCode?: true
   sessionsInvalidatedAt?: true
+  emailOptIn?: true
+  smsOptIn?: true
+  pendingEmail?: true
+  pendingPhone?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -305,6 +329,10 @@ export type UserGroupByOutputType = {
   billingDistrict: string | null
   billingZipCode: string | null
   sessionsInvalidatedAt: Date | null
+  emailOptIn: boolean
+  smsOptIn: boolean
+  pendingEmail: string | null
+  pendingPhone: string | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -356,6 +384,10 @@ export type UserWhereInput = {
   billingDistrict?: Prisma.StringNullableFilter<"User"> | string | null
   billingZipCode?: Prisma.StringNullableFilter<"User"> | string | null
   sessionsInvalidatedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  emailOptIn?: Prisma.BoolFilter<"User"> | boolean
+  smsOptIn?: Prisma.BoolFilter<"User"> | boolean
+  pendingEmail?: Prisma.StringNullableFilter<"User"> | string | null
+  pendingPhone?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   addresses?: Prisma.AddressListRelationFilter
@@ -394,6 +426,10 @@ export type UserOrderByWithRelationInput = {
   billingDistrict?: Prisma.SortOrderInput | Prisma.SortOrder
   billingZipCode?: Prisma.SortOrderInput | Prisma.SortOrder
   sessionsInvalidatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailOptIn?: Prisma.SortOrder
+  smsOptIn?: Prisma.SortOrder
+  pendingEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  pendingPhone?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   addresses?: Prisma.AddressOrderByRelationAggregateInput
@@ -435,6 +471,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   billingDistrict?: Prisma.StringNullableFilter<"User"> | string | null
   billingZipCode?: Prisma.StringNullableFilter<"User"> | string | null
   sessionsInvalidatedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  emailOptIn?: Prisma.BoolFilter<"User"> | boolean
+  smsOptIn?: Prisma.BoolFilter<"User"> | boolean
+  pendingEmail?: Prisma.StringNullableFilter<"User"> | string | null
+  pendingPhone?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   addresses?: Prisma.AddressListRelationFilter
@@ -473,6 +513,10 @@ export type UserOrderByWithAggregationInput = {
   billingDistrict?: Prisma.SortOrderInput | Prisma.SortOrder
   billingZipCode?: Prisma.SortOrderInput | Prisma.SortOrder
   sessionsInvalidatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailOptIn?: Prisma.SortOrder
+  smsOptIn?: Prisma.SortOrder
+  pendingEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  pendingPhone?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -509,6 +553,10 @@ export type UserScalarWhereWithAggregatesInput = {
   billingDistrict?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   billingZipCode?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   sessionsInvalidatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  emailOptIn?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  smsOptIn?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  pendingEmail?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  pendingPhone?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -539,6 +587,10 @@ export type UserCreateInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -577,6 +629,10 @@ export type UserUncheckedCreateInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -615,6 +671,10 @@ export type UserUpdateInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -653,6 +713,10 @@ export type UserUncheckedUpdateInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -691,6 +755,10 @@ export type UserCreateManyInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -721,6 +789,10 @@ export type UserUpdateManyMutationInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -751,6 +823,10 @@ export type UserUncheckedUpdateManyInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -781,6 +857,10 @@ export type UserCountOrderByAggregateInput = {
   billingDistrict?: Prisma.SortOrder
   billingZipCode?: Prisma.SortOrder
   sessionsInvalidatedAt?: Prisma.SortOrder
+  emailOptIn?: Prisma.SortOrder
+  smsOptIn?: Prisma.SortOrder
+  pendingEmail?: Prisma.SortOrder
+  pendingPhone?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -811,6 +891,10 @@ export type UserMaxOrderByAggregateInput = {
   billingDistrict?: Prisma.SortOrder
   billingZipCode?: Prisma.SortOrder
   sessionsInvalidatedAt?: Prisma.SortOrder
+  emailOptIn?: Prisma.SortOrder
+  smsOptIn?: Prisma.SortOrder
+  pendingEmail?: Prisma.SortOrder
+  pendingPhone?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -841,6 +925,10 @@ export type UserMinOrderByAggregateInput = {
   billingDistrict?: Prisma.SortOrder
   billingZipCode?: Prisma.SortOrder
   sessionsInvalidatedAt?: Prisma.SortOrder
+  emailOptIn?: Prisma.SortOrder
+  smsOptIn?: Prisma.SortOrder
+  pendingEmail?: Prisma.SortOrder
+  pendingPhone?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1027,6 +1115,10 @@ export type UserCreateWithoutAccountsInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -1064,6 +1156,10 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -1117,6 +1213,10 @@ export type UserUpdateWithoutAccountsInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -1154,6 +1254,10 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -1191,6 +1295,10 @@ export type UserCreateWithoutSessionsInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -1228,6 +1336,10 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -1281,6 +1393,10 @@ export type UserUpdateWithoutSessionsInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -1318,6 +1434,10 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -1355,6 +1475,10 @@ export type UserCreateWithoutUserSessionsInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -1392,6 +1516,10 @@ export type UserUncheckedCreateWithoutUserSessionsInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -1445,6 +1573,10 @@ export type UserUpdateWithoutUserSessionsInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -1482,6 +1614,10 @@ export type UserUncheckedUpdateWithoutUserSessionsInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -1519,6 +1655,10 @@ export type UserCreateWithoutAddressesInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
@@ -1556,6 +1696,10 @@ export type UserUncheckedCreateWithoutAddressesInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
@@ -1609,6 +1753,10 @@ export type UserUpdateWithoutAddressesInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
@@ -1646,6 +1794,10 @@ export type UserUncheckedUpdateWithoutAddressesInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
@@ -1683,6 +1835,10 @@ export type UserCreateWithoutSpecialPricingInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -1720,6 +1876,10 @@ export type UserUncheckedCreateWithoutSpecialPricingInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -1773,6 +1933,10 @@ export type UserUpdateWithoutSpecialPricingInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -1810,6 +1974,10 @@ export type UserUncheckedUpdateWithoutSpecialPricingInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -1847,6 +2015,10 @@ export type UserCreateWithoutOrdersInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -1884,6 +2056,10 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -1937,6 +2113,10 @@ export type UserUpdateWithoutOrdersInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -1974,6 +2154,10 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -2011,6 +2195,10 @@ export type UserCreateWithoutDesignDraftsInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -2048,6 +2236,10 @@ export type UserUncheckedCreateWithoutDesignDraftsInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -2101,6 +2293,10 @@ export type UserUpdateWithoutDesignDraftsInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -2138,6 +2334,10 @@ export type UserUncheckedUpdateWithoutDesignDraftsInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -2175,6 +2375,10 @@ export type UserCreateWithoutCartItemsInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -2212,6 +2416,10 @@ export type UserUncheckedCreateWithoutCartItemsInput = {
   billingDistrict?: string | null
   billingZipCode?: string | null
   sessionsInvalidatedAt?: Date | string | null
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: string | null
+  pendingPhone?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -2265,6 +2473,10 @@ export type UserUpdateWithoutCartItemsInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -2302,6 +2514,10 @@ export type UserUncheckedUpdateWithoutCartItemsInput = {
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  smsOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -2424,6 +2640,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   billingDistrict?: boolean
   billingZipCode?: boolean
   sessionsInvalidatedAt?: boolean
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: boolean
+  pendingPhone?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   addresses?: boolean | Prisma.User$addressesArgs<ExtArgs>
@@ -2463,6 +2683,10 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   billingDistrict?: boolean
   billingZipCode?: boolean
   sessionsInvalidatedAt?: boolean
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: boolean
+  pendingPhone?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -2493,6 +2717,10 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   billingDistrict?: boolean
   billingZipCode?: boolean
   sessionsInvalidatedAt?: boolean
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: boolean
+  pendingPhone?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -2523,11 +2751,15 @@ export type UserSelectScalar = {
   billingDistrict?: boolean
   billingZipCode?: boolean
   sessionsInvalidatedAt?: boolean
+  emailOptIn?: boolean
+  smsOptIn?: boolean
+  pendingEmail?: boolean
+  pendingPhone?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "phone" | "passwordHash" | "name" | "surname" | "companyName" | "taxNumber" | "authProvider" | "role" | "emailVerified" | "phoneVerified" | "image" | "billingType" | "billingFirstName" | "billingLastName" | "billingFullName" | "billingCompanyName" | "billingTaxOffice" | "billingTaxNumber" | "billingAddress" | "billingCity" | "billingDistrict" | "billingZipCode" | "sessionsInvalidatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "phone" | "passwordHash" | "name" | "surname" | "companyName" | "taxNumber" | "authProvider" | "role" | "emailVerified" | "phoneVerified" | "image" | "billingType" | "billingFirstName" | "billingLastName" | "billingFullName" | "billingCompanyName" | "billingTaxOffice" | "billingTaxNumber" | "billingAddress" | "billingCity" | "billingDistrict" | "billingZipCode" | "sessionsInvalidatedAt" | "emailOptIn" | "smsOptIn" | "pendingEmail" | "pendingPhone" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   addresses?: boolean | Prisma.User$addressesArgs<ExtArgs>
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>
@@ -2580,6 +2812,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     billingDistrict: string | null
     billingZipCode: string | null
     sessionsInvalidatedAt: Date | null
+    emailOptIn: boolean
+    smsOptIn: boolean
+    pendingEmail: string | null
+    pendingPhone: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -3038,6 +3274,10 @@ export interface UserFieldRefs {
   readonly billingDistrict: Prisma.FieldRef<"User", 'String'>
   readonly billingZipCode: Prisma.FieldRef<"User", 'String'>
   readonly sessionsInvalidatedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly emailOptIn: Prisma.FieldRef<"User", 'Boolean'>
+  readonly smsOptIn: Prisma.FieldRef<"User", 'Boolean'>
+  readonly pendingEmail: Prisma.FieldRef<"User", 'String'>
+  readonly pendingPhone: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }

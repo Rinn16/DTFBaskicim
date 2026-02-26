@@ -17,6 +17,7 @@ import {
   Upload,
   CheckCircle2,
   AlertCircle,
+  PauseCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -26,6 +27,8 @@ interface SiteSettings {
   emailWelcome: boolean;
   emailOrderConfirm: boolean;
   emailShipped: boolean;
+  ordersPaused: boolean;
+  ordersPausedMessage: string | null;
   // Fatura firma bilgileri
   invoiceCompanyName: string | null;
   invoiceCompanyTaxNumber: string | null;
@@ -700,6 +703,77 @@ export default function SettingsPage() {
                 </Button>
               </div>
             </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Sipariş Duraklatma */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <PauseCircle className="h-5 w-5 text-amber-500" />
+            Sipariş Duraklatma
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {settings && (
+            <>
+              <div className="flex items-center justify-between rounded-lg border border-border p-4">
+                <div>
+                  <p className="font-medium text-foreground">Sipariş alımını durdur</p>
+                  <p className="text-sm text-muted-foreground">
+                    Aktifken yeni sipariş oluşturulamaz. Tatil, bakım vb. için kullanın.
+                  </p>
+                </div>
+                <Switch
+                  checked={settings.ordersPaused}
+                  onCheckedChange={async (checked) => {
+                    const res = await fetch("/api/admin/settings", {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ ordersPaused: checked }),
+                    });
+                    if (res.ok) {
+                      setSettings((prev) => prev ? { ...prev, ordersPaused: checked } : prev);
+                      toast.success(checked ? "Sipariş alımı durduruldu" : "Sipariş alımı açıldı");
+                    } else {
+                      toast.error("Güncelleme başarısız");
+                    }
+                  }}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Duyuru Mesajı (opsiyonel)</Label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Tatil nedeniyle sipariş almıyoruz. 3 Mart'ta geri döneceğiz."
+                    value={settings.ordersPausedMessage ?? ""}
+                    onChange={(e) => setSettings((prev) => prev ? { ...prev, ordersPausedMessage: e.target.value } : prev)}
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      const res = await fetch("/api/admin/settings", {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ ordersPausedMessage: settings.ordersPausedMessage ?? "" }),
+                      });
+                      if (res.ok) {
+                        toast.success("Mesaj kaydedildi");
+                      } else {
+                        toast.error("Güncelleme başarısız");
+                      }
+                    }}
+                  >
+                    <Save className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Bu mesaj checkout sayfasında kullanıcılara gösterilir.
+                </p>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

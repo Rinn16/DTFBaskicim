@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Mail, Clock, MapPin, Instagram, Twitter, Linkedin } from "lucide-react";
+import { ContactForm } from "@/components/contact-form";
 
 export const metadata: Metadata = {
   title: "İletişim | DTF Baskıcım",
@@ -76,7 +77,7 @@ export default function IletisimPage() {
       </section>
 
       {/* Sosyal Medya */}
-      <section>
+      <section className="mb-16">
         <h2 className="mb-4 text-xl font-semibold">Sosyal Medya</h2>
         <div className="flex gap-4">
           <a
@@ -104,6 +105,12 @@ export default function IletisimPage() {
             <Linkedin className="h-5 w-5 text-muted-foreground" />
           </a>
         </div>
+      </section>
+
+      {/* İletişim Formu */}
+      <section>
+        <h2 className="mb-4 text-xl font-semibold">Mesaj Gönderin</h2>
+        <ContactForm />
       </section>
     </div>
   );

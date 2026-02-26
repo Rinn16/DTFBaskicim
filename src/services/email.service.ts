@@ -89,3 +89,24 @@ export async function sendVerificationEmail(to: string, verifyUrl: string) {
   `;
   await sendEmail({ to, subject: "Email Adresinizi Doğrulayın - DTF Baskıcım", html });
 }
+
+/** İletişim formu bildirimi — admine gönderilir */
+export async function sendContactNotification(
+  to: string,
+  data: { name: string; email: string; subject: string; message: string }
+) {
+  const html = `
+    <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;">
+      <h2 style="color:#0f172a;margin:0 0 16px;">Yeni İletişim Formu Mesajı</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <tr><td style="padding:8px 0;color:#64748b;width:120px;">Gönderen</td><td style="padding:8px 0;color:#0f172a;font-weight:600;">${data.name}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;">E-posta</td><td style="padding:8px 0;"><a href="mailto:${data.email}" style="color:#137fec;">${data.email}</a></td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;">Konu</td><td style="padding:8px 0;color:#0f172a;">${data.subject}</td></tr>
+      </table>
+      <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0;" />
+      <p style="color:#0f172a;font-size:14px;line-height:1.7;white-space:pre-wrap;">${data.message}</p>
+    </div>
+  `;
+  await sendEmail({ to, subject: `İletişim: ${data.subject}`, html });
+}
+

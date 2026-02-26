@@ -14,6 +14,7 @@ import {
   Lock,
   Zap,
   Ruler,
+  PauseCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useCartStore } from "@/stores/cart-store";
@@ -56,6 +57,9 @@ export default function OdemePage() {
   const { guestItems, memberItems, clearGuestCart } = useCartStore();
 
   const cartItems = isAuthenticated ? memberItems : guestItems;
+
+  const [ordersPaused, setOrdersPaused] = useState(false);
+  const [ordersPausedMessage, setOrdersPausedMessage] = useState<string | null>(null);
 
   const [step, setStep] = useState<CheckoutStep>("form");
   const [paymentMethod, setPaymentMethod] = useState("CREDIT_CARD");
@@ -104,6 +108,22 @@ export default function OdemePage() {
       }
     }
     fetchPricing();
+  }, []);
+
+  useEffect(() => {
+    async function checkOrdersPaused() {
+      try {
+        const res = await fetch("/api/site-settings");
+        if (res.ok) {
+          const data = await res.json();
+          setOrdersPaused(data.ordersPaused);
+          setOrdersPausedMessage(data.ordersPausedMessage);
+        }
+      } catch {
+        // ignore
+      }
+    }
+    checkOrdersPaused();
   }, []);
 
   // Fetch saved billing info for authenticated users
@@ -378,6 +398,19 @@ export default function OdemePage() {
             Sepete Dön
           </Link>
         </Button>
+
+        {/* Orders paused banner */}
+        {ordersPaused && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-5 py-4">
+            <PauseCircle className="h-5 w-5 shrink-0 text-amber-500 mt-0.5" />
+            <div>
+              <p className="font-semibold text-amber-600 dark:text-amber-400">Sipariş alımı geçici olarak durduruldu</p>
+              <p className="text-sm text-amber-600/80 dark:text-amber-400/80 mt-0.5">
+                {ordersPausedMessage || "Şu anda sipariş alınmıyor. Lütfen daha sonra tekrar deneyin."}
+              </p>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Left Column: Order Summary */}

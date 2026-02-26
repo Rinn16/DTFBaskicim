@@ -83,6 +83,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Çok fazla istek. Lütfen bekleyin." }, { status: 429 });
     }
 
+    // Check if orders are paused
+    const siteSettings = await db.siteSettings.findUnique({ where: { id: "default" }, select: { ordersPaused: true, ordersPausedMessage: true } });
+    if (siteSettings?.ordersPaused) {
+      return NextResponse.json({
+        error: siteSettings.ordersPausedMessage || "Şu anda sipariş alınmıyor. Lütfen daha sonra tekrar deneyin.",
+        ordersPaused: true,
+      }, { status: 503 });
+    }
+
     const body = await request.json();
 
     const parsed = checkoutSchema.safeParse(body);
