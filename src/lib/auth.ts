@@ -202,14 +202,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user?.id) {
         token.id = user.id;
+        // Create a UserSession record on sign-in for session tracking
+        const userSession = await db.userSession.create({
+          data: { userId: user.id },
+        });
+        token.sessionId = userSession.id;
       }
-      // Fetch role from database
+      // Fetch role and session validity from database
       if (token.id) {
         const dbUser = await db.user.findUnique({
           where: { id: token.id as string },
-          select: { role: true, name: true, surname: true },
+          select: { role: true, name: true, surname: true, sessionsInvalidatedAt: true },
         });
         if (dbUser) {
+          // Invalidate if token was issued before sessionsInvalidatedAt
+          if (dbUser.sessionsInvalidatedAt && token.iat) {
+            const tokenIssuedMs = (token.iat as number) * 1000;
+            if (dbUser.sessionsInvalidatedAt.getTime() > tokenIssuedMs) {
+              return null as unknown as typeof token;
+            }
+          }
           token.role = dbUser.role;
           token.name = `${dbUser.name} ${dbUser.surname}`.trim();
           token.profileComplete = !!(dbUser.name?.trim() && dbUser.surname?.trim());
@@ -222,6 +234,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = token.id as string;
         session.user.role = token.role as "CUSTOMER" | "ADMIN";
         session.user.profileComplete = token.profileComplete as boolean;
+        session.user.sessionId = token.sessionId as string | undefined;
       }
       return session;
     },

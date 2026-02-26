@@ -1,14 +1,19 @@
 import { z } from "zod";
 
+const strongPassword = z
+  .string()
+  .min(1, "Şifre gerekli")
+  .min(8, "Şifre en az 8 karakter olmalı")
+  .regex(/[A-Z]/, "En az bir büyük harf içermeli")
+  .regex(/[a-z]/, "En az bir küçük harf içermeli")
+  .regex(/[0-9]/, "En az bir rakam içermeli");
+
 export const loginSchema = z.object({
   email: z
     .string()
     .min(1, "Email adresi gerekli")
     .email("Geçerli bir email adresi girin"),
-  password: z
-    .string()
-    .min(1, "Şifre gerekli")
-    .min(6, "Şifre en az 6 karakter olmalı"),
+  password: z.string().min(1, "Şifre gerekli"),
 });
 
 export const registerSchema = z
@@ -23,10 +28,7 @@ export const registerSchema = z
       .min(1, "Email adresi gerekli")
       .email("Geçerli bir email adresi girin"),
     phone: z.string().optional(),
-    password: z
-      .string()
-      .min(1, "Şifre gerekli")
-      .min(6, "Şifre en az 6 karakter olmalı"),
+    password: strongPassword,
     confirmPassword: z.string().min(1, "Şifre tekrarı gerekli"),
     companyName: z.string().optional(),
     taxNumber: z.string().optional(),
@@ -62,10 +64,7 @@ export const forgotPasswordSchema = z.object({
 export const resetPasswordSchema = z
   .object({
     token: z.string().min(1, "Token gerekli"),
-    password: z
-      .string()
-      .min(1, "Şifre gerekli")
-      .min(6, "Şifre en az 6 karakter olmalı"),
+    password: strongPassword,
     confirmPassword: z.string().min(1, "Şifre tekrarı gerekli"),
   })
   .refine((data) => data.password === data.confirmPassword, {

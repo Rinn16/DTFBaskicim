@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { registerSchema, type RegisterInput } from "@/validations/auth";
+import { PasswordStrength } from "@/components/ui/password-strength";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -146,35 +147,35 @@ export default function RegisterPage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label htmlFor="reg-password">Şifre *</Label>
-              <Input
-                id="reg-password"
-                type="password"
-                placeholder="••••••"
-                {...form.register("password")}
-              />
-              {form.formState.errors.password && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.password.message}
-                </p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Şifre Tekrar *</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••"
-                {...form.register("confirmPassword")}
-              />
-              {form.formState.errors.confirmPassword && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.confirmPassword.message}
-                </p>
-              )}
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="reg-password">Şifre *</Label>
+            <Input
+              id="reg-password"
+              type="password"
+              placeholder="En az 8 karakter"
+              {...form.register("password")}
+            />
+            <PasswordStrength password={form.watch("password")} />
+            {form.formState.errors.password && (
+              <p className="text-xs text-destructive">
+                {form.formState.errors.password.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Şifre Tekrar *</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="••••••••"
+              {...form.register("confirmPassword")}
+            />
+            {form.formState.errors.confirmPassword && (
+              <p className="text-xs text-destructive">
+                {form.formState.errors.confirmPassword.message}
+              </p>
+            )}
           </div>
 
           <Separator />

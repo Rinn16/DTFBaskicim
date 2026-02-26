@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { resetPasswordSchema, type ResetPasswordInput } from "@/validations/auth";
 import { Lock, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { PasswordStrength } from "@/components/ui/password-strength";
 
 export default function ResetPasswordPage() {
   const params = useParams();
@@ -102,11 +103,12 @@ export default function ResetPasswordPage() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="En az 6 karakter"
+                  placeholder="En az 8 karakter"
                   className="pl-10"
                   {...form.register("password")}
                 />
               </div>
+              <PasswordStrength password={form.watch("password")} />
               {form.formState.errors.password && (
                 <p className="text-xs text-destructive">
                   {form.formState.errors.password.message}

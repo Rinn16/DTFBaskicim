@@ -338,8 +338,6 @@ export class TrendyolEFaturaProvider implements EFaturaProvider {
       ? `${this.baseUrl}/api/invoice/documents/earchive`
       : `${this.baseUrl}/api/invoice/documents/outgoing-einvoice`;
 
-    console.log("[efatura] submitInvoice →", endpoint, JSON.stringify(payload, null, 2));
-
     const res = await fetch(endpoint, {
       method: "POST",
       headers: this.getAuthHeaders(auth.accessToken),
@@ -353,7 +351,6 @@ export class TrendyolEFaturaProvider implements EFaturaProvider {
     }
 
     const result = await res.json();
-    console.log("[efatura] submitInvoice response:", JSON.stringify(result));
     return {
       gibInvoiceId: result.invoiceUuid || result.id?.toString(),
       gibInvoiceNumber: result.invoiceId || undefined,

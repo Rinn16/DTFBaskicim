@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 import { getCartItems, addCartItem } from "@/services/cart.service";
 import { addToCartSchema } from "@/validations/cart";
 
@@ -22,6 +23,11 @@ export async function POST(request: Request) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
+    }
+
+    const { success: rlOk } = await rateLimit(`cart:${session.user.id}`, 30, 3600);
+    if (!rlOk) {
+      return NextResponse.json({ error: "Çok fazla istek. Lütfen bekleyin." }, { status: 429 });
     }
 
     const body = await request.json();

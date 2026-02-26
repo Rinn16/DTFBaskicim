@@ -78,6 +78,7 @@ export type OrderMinAggregateOutputType = {
   trackingCode: string | null
   customerNote: string | null
   adminNote: string | null
+  termsAcceptedAt: Date | null
   billingType: $Enums.BillingType | null
   billingSameAddress: boolean | null
   billingFirstName: string | null
@@ -122,6 +123,7 @@ export type OrderMaxAggregateOutputType = {
   trackingCode: string | null
   customerNote: string | null
   adminNote: string | null
+  termsAcceptedAt: Date | null
   billingType: $Enums.BillingType | null
   billingSameAddress: boolean | null
   billingFirstName: string | null
@@ -167,6 +169,7 @@ export type OrderCountAggregateOutputType = {
   trackingCode: number
   customerNote: number
   adminNote: number
+  termsAcceptedAt: number
   billingType: number
   billingSameAddress: number
   billingFirstName: number
@@ -237,6 +240,7 @@ export type OrderMinAggregateInputType = {
   trackingCode?: true
   customerNote?: true
   adminNote?: true
+  termsAcceptedAt?: true
   billingType?: true
   billingSameAddress?: true
   billingFirstName?: true
@@ -281,6 +285,7 @@ export type OrderMaxAggregateInputType = {
   trackingCode?: true
   customerNote?: true
   adminNote?: true
+  termsAcceptedAt?: true
   billingType?: true
   billingSameAddress?: true
   billingFirstName?: true
@@ -326,6 +331,7 @@ export type OrderCountAggregateInputType = {
   trackingCode?: true
   customerNote?: true
   adminNote?: true
+  termsAcceptedAt?: true
   billingType?: true
   billingSameAddress?: true
   billingFirstName?: true
@@ -458,6 +464,7 @@ export type OrderGroupByOutputType = {
   trackingCode: string | null
   customerNote: string | null
   adminNote: string | null
+  termsAcceptedAt: Date | null
   billingType: $Enums.BillingType
   billingSameAddress: boolean
   billingFirstName: string | null
@@ -526,6 +533,7 @@ export type OrderWhereInput = {
   trackingCode?: Prisma.StringNullableFilter<"Order"> | string | null
   customerNote?: Prisma.StringNullableFilter<"Order"> | string | null
   adminNote?: Prisma.StringNullableFilter<"Order"> | string | null
+  termsAcceptedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   billingType?: Prisma.EnumBillingTypeFilter<"Order"> | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFilter<"Order"> | boolean
   billingFirstName?: Prisma.StringNullableFilter<"Order"> | string | null
@@ -579,6 +587,7 @@ export type OrderOrderByWithRelationInput = {
   trackingCode?: Prisma.SortOrderInput | Prisma.SortOrder
   customerNote?: Prisma.SortOrderInput | Prisma.SortOrder
   adminNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  termsAcceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   billingType?: Prisma.SortOrder
   billingSameAddress?: Prisma.SortOrder
   billingFirstName?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -635,6 +644,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   trackingCode?: Prisma.StringNullableFilter<"Order"> | string | null
   customerNote?: Prisma.StringNullableFilter<"Order"> | string | null
   adminNote?: Prisma.StringNullableFilter<"Order"> | string | null
+  termsAcceptedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   billingType?: Prisma.EnumBillingTypeFilter<"Order"> | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFilter<"Order"> | boolean
   billingFirstName?: Prisma.StringNullableFilter<"Order"> | string | null
@@ -688,6 +698,7 @@ export type OrderOrderByWithAggregationInput = {
   trackingCode?: Prisma.SortOrderInput | Prisma.SortOrder
   customerNote?: Prisma.SortOrderInput | Prisma.SortOrder
   adminNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  termsAcceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   billingType?: Prisma.SortOrder
   billingSameAddress?: Prisma.SortOrder
   billingFirstName?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -741,6 +752,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   trackingCode?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   customerNote?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   adminNote?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  termsAcceptedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
   billingType?: Prisma.EnumBillingTypeWithAggregatesFilter<"Order"> | $Enums.BillingType
   billingSameAddress?: Prisma.BoolWithAggregatesFilter<"Order"> | boolean
   billingFirstName?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
@@ -783,6 +795,7 @@ export type OrderCreateInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -836,6 +849,7 @@ export type OrderUncheckedCreateInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -883,6 +897,7 @@ export type OrderUpdateInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -936,6 +951,7 @@ export type OrderUncheckedUpdateInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -986,6 +1002,7 @@ export type OrderCreateManyInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -1028,6 +1045,7 @@ export type OrderUpdateManyMutationInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1073,6 +1091,7 @@ export type OrderUncheckedUpdateManyInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1128,6 +1147,7 @@ export type OrderCountOrderByAggregateInput = {
   trackingCode?: Prisma.SortOrder
   customerNote?: Prisma.SortOrder
   adminNote?: Prisma.SortOrder
+  termsAcceptedAt?: Prisma.SortOrder
   billingType?: Prisma.SortOrder
   billingSameAddress?: Prisma.SortOrder
   billingFirstName?: Prisma.SortOrder
@@ -1184,6 +1204,7 @@ export type OrderMaxOrderByAggregateInput = {
   trackingCode?: Prisma.SortOrder
   customerNote?: Prisma.SortOrder
   adminNote?: Prisma.SortOrder
+  termsAcceptedAt?: Prisma.SortOrder
   billingType?: Prisma.SortOrder
   billingSameAddress?: Prisma.SortOrder
   billingFirstName?: Prisma.SortOrder
@@ -1228,6 +1249,7 @@ export type OrderMinOrderByAggregateInput = {
   trackingCode?: Prisma.SortOrder
   customerNote?: Prisma.SortOrder
   adminNote?: Prisma.SortOrder
+  termsAcceptedAt?: Prisma.SortOrder
   billingType?: Prisma.SortOrder
   billingSameAddress?: Prisma.SortOrder
   billingFirstName?: Prisma.SortOrder
@@ -1495,6 +1517,7 @@ export type OrderCreateWithoutUserInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -1546,6 +1569,7 @@ export type OrderUncheckedCreateWithoutUserInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -1625,6 +1649,7 @@ export type OrderScalarWhereInput = {
   trackingCode?: Prisma.StringNullableFilter<"Order"> | string | null
   customerNote?: Prisma.StringNullableFilter<"Order"> | string | null
   adminNote?: Prisma.StringNullableFilter<"Order"> | string | null
+  termsAcceptedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   billingType?: Prisma.EnumBillingTypeFilter<"Order"> | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFilter<"Order"> | boolean
   billingFirstName?: Prisma.StringNullableFilter<"Order"> | string | null
@@ -1667,6 +1692,7 @@ export type OrderCreateWithoutAddressInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -1718,6 +1744,7 @@ export type OrderUncheckedCreateWithoutAddressInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -1791,6 +1818,7 @@ export type OrderCreateWithoutDiscountCodeInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -1842,6 +1870,7 @@ export type OrderUncheckedCreateWithoutDiscountCodeInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -1915,6 +1944,7 @@ export type OrderCreateWithoutItemsInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -1967,6 +1997,7 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -2029,6 +2060,7 @@ export type OrderUpdateWithoutItemsInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2081,6 +2113,7 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2127,6 +2160,7 @@ export type OrderCreateWithoutStatusHistoryInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -2179,6 +2213,7 @@ export type OrderUncheckedCreateWithoutStatusHistoryInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -2241,6 +2276,7 @@ export type OrderUpdateWithoutStatusHistoryInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2293,6 +2329,7 @@ export type OrderUncheckedUpdateWithoutStatusHistoryInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2339,6 +2376,7 @@ export type OrderCreateWithoutGangSheetsInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -2391,6 +2429,7 @@ export type OrderUncheckedCreateWithoutGangSheetsInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -2453,6 +2492,7 @@ export type OrderUpdateWithoutGangSheetsInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2505,6 +2545,7 @@ export type OrderUncheckedUpdateWithoutGangSheetsInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2551,6 +2592,7 @@ export type OrderCreateWithoutInvoicesInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -2603,6 +2645,7 @@ export type OrderUncheckedCreateWithoutInvoicesInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -2665,6 +2708,7 @@ export type OrderUpdateWithoutInvoicesInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2717,6 +2761,7 @@ export type OrderUncheckedUpdateWithoutInvoicesInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2763,6 +2808,7 @@ export type OrderCreateWithoutTransactionsInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -2815,6 +2861,7 @@ export type OrderUncheckedCreateWithoutTransactionsInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -2877,6 +2924,7 @@ export type OrderUpdateWithoutTransactionsInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2929,6 +2977,7 @@ export type OrderUncheckedUpdateWithoutTransactionsInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2977,6 +3026,7 @@ export type OrderCreateManyUserInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -3019,6 +3069,7 @@ export type OrderUpdateWithoutUserInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3070,6 +3121,7 @@ export type OrderUncheckedUpdateWithoutUserInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3119,6 +3171,7 @@ export type OrderUncheckedUpdateManyWithoutUserInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3163,6 +3216,7 @@ export type OrderCreateManyAddressInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -3205,6 +3259,7 @@ export type OrderUpdateWithoutAddressInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3256,6 +3311,7 @@ export type OrderUncheckedUpdateWithoutAddressInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3305,6 +3361,7 @@ export type OrderUncheckedUpdateManyWithoutAddressInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3349,6 +3406,7 @@ export type OrderCreateManyDiscountCodeInput = {
   trackingCode?: string | null
   customerNote?: string | null
   adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
   billingType?: $Enums.BillingType
   billingSameAddress?: boolean
   billingFirstName?: string | null
@@ -3391,6 +3449,7 @@ export type OrderUpdateWithoutDiscountCodeInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3442,6 +3501,7 @@ export type OrderUncheckedUpdateWithoutDiscountCodeInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3491,6 +3551,7 @@ export type OrderUncheckedUpdateManyWithoutDiscountCodeInput = {
   trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
   billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3603,6 +3664,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   trackingCode?: boolean
   customerNote?: boolean
   adminNote?: boolean
+  termsAcceptedAt?: boolean
   billingType?: boolean
   billingSameAddress?: boolean
   billingFirstName?: boolean
@@ -3657,6 +3719,7 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   trackingCode?: boolean
   customerNote?: boolean
   adminNote?: boolean
+  termsAcceptedAt?: boolean
   billingType?: boolean
   billingSameAddress?: boolean
   billingFirstName?: boolean
@@ -3705,6 +3768,7 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   trackingCode?: boolean
   customerNote?: boolean
   adminNote?: boolean
+  termsAcceptedAt?: boolean
   billingType?: boolean
   billingSameAddress?: boolean
   billingFirstName?: boolean
@@ -3753,6 +3817,7 @@ export type OrderSelectScalar = {
   trackingCode?: boolean
   customerNote?: boolean
   adminNote?: boolean
+  termsAcceptedAt?: boolean
   billingType?: boolean
   billingSameAddress?: boolean
   billingFirstName?: boolean
@@ -3769,7 +3834,7 @@ export type OrderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "userId" | "addressId" | "guestEmail" | "guestName" | "guestPhone" | "totalMeters" | "pricePerMeter" | "subtotal" | "discountAmount" | "taxAmount" | "totalAmount" | "shippingCost" | "discountCodeId" | "status" | "paymentMethod" | "paymentStatus" | "paymentId" | "gangSheetLayout" | "gangSheetWidth" | "gangSheetHeight" | "exportPng" | "exportTiff" | "exportPdf" | "trackingCode" | "customerNote" | "adminNote" | "billingType" | "billingSameAddress" | "billingFirstName" | "billingLastName" | "billingFullName" | "billingCompanyName" | "billingTaxOffice" | "billingTaxNumber" | "billingAddress" | "billingCity" | "billingDistrict" | "billingZipCode" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "userId" | "addressId" | "guestEmail" | "guestName" | "guestPhone" | "totalMeters" | "pricePerMeter" | "subtotal" | "discountAmount" | "taxAmount" | "totalAmount" | "shippingCost" | "discountCodeId" | "status" | "paymentMethod" | "paymentStatus" | "paymentId" | "gangSheetLayout" | "gangSheetWidth" | "gangSheetHeight" | "exportPng" | "exportTiff" | "exportPdf" | "trackingCode" | "customerNote" | "adminNote" | "termsAcceptedAt" | "billingType" | "billingSameAddress" | "billingFirstName" | "billingLastName" | "billingFullName" | "billingCompanyName" | "billingTaxOffice" | "billingTaxNumber" | "billingAddress" | "billingCity" | "billingDistrict" | "billingZipCode" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Order$userArgs<ExtArgs>
   address?: boolean | Prisma.Order$addressArgs<ExtArgs>
@@ -3833,6 +3898,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     trackingCode: string | null
     customerNote: string | null
     adminNote: string | null
+    termsAcceptedAt: Date | null
     billingType: $Enums.BillingType
     billingSameAddress: boolean
     billingFirstName: string | null
@@ -4306,6 +4372,7 @@ export interface OrderFieldRefs {
   readonly trackingCode: Prisma.FieldRef<"Order", 'String'>
   readonly customerNote: Prisma.FieldRef<"Order", 'String'>
   readonly adminNote: Prisma.FieldRef<"Order", 'String'>
+  readonly termsAcceptedAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly billingType: Prisma.FieldRef<"Order", 'BillingType'>
   readonly billingSameAddress: Prisma.FieldRef<"Order", 'Boolean'>
   readonly billingFirstName: Prisma.FieldRef<"Order", 'String'>

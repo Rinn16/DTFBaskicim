@@ -32,7 +32,9 @@
       "Bash(cd:*)",
       "Bash(node:*)",
       "Bash(cd /c/Users/Rin/Desktop/DTFBaskicim && npx prisma generate 2>&1)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "WebFetch(domain:docs.vatansms.net)",
+      "WebFetch(domain:www.vatansms.net)"
     ]
   }
 }

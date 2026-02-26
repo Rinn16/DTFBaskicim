@@ -49,6 +49,7 @@ export type UserMinAggregateOutputType = {
   billingCity: string | null
   billingDistrict: string | null
   billingZipCode: string | null
+  sessionsInvalidatedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -78,6 +79,7 @@ export type UserMaxAggregateOutputType = {
   billingCity: string | null
   billingDistrict: string | null
   billingZipCode: string | null
+  sessionsInvalidatedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -107,6 +109,7 @@ export type UserCountAggregateOutputType = {
   billingCity: number
   billingDistrict: number
   billingZipCode: number
+  sessionsInvalidatedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -138,6 +141,7 @@ export type UserMinAggregateInputType = {
   billingCity?: true
   billingDistrict?: true
   billingZipCode?: true
+  sessionsInvalidatedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -167,6 +171,7 @@ export type UserMaxAggregateInputType = {
   billingCity?: true
   billingDistrict?: true
   billingZipCode?: true
+  sessionsInvalidatedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -196,6 +201,7 @@ export type UserCountAggregateInputType = {
   billingCity?: true
   billingDistrict?: true
   billingZipCode?: true
+  sessionsInvalidatedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -298,6 +304,7 @@ export type UserGroupByOutputType = {
   billingCity: string | null
   billingDistrict: string | null
   billingZipCode: string | null
+  sessionsInvalidatedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -348,6 +355,7 @@ export type UserWhereInput = {
   billingCity?: Prisma.StringNullableFilter<"User"> | string | null
   billingDistrict?: Prisma.StringNullableFilter<"User"> | string | null
   billingZipCode?: Prisma.StringNullableFilter<"User"> | string | null
+  sessionsInvalidatedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   addresses?: Prisma.AddressListRelationFilter
@@ -357,6 +365,7 @@ export type UserWhereInput = {
   specialPricing?: Prisma.XOR<Prisma.CustomerPricingNullableScalarRelationFilter, Prisma.CustomerPricingWhereInput> | null
   accounts?: Prisma.AccountListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
+  userSessions?: Prisma.UserSessionListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -384,6 +393,7 @@ export type UserOrderByWithRelationInput = {
   billingCity?: Prisma.SortOrderInput | Prisma.SortOrder
   billingDistrict?: Prisma.SortOrderInput | Prisma.SortOrder
   billingZipCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  sessionsInvalidatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   addresses?: Prisma.AddressOrderByRelationAggregateInput
@@ -393,6 +403,7 @@ export type UserOrderByWithRelationInput = {
   specialPricing?: Prisma.CustomerPricingOrderByWithRelationInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
+  userSessions?: Prisma.UserSessionOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -423,6 +434,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   billingCity?: Prisma.StringNullableFilter<"User"> | string | null
   billingDistrict?: Prisma.StringNullableFilter<"User"> | string | null
   billingZipCode?: Prisma.StringNullableFilter<"User"> | string | null
+  sessionsInvalidatedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   addresses?: Prisma.AddressListRelationFilter
@@ -432,6 +444,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   specialPricing?: Prisma.XOR<Prisma.CustomerPricingNullableScalarRelationFilter, Prisma.CustomerPricingWhereInput> | null
   accounts?: Prisma.AccountListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
+  userSessions?: Prisma.UserSessionListRelationFilter
 }, "id" | "email" | "phone">
 
 export type UserOrderByWithAggregationInput = {
@@ -459,6 +472,7 @@ export type UserOrderByWithAggregationInput = {
   billingCity?: Prisma.SortOrderInput | Prisma.SortOrder
   billingDistrict?: Prisma.SortOrderInput | Prisma.SortOrder
   billingZipCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  sessionsInvalidatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -494,6 +508,7 @@ export type UserScalarWhereWithAggregatesInput = {
   billingCity?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   billingDistrict?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   billingZipCode?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  sessionsInvalidatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -523,6 +538,7 @@ export type UserCreateInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -532,6 +548,7 @@ export type UserCreateInput = {
   specialPricing?: Prisma.CustomerPricingCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -559,6 +576,7 @@ export type UserUncheckedCreateInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -568,6 +586,7 @@ export type UserUncheckedCreateInput = {
   specialPricing?: Prisma.CustomerPricingUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -595,6 +614,7 @@ export type UserUpdateInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -604,6 +624,7 @@ export type UserUpdateInput = {
   specialPricing?: Prisma.CustomerPricingUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -631,6 +652,7 @@ export type UserUncheckedUpdateInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -640,6 +662,7 @@ export type UserUncheckedUpdateInput = {
   specialPricing?: Prisma.CustomerPricingUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -667,6 +690,7 @@ export type UserCreateManyInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -696,6 +720,7 @@ export type UserUpdateManyMutationInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -725,6 +750,7 @@ export type UserUncheckedUpdateManyInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -754,6 +780,7 @@ export type UserCountOrderByAggregateInput = {
   billingCity?: Prisma.SortOrder
   billingDistrict?: Prisma.SortOrder
   billingZipCode?: Prisma.SortOrder
+  sessionsInvalidatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -783,6 +810,7 @@ export type UserMaxOrderByAggregateInput = {
   billingCity?: Prisma.SortOrder
   billingDistrict?: Prisma.SortOrder
   billingZipCode?: Prisma.SortOrder
+  sessionsInvalidatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -812,6 +840,7 @@ export type UserMinOrderByAggregateInput = {
   billingCity?: Prisma.SortOrder
   billingDistrict?: Prisma.SortOrder
   billingZipCode?: Prisma.SortOrder
+  sessionsInvalidatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -850,6 +879,10 @@ export type EnumBillingTypeFieldUpdateOperationsInput = {
   set?: $Enums.BillingType
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
@@ -880,6 +913,20 @@ export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
   upsert?: Prisma.UserUpsertWithoutSessionsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSessionsInput, Prisma.UserUpdateWithoutSessionsInput>, Prisma.UserUncheckedUpdateWithoutSessionsInput>
+}
+
+export type UserCreateNestedOneWithoutUserSessionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUserSessionsInput, Prisma.UserUncheckedCreateWithoutUserSessionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserSessionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutUserSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUserSessionsInput, Prisma.UserUncheckedCreateWithoutUserSessionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserSessionsInput
+  upsert?: Prisma.UserUpsertWithoutUserSessionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUserSessionsInput, Prisma.UserUpdateWithoutUserSessionsInput>, Prisma.UserUncheckedUpdateWithoutUserSessionsInput>
 }
 
 export type UserCreateNestedOneWithoutAddressesInput = {
@@ -979,6 +1026,7 @@ export type UserCreateWithoutAccountsInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -987,6 +1035,7 @@ export type UserCreateWithoutAccountsInput = {
   designDrafts?: Prisma.DesignDraftCreateNestedManyWithoutUserInput
   specialPricing?: Prisma.CustomerPricingCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1014,6 +1063,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -1022,6 +1072,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   designDrafts?: Prisma.DesignDraftUncheckedCreateNestedManyWithoutUserInput
   specialPricing?: Prisma.CustomerPricingUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1065,6 +1116,7 @@ export type UserUpdateWithoutAccountsInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -1073,6 +1125,7 @@ export type UserUpdateWithoutAccountsInput = {
   designDrafts?: Prisma.DesignDraftUpdateManyWithoutUserNestedInput
   specialPricing?: Prisma.CustomerPricingUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1100,6 +1153,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -1108,6 +1162,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   designDrafts?: Prisma.DesignDraftUncheckedUpdateManyWithoutUserNestedInput
   specialPricing?: Prisma.CustomerPricingUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -1135,6 +1190,7 @@ export type UserCreateWithoutSessionsInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -1143,6 +1199,7 @@ export type UserCreateWithoutSessionsInput = {
   designDrafts?: Prisma.DesignDraftCreateNestedManyWithoutUserInput
   specialPricing?: Prisma.CustomerPricingCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1170,6 +1227,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -1178,6 +1236,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   designDrafts?: Prisma.DesignDraftUncheckedCreateNestedManyWithoutUserInput
   specialPricing?: Prisma.CustomerPricingUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1221,6 +1280,7 @@ export type UserUpdateWithoutSessionsInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -1229,6 +1289,7 @@ export type UserUpdateWithoutSessionsInput = {
   designDrafts?: Prisma.DesignDraftUpdateManyWithoutUserNestedInput
   specialPricing?: Prisma.CustomerPricingUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1256,6 +1317,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -1264,6 +1326,171 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   designDrafts?: Prisma.DesignDraftUncheckedUpdateManyWithoutUserNestedInput
   specialPricing?: Prisma.CustomerPricingUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutUserSessionsInput = {
+  id?: string
+  email?: string | null
+  phone?: string | null
+  passwordHash?: string | null
+  name: string
+  surname: string
+  companyName?: string | null
+  taxNumber?: string | null
+  authProvider: $Enums.AuthProvider
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  image?: string | null
+  billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
+  billingFullName?: string | null
+  billingCompanyName?: string | null
+  billingTaxOffice?: string | null
+  billingTaxNumber?: string | null
+  billingAddress?: string | null
+  billingCity?: string | null
+  billingDistrict?: string | null
+  billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  designDrafts?: Prisma.DesignDraftCreateNestedManyWithoutUserInput
+  specialPricing?: Prisma.CustomerPricingCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutUserSessionsInput = {
+  id?: string
+  email?: string | null
+  phone?: string | null
+  passwordHash?: string | null
+  name: string
+  surname: string
+  companyName?: string | null
+  taxNumber?: string | null
+  authProvider: $Enums.AuthProvider
+  role?: $Enums.UserRole
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  image?: string | null
+  billingType?: $Enums.BillingType
+  billingFirstName?: string | null
+  billingLastName?: string | null
+  billingFullName?: string | null
+  billingCompanyName?: string | null
+  billingTaxOffice?: string | null
+  billingTaxNumber?: string | null
+  billingAddress?: string | null
+  billingCity?: string | null
+  billingDistrict?: string | null
+  billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  designDrafts?: Prisma.DesignDraftUncheckedCreateNestedManyWithoutUserInput
+  specialPricing?: Prisma.CustomerPricingUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutUserSessionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutUserSessionsInput, Prisma.UserUncheckedCreateWithoutUserSessionsInput>
+}
+
+export type UserUpsertWithoutUserSessionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutUserSessionsInput, Prisma.UserUncheckedUpdateWithoutUserSessionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutUserSessionsInput, Prisma.UserUncheckedCreateWithoutUserSessionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutUserSessionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutUserSessionsInput, Prisma.UserUncheckedUpdateWithoutUserSessionsInput>
+}
+
+export type UserUpdateWithoutUserSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  surname?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingTaxNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  designDrafts?: Prisma.DesignDraftUpdateManyWithoutUserNestedInput
+  specialPricing?: Prisma.CustomerPricingUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutUserSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  surname?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingTaxNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  designDrafts?: Prisma.DesignDraftUncheckedUpdateManyWithoutUserNestedInput
+  specialPricing?: Prisma.CustomerPricingUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAddressesInput = {
@@ -1291,6 +1518,7 @@ export type UserCreateWithoutAddressesInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
@@ -1299,6 +1527,7 @@ export type UserCreateWithoutAddressesInput = {
   specialPricing?: Prisma.CustomerPricingCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAddressesInput = {
@@ -1326,6 +1555,7 @@ export type UserUncheckedCreateWithoutAddressesInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
@@ -1334,6 +1564,7 @@ export type UserUncheckedCreateWithoutAddressesInput = {
   specialPricing?: Prisma.CustomerPricingUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAddressesInput = {
@@ -1377,6 +1608,7 @@ export type UserUpdateWithoutAddressesInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
@@ -1385,6 +1617,7 @@ export type UserUpdateWithoutAddressesInput = {
   specialPricing?: Prisma.CustomerPricingUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAddressesInput = {
@@ -1412,6 +1645,7 @@ export type UserUncheckedUpdateWithoutAddressesInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
@@ -1420,6 +1654,7 @@ export type UserUncheckedUpdateWithoutAddressesInput = {
   specialPricing?: Prisma.CustomerPricingUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSpecialPricingInput = {
@@ -1447,6 +1682,7 @@ export type UserCreateWithoutSpecialPricingInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -1455,6 +1691,7 @@ export type UserCreateWithoutSpecialPricingInput = {
   designDrafts?: Prisma.DesignDraftCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSpecialPricingInput = {
@@ -1482,6 +1719,7 @@ export type UserUncheckedCreateWithoutSpecialPricingInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -1490,6 +1728,7 @@ export type UserUncheckedCreateWithoutSpecialPricingInput = {
   designDrafts?: Prisma.DesignDraftUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSpecialPricingInput = {
@@ -1533,6 +1772,7 @@ export type UserUpdateWithoutSpecialPricingInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -1541,6 +1781,7 @@ export type UserUpdateWithoutSpecialPricingInput = {
   designDrafts?: Prisma.DesignDraftUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSpecialPricingInput = {
@@ -1568,6 +1809,7 @@ export type UserUncheckedUpdateWithoutSpecialPricingInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -1576,6 +1818,7 @@ export type UserUncheckedUpdateWithoutSpecialPricingInput = {
   designDrafts?: Prisma.DesignDraftUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutOrdersInput = {
@@ -1603,6 +1846,7 @@ export type UserCreateWithoutOrdersInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -1611,6 +1855,7 @@ export type UserCreateWithoutOrdersInput = {
   specialPricing?: Prisma.CustomerPricingCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOrdersInput = {
@@ -1638,6 +1883,7 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -1646,6 +1892,7 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   specialPricing?: Prisma.CustomerPricingUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOrdersInput = {
@@ -1689,6 +1936,7 @@ export type UserUpdateWithoutOrdersInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -1697,6 +1945,7 @@ export type UserUpdateWithoutOrdersInput = {
   specialPricing?: Prisma.CustomerPricingUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -1724,6 +1973,7 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -1732,6 +1982,7 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   specialPricing?: Prisma.CustomerPricingUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDesignDraftsInput = {
@@ -1759,6 +2010,7 @@ export type UserCreateWithoutDesignDraftsInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -1767,6 +2019,7 @@ export type UserCreateWithoutDesignDraftsInput = {
   specialPricing?: Prisma.CustomerPricingCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDesignDraftsInput = {
@@ -1794,6 +2047,7 @@ export type UserUncheckedCreateWithoutDesignDraftsInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -1802,6 +2056,7 @@ export type UserUncheckedCreateWithoutDesignDraftsInput = {
   specialPricing?: Prisma.CustomerPricingUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDesignDraftsInput = {
@@ -1845,6 +2100,7 @@ export type UserUpdateWithoutDesignDraftsInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -1853,6 +2109,7 @@ export type UserUpdateWithoutDesignDraftsInput = {
   specialPricing?: Prisma.CustomerPricingUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDesignDraftsInput = {
@@ -1880,6 +2137,7 @@ export type UserUncheckedUpdateWithoutDesignDraftsInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -1888,6 +2146,7 @@ export type UserUncheckedUpdateWithoutDesignDraftsInput = {
   specialPricing?: Prisma.CustomerPricingUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCartItemsInput = {
@@ -1915,6 +2174,7 @@ export type UserCreateWithoutCartItemsInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -1923,6 +2183,7 @@ export type UserCreateWithoutCartItemsInput = {
   specialPricing?: Prisma.CustomerPricingCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCartItemsInput = {
@@ -1950,6 +2211,7 @@ export type UserUncheckedCreateWithoutCartItemsInput = {
   billingCity?: string | null
   billingDistrict?: string | null
   billingZipCode?: string | null
+  sessionsInvalidatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -1958,6 +2220,7 @@ export type UserUncheckedCreateWithoutCartItemsInput = {
   specialPricing?: Prisma.CustomerPricingUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCartItemsInput = {
@@ -2001,6 +2264,7 @@ export type UserUpdateWithoutCartItemsInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -2009,6 +2273,7 @@ export type UserUpdateWithoutCartItemsInput = {
   specialPricing?: Prisma.CustomerPricingUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCartItemsInput = {
@@ -2036,6 +2301,7 @@ export type UserUncheckedUpdateWithoutCartItemsInput = {
   billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionsInvalidatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -2044,6 +2310,7 @@ export type UserUncheckedUpdateWithoutCartItemsInput = {
   specialPricing?: Prisma.CustomerPricingUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -2058,6 +2325,7 @@ export type UserCountOutputType = {
   designDrafts: number
   accounts: number
   sessions: number
+  userSessions: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2067,6 +2335,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   designDrafts?: boolean | UserCountOutputTypeCountDesignDraftsArgs
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
+  userSessions?: boolean | UserCountOutputTypeCountUserSessionsArgs
 }
 
 /**
@@ -2121,6 +2390,13 @@ export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.SessionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountUserSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserSessionWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2147,6 +2423,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   billingCity?: boolean
   billingDistrict?: boolean
   billingZipCode?: boolean
+  sessionsInvalidatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   addresses?: boolean | Prisma.User$addressesArgs<ExtArgs>
@@ -2156,6 +2433,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   specialPricing?: boolean | Prisma.User$specialPricingArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
+  userSessions?: boolean | Prisma.User$userSessionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -2184,6 +2462,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   billingCity?: boolean
   billingDistrict?: boolean
   billingZipCode?: boolean
+  sessionsInvalidatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -2213,6 +2492,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   billingCity?: boolean
   billingDistrict?: boolean
   billingZipCode?: boolean
+  sessionsInvalidatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -2242,11 +2522,12 @@ export type UserSelectScalar = {
   billingCity?: boolean
   billingDistrict?: boolean
   billingZipCode?: boolean
+  sessionsInvalidatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "phone" | "passwordHash" | "name" | "surname" | "companyName" | "taxNumber" | "authProvider" | "role" | "emailVerified" | "phoneVerified" | "image" | "billingType" | "billingFirstName" | "billingLastName" | "billingFullName" | "billingCompanyName" | "billingTaxOffice" | "billingTaxNumber" | "billingAddress" | "billingCity" | "billingDistrict" | "billingZipCode" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "phone" | "passwordHash" | "name" | "surname" | "companyName" | "taxNumber" | "authProvider" | "role" | "emailVerified" | "phoneVerified" | "image" | "billingType" | "billingFirstName" | "billingLastName" | "billingFullName" | "billingCompanyName" | "billingTaxOffice" | "billingTaxNumber" | "billingAddress" | "billingCity" | "billingDistrict" | "billingZipCode" | "sessionsInvalidatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   addresses?: boolean | Prisma.User$addressesArgs<ExtArgs>
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>
@@ -2255,6 +2536,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   specialPricing?: boolean | Prisma.User$specialPricingArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
+  userSessions?: boolean | Prisma.User$userSessionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2270,6 +2552,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     specialPricing: Prisma.$CustomerPricingPayload<ExtArgs> | null
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     sessions: Prisma.$SessionPayload<ExtArgs>[]
+    userSessions: Prisma.$UserSessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2296,6 +2579,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     billingCity: string | null
     billingDistrict: string | null
     billingZipCode: string | null
+    sessionsInvalidatedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -2699,6 +2983,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   specialPricing<T extends Prisma.User$specialPricingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$specialPricingArgs<ExtArgs>>): Prisma.Prisma__CustomerPricingClient<runtime.Types.Result.GetResult<Prisma.$CustomerPricingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  userSessions<T extends Prisma.User$userSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2752,6 +3037,7 @@ export interface UserFieldRefs {
   readonly billingCity: Prisma.FieldRef<"User", 'String'>
   readonly billingDistrict: Prisma.FieldRef<"User", 'String'>
   readonly billingZipCode: Prisma.FieldRef<"User", 'String'>
+  readonly sessionsInvalidatedAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -3302,6 +3588,30 @@ export type User$sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.SessionScalarFieldEnum | Prisma.SessionScalarFieldEnum[]
+}
+
+/**
+ * User.userSessions
+ */
+export type User$userSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserSession
+   */
+  select?: Prisma.UserSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserSession
+   */
+  omit?: Prisma.UserSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserSessionInclude<ExtArgs> | null
+  where?: Prisma.UserSessionWhereInput
+  orderBy?: Prisma.UserSessionOrderByWithRelationInput | Prisma.UserSessionOrderByWithRelationInput[]
+  cursor?: Prisma.UserSessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserSessionScalarFieldEnum | Prisma.UserSessionScalarFieldEnum[]
 }
 
 /**

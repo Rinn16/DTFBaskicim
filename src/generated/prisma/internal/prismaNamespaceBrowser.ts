@@ -54,6 +54,7 @@ export const ModelName = {
   User: 'User',
   Account: 'Account',
   Session: 'Session',
+  UserSession: 'UserSession',
   VerificationToken: 'VerificationToken',
   OtpCode: 'OtpCode',
   Address: 'Address',
@@ -116,6 +117,7 @@ export const UserScalarFieldEnum = {
   billingCity: 'billingCity',
   billingDistrict: 'billingDistrict',
   billingZipCode: 'billingZipCode',
+  sessionsInvalidatedAt: 'sessionsInvalidatedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -149,6 +151,18 @@ export const SessionScalarFieldEnum = {
 } as const
 
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+export const UserSessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  userAgent: 'userAgent',
+  ipAddress: 'ipAddress',
+  createdAt: 'createdAt',
+  lastSeenAt: 'lastSeenAt'
+} as const
+
+export type UserSessionScalarFieldEnum = (typeof UserSessionScalarFieldEnum)[keyof typeof UserSessionScalarFieldEnum]
 
 
 export const VerificationTokenScalarFieldEnum = {
@@ -308,6 +322,7 @@ export const OrderScalarFieldEnum = {
   trackingCode: 'trackingCode',
   customerNote: 'customerNote',
   adminNote: 'adminNote',
+  termsAcceptedAt: 'termsAcceptedAt',
   billingType: 'billingType',
   billingSameAddress: 'billingSameAddress',
   billingFirstName: 'billingFirstName',

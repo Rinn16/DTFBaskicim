@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 import { createOrder } from "@/services/order.service";
 import { checkoutSchema } from "@/validations/checkout";
 import { addToCartSchema } from "@/validations/cart";
@@ -70,6 +71,16 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const session = await auth();
+
+    // Rate limit: 10 orders per hour per user/IP
+    const rlKey = session?.user?.id
+      ? `orders:${session.user.id}`
+      : `orders:ip:${request.headers.get("x-forwarded-for") ?? "unknown"}`;
+    const { success: rlOk } = await rateLimit(rlKey, 10, 3600);
+    if (!rlOk) {
+      return NextResponse.json({ error: "Çok fazla istek. Lütfen bekleyin." }, { status: 429 });
+    }
+
     const body = await request.json();
 
     const parsed = checkoutSchema.safeParse(body);

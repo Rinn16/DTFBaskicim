@@ -24,9 +24,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Plus, Pencil, Trash2, Star } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Star, MonitorSmartphone, LogOut } from "lucide-react";
 import { toast } from "sonner";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 // ---- Schemas ----
 const profileSchema = z.object({
@@ -75,7 +75,13 @@ const inputClass =
 const labelClass =
   "text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1";
 
+interface UserSessionEntry {
+  id: string;
+  createdAt: string;
+}
+
 export default function SettingsPage() {
+  const { data: authSession } = useSession();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
@@ -85,6 +91,13 @@ export default function SettingsPage() {
   // Account deletion state
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Sessions state
+  const [sessions, setSessions] = useState<UserSessionEntry[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string | undefined>();
+  const [isLoadingSessions, setIsLoadingSessions] = useState(true);
+  const [signOutAllLoading, setSignOutAllLoading] = useState(false);
+  const [showSignOutAllDialog, setShowSignOutAllDialog] = useState(false);
 
   // Address dialog state
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
@@ -143,6 +156,42 @@ export default function SettingsPage() {
   useEffect(() => {
     fetchAddresses();
   }, []);
+
+  // Fetch sessions
+  useEffect(() => {
+    async function fetchSessions() {
+      try {
+        const res = await fetch("/api/user/sessions");
+        if (res.ok) {
+          const data = await res.json();
+          setSessions(data.sessions);
+          setCurrentSessionId(data.currentSessionId);
+        }
+      } catch {
+        // silent
+      } finally {
+        setIsLoadingSessions(false);
+      }
+    }
+    fetchSessions();
+  }, []);
+
+  const handleSignOutAll = async () => {
+    setSignOutAllLoading(true);
+    try {
+      const res = await fetch("/api/user/sessions", { method: "DELETE" });
+      if (res.ok) {
+        await signOut({ callbackUrl: "/giris" });
+      } else {
+        toast.error("Oturumlar sonlandırılamadı");
+      }
+    } catch {
+      toast.error("Bir hata oluştu");
+    } finally {
+      setSignOutAllLoading(false);
+      setShowSignOutAllDialog(false);
+    }
+  };
 
   // Save profile
   const handleSaveProfile = async (data: ProfileForm) => {
@@ -609,6 +658,95 @@ export default function SettingsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Sessions Section */}
+      <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <MonitorSmartphone className="h-5 w-5 text-muted-foreground" />
+            <h2 className="text-xl font-bold text-foreground">Aktif Oturumlar</h2>
+          </div>
+          <button
+            onClick={() => setShowSignOutAllDialog(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded border border-destructive/30 text-destructive hover:bg-destructive/10 transition-all text-sm font-medium"
+          >
+            <LogOut className="h-4 w-4" />
+            Tümünden Çıkış
+          </button>
+        </div>
+
+        {isLoadingSessions ? (
+          <div className="flex justify-center py-6">
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          </div>
+        ) : sessions.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-6">
+            Aktif oturum bulunamadı.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {sessions.map((s) => {
+              const isCurrent = s.id === currentSessionId;
+              return (
+                <div
+                  key={s.id}
+                  className={`flex items-center justify-between rounded-xl px-4 py-3 border ${
+                    isCurrent
+                      ? "border-primary/30 bg-primary/5"
+                      : "border-border bg-input/30"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <MonitorSmartphone className={`h-4 w-4 ${isCurrent ? "text-primary" : "text-muted-foreground"}`} />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {isCurrent ? "Bu cihaz" : "Diğer cihaz"}
+                        {isCurrent && (
+                          <span className="ml-2 text-[10px] font-bold uppercase tracking-wider text-primary">
+                            Aktif
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Giriş:{" "}
+                        {new Date(s.createdAt).toLocaleDateString("tr-TR", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Sign Out All Confirm */}
+      <AlertDialog open={showSignOutAllDialog} onOpenChange={setShowSignOutAllDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Tüm cihazlardan çıkış yapılsın mı?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tüm aktif oturumlar sonlandırılacak ve yeniden giriş yapmanız gerekecek.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={signOutAllLoading}>İptal</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleSignOutAll}
+              disabled={signOutAllLoading}
+            >
+              {signOutAllLoading ? "Çıkış yapılıyor..." : "Evet, Tümünden Çık"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Hesap Silme Bölümü */}
       <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-6 md:p-8">
