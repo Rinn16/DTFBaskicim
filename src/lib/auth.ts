@@ -66,15 +66,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.phone || !credentials?.code) return null;
 
+        // Normalize phone to +90XXXXXXXXXX format (same as /api/otp/send)
+        const rawPhone = credentials.phone as string;
+        const normalized = rawPhone.replace(/^(\+90|0)/, "").replace(/\s/g, "");
+        const phone = `+90${normalized}`;
+
         // Rate limit: 10 OTP verify attempts per phone per hour
-        const phone = credentials.phone as string;
         const { success } = await rateLimit(`otp-verify:${phone}`, 10, 3600);
         if (!success) return null;
 
         // Find the most recent unverified OTP for this phone
         const otp = await db.otpCode.findFirst({
           where: {
-            phone: credentials.phone as string,
+            phone,
             verified: false,
             expiresAt: { gt: new Date() },
           },
@@ -101,13 +105,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         // Find or create user
         let user = await db.user.findUnique({
-          where: { phone: credentials.phone as string },
+          where: { phone },
         });
 
         if (!user) {
           user = await db.user.create({
             data: {
-              phone: credentials.phone as string,
+              phone,
               name: "",
               surname: "",
               authProvider: "PHONE",
