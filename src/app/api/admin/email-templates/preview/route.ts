@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getBaseUrl } from "@/lib/env";
+import { getBaseUrl } from "@/lib/utils";
 import { baseLayout, replaceVariables } from "@/lib/email-templates";
 
 export async function POST(request: Request) {

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { getBaseUrl } from "@/lib/env";
+import { getBaseUrl } from "@/lib/utils";
 import { calculatePrice } from "@/services/pricing.service";
 import { sendOrderConfirmation } from "@/services/email.service";
 import { ROLL_CONFIG } from "@/lib/constants";

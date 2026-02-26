@@ -1,6 +1,6 @@
 import { ORDER_STATUSES } from "@/lib/constants";
 import { db } from "@/lib/db";
-import { getBaseUrl } from "@/lib/env";
+import { getBaseUrl } from "@/lib/utils";
 import type { EmailTemplateType } from "@/generated/prisma/client";
 
 export interface OrderEmailItem {

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { getBaseUrl } from "@/lib/env";
+import { getBaseUrl } from "@/lib/utils";
 import { sendOrderShipped } from "@/services/email.service";
 
 const statusUpdateSchema = z.object({
