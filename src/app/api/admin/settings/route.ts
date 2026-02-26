@@ -86,6 +86,14 @@ export async function PATCH(request: Request) {
       data: parsed.data,
     });
 
+    // Reset cached e-fatura provider when relevant fields change
+    const efaturaFields = ["efaturaEnabled", "efaturaEnvironment", "efaturaEmail", "efaturaPassword"] as const;
+    const hasEfaturaChange = efaturaFields.some((key) => key in parsed.data);
+    if (hasEfaturaChange) {
+      const { resetEFaturaProvider } = await import("@/services/efatura");
+      resetEFaturaProvider();
+    }
+
     return NextResponse.json({ settings });
   } catch (error) {
     console.error("Settings PATCH error:", error);

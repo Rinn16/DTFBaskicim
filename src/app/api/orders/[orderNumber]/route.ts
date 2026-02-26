@@ -17,6 +17,7 @@ export async function GET(
         address: true,
         statusHistory: { orderBy: { createdAt: "asc" } },
         discountCode: { select: { code: true, discountPercent: true, discountAmount: true } },
+        invoices: { where: { type: "SATIS", status: { not: "CANCELLED" } }, select: { id: true }, take: 1 },
       },
     });
 
@@ -48,6 +49,9 @@ export async function GET(
         discountAmount: Number(order.discountAmount),
         taxAmount: Number(order.taxAmount),
         totalAmount: Number(order.totalAmount),
+        shippingCost: Number(order.shippingCost),
+        hasInvoice: order.invoices.length > 0,
+        invoices: undefined,
       },
     });
   } catch (error) {

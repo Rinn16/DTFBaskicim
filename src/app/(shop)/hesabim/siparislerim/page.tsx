@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -31,33 +31,63 @@ interface OrderSummary {
   createdAt: string;
 }
 
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 const ORDERS_PER_PAGE = 10;
 
 export default function OrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<OrderSummary[]>([]);
+  const [pagination, setPagination] = useState<Pagination | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    async function fetchOrders() {
-      try {
-        const res = await fetch("/api/orders");
-        if (res.ok) {
-          const data = await res.json();
-          setOrders(data.orders);
-        }
-      } catch {
-        // silent
-      } finally {
-        setIsLoading(false);
+  const fetchOrders = useCallback(async (page: number, search: string) => {
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(ORDERS_PER_PAGE),
+      });
+      if (search) params.set("search", search);
+
+      const res = await fetch(`/api/orders?${params}`);
+      if (res.ok) {
+        const data = await res.json();
+        setOrders(data.orders);
+        setPagination(data.pagination);
       }
+    } catch {
+      // silent
+    } finally {
+      setIsLoading(false);
     }
-    fetchOrders();
   }, []);
 
-  if (isLoading) {
+  useEffect(() => {
+    fetchOrders(currentPage, searchQuery);
+  }, [currentPage, fetchOrders]); // searchQuery handled by debounce
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    if (searchTimeout) clearTimeout(searchTimeout);
+    const timeout = setTimeout(() => {
+      setCurrentPage(1);
+      fetchOrders(1, value);
+    }, 400);
+    setSearchTimeout(timeout);
+  };
+
+  const totalPages = pagination?.totalPages ?? 1;
+
+  if (isLoading && orders.length === 0) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -65,7 +95,7 @@ export default function OrdersPage() {
     );
   }
 
-  if (orders.length === 0) {
+  if (!isLoading && orders.length === 0 && !searchQuery) {
     return (
       <div className="text-center py-20">
         <Package className="h-12 w-12 text-muted-foreground/70 mx-auto mb-4" />
@@ -86,20 +116,6 @@ export default function OrdersPage() {
     );
   }
 
-  // Filter orders by search query
-  const filtered = searchQuery
-    ? orders.filter((o) =>
-        o.orderNumber.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : orders;
-
-  // Pagination
-  const totalPages = Math.ceil(filtered.length / ORDERS_PER_PAGE);
-  const paginatedOrders = filtered.slice(
-    (currentPage - 1) * ORDERS_PER_PAGE,
-    currentPage * ORDERS_PER_PAGE
-  );
-
   return (
     <div>
       {/* Header */}
@@ -119,19 +135,23 @@ export default function OrdersPage() {
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1);
-            }}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="block w-full pl-10 pr-3 py-3 border border-border rounded-lg leading-5 bg-muted text-foreground/80 placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 sm:text-sm transition-all backdrop-blur-sm"
             placeholder="Sipariş No Ara..."
           />
         </div>
       </div>
 
+      {/* Loading indicator for page changes */}
+      {isLoading && orders.length > 0 && (
+        <div className="flex justify-center py-4">
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        </div>
+      )}
+
       {/* Order Cards */}
       <div className="space-y-3">
-        {paginatedOrders.map((order) => (
+        {orders.map((order) => (
           <div
             key={order.id}
             onClick={() =>
@@ -214,6 +234,15 @@ export default function OrdersPage() {
           </div>
         ))}
       </div>
+
+      {/* No results for search */}
+      {!isLoading && orders.length === 0 && searchQuery && (
+        <div className="text-center py-12">
+          <p className="text-sm text-muted-foreground">
+            &quot;{searchQuery}&quot; ile eşleşen sipariş bulunamadı.
+          </p>
+        </div>
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (

@@ -186,10 +186,107 @@ async function main() {
     console.error("[Export Worker] Error:", err);
   });
 
+  // ========== Cron Jobs ==========
+  const { Queue } = await import("bullmq");
+  const cronQueue = new Queue("cron-jobs", { connection: getRedisConnection() });
+
+  // Register repeatable cron jobs
+  await cronQueue.add("cleanup-expired-otps", {}, {
+    repeat: { pattern: "0 * * * *" }, // every hour
+    removeOnComplete: { count: 5 },
+    removeOnFail: { count: 10 },
+  });
+  await cronQueue.add("cleanup-abandoned-orders", {}, {
+    repeat: { pattern: "0 3 * * *" }, // daily at 03:00
+    removeOnComplete: { count: 5 },
+    removeOnFail: { count: 10 },
+  });
+  await cronQueue.add("cleanup-old-drafts", {}, {
+    repeat: { pattern: "0 4 * * *" }, // daily at 04:00
+    removeOnComplete: { count: 5 },
+    removeOnFail: { count: 10 },
+  });
+
+  const cronWorker = new Worker(
+    "cron-jobs",
+    async (job) => {
+      const now = new Date();
+      console.log(`[Cron] Running ${job.name} at ${now.toISOString()}`);
+
+      switch (job.name) {
+        case "cleanup-expired-otps": {
+          // Delete expired verification tokens
+          const deleted = await db.verificationToken.deleteMany({
+            where: { expires: { lt: now } },
+          });
+          console.log(`[Cron] Deleted ${deleted.count} expired verification tokens`);
+          break;
+        }
+
+        case "cleanup-abandoned-orders": {
+          // Cancel orders stuck in PENDING_PAYMENT for more than 48 hours
+          const cutoff = new Date(now.getTime() - 48 * 60 * 60 * 1000);
+          const abandoned = await db.order.findMany({
+            where: {
+              status: "PENDING_PAYMENT",
+              paymentMethod: "BANK_TRANSFER",
+              createdAt: { lt: cutoff },
+            },
+            select: { id: true, orderNumber: true, status: true },
+          });
+
+          for (const order of abandoned) {
+            await db.$transaction([
+              db.order.update({
+                where: { id: order.id },
+                data: { status: "CANCELLED" },
+              }),
+              db.orderStatusHistory.create({
+                data: {
+                  orderId: order.id,
+                  fromStatus: order.status,
+                  toStatus: "CANCELLED",
+                  note: "Ödeme süresi doldu (48 saat) — otomatik iptal",
+                  eventType: "STATUS_CHANGE",
+                },
+              }),
+            ]);
+          }
+          console.log(`[Cron] Auto-cancelled ${abandoned.length} abandoned orders`);
+          break;
+        }
+
+        case "cleanup-old-drafts": {
+          // Delete design drafts older than 30 days
+          const draftCutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          const deleted = await db.designDraft.deleteMany({
+            where: { updatedAt: { lt: draftCutoff } },
+          });
+          console.log(`[Cron] Deleted ${deleted.count} old design drafts`);
+          break;
+        }
+      }
+    },
+    {
+      connection: getRedisConnection(),
+      concurrency: 1,
+      removeOnComplete: { count: 10 },
+      removeOnFail: { count: 20 },
+    }
+  );
+
+  cronWorker.on("ready", () => {
+    console.log("[Cron Worker] Started — processing cron jobs");
+  });
+
+  cronWorker.on("failed", (job, err) => {
+    console.error(`[Cron] Job ${job?.name} failed:`, err.message);
+  });
+
   // Graceful shutdown
   const shutdown = async () => {
     console.log("[Export Worker] Shutting down...");
-    await worker.close();
+    await Promise.all([worker.close(), cronWorker.close(), cronQueue.close()]);
     await db.$disconnect();
     process.exit(0);
   };

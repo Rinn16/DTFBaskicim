@@ -25,6 +25,12 @@ interface OrderSummary {
   createdAt: string;
 }
 
+interface ProfileData {
+  name: string;
+  surname: string;
+  emailVerified: boolean | null;
+}
+
 interface DashboardData {
   orders: OrderSummary[];
 }
@@ -39,21 +45,24 @@ export default function AccountDashboard() {
   const { data: session } = useSession();
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [emailVerified, setEmailVerified] = useState(true);
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [resendLoading, setResendLoading] = useState(false);
+
+  const emailVerified = profileData?.emailVerified ?? true;
+  const profileIncomplete = profileData && (!profileData.name || !profileData.surname);
 
   useEffect(() => {
     async function fetchDashboard() {
       try {
         const [ordersRes, profileRes] = await Promise.all([
-          fetch("/api/orders"),
+          fetch("/api/orders?limit=50"),
           fetch("/api/user/profile"),
         ]);
         const ordersData = ordersRes.ok ? await ordersRes.json() : { orders: [] };
         setData({ orders: ordersData.orders });
         if (profileRes.ok) {
-          const profileData = await profileRes.json();
-          setEmailVerified(profileData.user.emailVerified ?? true);
+          const pd = await profileRes.json();
+          setProfileData(pd.user);
         }
       } catch {
         // silent
@@ -97,6 +106,30 @@ export default function AccountDashboard() {
 
   return (
     <div>
+      {/* Profil Tamamlama Banner */}
+      {profileIncomplete && (
+        <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 p-4 mb-6 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="h-5 w-5 text-blue-500 shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-blue-700 dark:text-blue-400">
+                Profil bilgilerinizi tamamlayın
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Sipariş verebilmek için ad ve soyad bilgilerinizi girmeniz gerekiyor.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/hesabim/ayarlar"
+            className="shrink-0 inline-flex items-center gap-1 px-4 py-2 text-sm font-medium border border-blue-500/30 text-blue-700 dark:text-blue-400 hover:bg-blue-500/10 rounded-md transition-colors"
+          >
+            Profili Tamamla
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+      )}
+
       {/* Email Doğrulama Banner */}
       {!emailVerified && (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 mb-6 flex items-center justify-between gap-4">

@@ -212,6 +212,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (dbUser) {
           token.role = dbUser.role;
           token.name = `${dbUser.name} ${dbUser.surname}`.trim();
+          token.profileComplete = !!(dbUser.name && dbUser.surname);
         }
       }
       return token;
@@ -220,6 +221,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token) {
         session.user.id = token.id as string;
         session.user.role = token.role as "CUSTOMER" | "ADMIN";
+        session.user.profileComplete = token.profileComplete as boolean;
       }
       return session;
     },

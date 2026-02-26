@@ -16,6 +16,9 @@ import {
   ImageIcon,
   MapPin,
   StickyNote,
+  Package,
+  Copy,
+  FileText,
 } from "lucide-react";
 import {
   STATUS_COLORS,
@@ -24,6 +27,16 @@ import {
 } from "@/lib/order-utils";
 import { ROLL_CONFIG } from "@/lib/constants";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface OrderDetail {
   id: string;
@@ -37,6 +50,9 @@ interface OrderDetail {
   discountAmount: number;
   taxAmount: number;
   totalAmount: number;
+  shippingCost: number;
+  trackingCode: string | null;
+  hasInvoice: boolean;
   customerNote: string | null;
   createdAt: string;
   address: {
@@ -112,6 +128,8 @@ export default function OrderDetailPage() {
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isReordering, setIsReordering] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   useEffect(() => {
     async function fetchOrder() {
@@ -148,6 +166,28 @@ export default function OrderDetailPage() {
       toast.error("Bir hata oluştu");
     } finally {
       setIsReordering(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!order) return;
+    setIsCancelling(true);
+    try {
+      const res = await fetch(`/api/orders/${order.orderNumber}/cancel`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        toast.success("Sipariş iptal edildi");
+        setOrder({ ...order, status: "CANCELLED" });
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Sipariş iptal edilemedi");
+      }
+    } catch {
+      toast.error("Bir hata oluştu");
+    } finally {
+      setIsCancelling(false);
+      setShowCancelDialog(false);
     }
   };
 
@@ -220,6 +260,28 @@ export default function OrderDetailPage() {
             />
             {statusLabel(order.status)}
           </div>
+          {/* Invoice Button */}
+          {order.hasInvoice && (
+            <a
+              href={`/api/orders/${order.orderNumber}/invoice/pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 text-foreground border border-border hover:border-border/80 rounded-lg font-medium text-sm transition-all"
+            >
+              <FileText className="h-4 w-4" />
+              Fatura
+            </a>
+          )}
+          {/* Cancel Button — only for PENDING_PAYMENT */}
+          {order.status === "PENDING_PAYMENT" && (
+            <button
+              onClick={() => setShowCancelDialog(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-destructive/10 text-muted-foreground hover:text-destructive border border-border hover:border-destructive/30 rounded-lg font-medium text-sm transition-all"
+            >
+              <XCircle className="h-4 w-4" />
+              İptal Et
+            </button>
+          )}
           {/* Reorder Button */}
           <button
             onClick={handleReorder}
@@ -320,6 +382,31 @@ export default function OrderDetailPage() {
           </div>
         </div>
 
+        {/* Tracking Code */}
+        {order.trackingCode && (order.status === "SHIPPED" || order.status === "COMPLETED") && (
+          <div className="glass-panel rounded-xl p-6">
+            <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+              <Package className="h-5 w-5 text-primary" />
+              Kargo Takip
+            </h3>
+            <div className="flex items-center gap-3">
+              <code className="flex-1 bg-muted border border-border rounded-lg px-4 py-3 font-mono text-sm text-foreground tracking-wider">
+                {order.trackingCode}
+              </code>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(order.trackingCode!);
+                  toast.success("Takip kodu kopyalandı");
+                }}
+                className="shrink-0 w-10 h-10 rounded-lg border border-border bg-muted hover:bg-muted/80 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                title="Kopyala"
+              >
+                <Copy className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Price Breakdown */}
         <div className="glass-panel rounded-xl p-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-muted/30 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none" />
@@ -357,6 +444,14 @@ export default function OrderDetailPage() {
                 </span>
                 <span className="font-mono">
                   -{order.discountAmount.toFixed(2)} TL
+                </span>
+              </div>
+            )}
+            {order.shippingCost > 0 && (
+              <div className="flex justify-between items-center text-sm text-muted-foreground">
+                <span>Kargo Ücreti</span>
+                <span className="font-mono text-foreground">
+                  {order.shippingCost.toFixed(2)} TL
                 </span>
               </div>
             )}
@@ -467,6 +562,29 @@ export default function OrderDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Cancel Order Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Siparişi iptal etmek istiyor musunuz?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <strong>{order.orderNumber}</strong> numaralı siparişiniz iptal edilecektir.
+              Bu işlem geri alınamaz.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isCancelling}>Vazgeç</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleCancel}
+              disabled={isCancelling}
+            >
+              {isCancelling ? "İptal ediliyor..." : "Evet, İptal Et"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

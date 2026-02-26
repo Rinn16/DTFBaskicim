@@ -187,6 +187,13 @@ export default function OdemePage() {
   };
 
   const handleSubmitOrder = async () => {
+    // Check profile completeness for authenticated users (e.g. phone-only users with no name)
+    if (isAuthenticated && session?.user?.profileComplete === false) {
+      toast.error("Sipariş vermek için ad ve soyad bilgilerinizi tamamlayın");
+      router.push("/hesabim/ayarlar");
+      return;
+    }
+
     // Validation
     if (isAuthenticated && !addressId) {
       toast.error("Lütfen teslimat adresi seçin");

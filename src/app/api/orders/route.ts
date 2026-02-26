@@ -9,27 +9,42 @@ import type { GangSheetLayout, GangSheetItem } from "@/types/canvas";
 
 const guestCartItemsSchema = z.array(addToCartSchema).min(1, "Sepetiniz boş");
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
-    const orders = await db.order.findMany({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        orderNumber: true,
-        totalMeters: true,
-        totalAmount: true,
-        status: true,
-        paymentMethod: true,
-        paymentStatus: true,
-        createdAt: true,
-      },
-    });
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const limit = Math.min(50, Math.max(1, Number(searchParams.get("limit")) || 10));
+    const search = searchParams.get("search") || "";
+
+    const where = {
+      userId: session.user.id,
+      ...(search ? { orderNumber: { contains: search, mode: "insensitive" as const } } : {}),
+    };
+
+    const [orders, total] = await Promise.all([
+      db.order.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+          id: true,
+          orderNumber: true,
+          totalMeters: true,
+          totalAmount: true,
+          status: true,
+          paymentMethod: true,
+          paymentStatus: true,
+          createdAt: true,
+        },
+      }),
+      db.order.count({ where }),
+    ]);
 
     const formatted = orders.map((o) => ({
       ...o,
@@ -37,7 +52,15 @@ export async function GET() {
       totalAmount: Number(o.totalAmount),
     }));
 
-    return NextResponse.json({ orders: formatted });
+    return NextResponse.json({
+      orders: formatted,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error("Orders fetch error:", error);
     return NextResponse.json({ error: "Siparişler yüklenemedi" }, { status: 500 });
