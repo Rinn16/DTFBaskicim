@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, ShoppingCart, User, UserPlus, LogIn, LogOut, Package, Palette, Settings, FileUp, Mail } from "lucide-react";
+import { Menu, ShoppingCart, User, UserPlus, LogIn, LogOut, Package, Palette, Settings, FileUp, Mail, Search, HelpCircle } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useCartStore } from "@/stores/cart-store";
 import { useEffect, useState } from "react";
@@ -104,6 +104,20 @@ export function Header() {
           >
             <Mail className="h-4 w-4" />
             İletişim
+          </Link>
+          <Link
+            href="/siparis-takip"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-muted text-sm font-medium transition-colors text-muted-foreground hover:text-foreground"
+          >
+            <Search className="h-4 w-4" />
+            Sipariş Takip
+          </Link>
+          <Link
+            href="/yardim"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-muted text-sm font-medium transition-colors text-muted-foreground hover:text-foreground"
+          >
+            <HelpCircle className="h-4 w-4" />
+            Yardım
           </Link>
         </nav>
 
@@ -280,6 +294,20 @@ export function Header() {
                 >
                   <Mail className="h-5 w-5 text-muted-foreground" />
                   İletişim
+                </Link>
+                <Link
+                  href="/siparis-takip"
+                  className="flex items-center gap-3 text-sm font-medium py-2 text-foreground/80 hover:text-foreground transition-colors"
+                >
+                  <Search className="h-5 w-5 text-muted-foreground" />
+                  Sipariş Takip
+                </Link>
+                <Link
+                  href="/yardim"
+                  className="flex items-center gap-3 text-sm font-medium py-2 text-foreground/80 hover:text-foreground transition-colors"
+                >
+                  <HelpCircle className="h-5 w-5 text-muted-foreground" />
+                  Yardım
                 </Link>
                 {!effectiveSession && (
                   <>

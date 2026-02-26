@@ -57,6 +57,18 @@ export function Footer() {
           </div>
         </div>
 
+        <div className="flex flex-wrap justify-center md:justify-start gap-x-8 gap-y-2 text-sm text-muted-foreground border-t border-border pt-8 pb-8">
+          <Link href="/iletisim" className="hover:text-primary transition-colors">
+            İletişim
+          </Link>
+          <Link href="/siparis-takip" className="hover:text-primary transition-colors">
+            Sipariş Takip
+          </Link>
+          <Link href="/yardim" className="hover:text-primary transition-colors">
+            Yardım
+          </Link>
+        </div>
+
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground/70 border-t border-border pt-8">
           <p>
             &copy; {new Date().getFullYear()} DTF Baskıcım. Tüm hakları saklıdır.
