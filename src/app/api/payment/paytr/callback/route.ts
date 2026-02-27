@@ -137,7 +137,7 @@ export async function POST(request: Request) {
           },
         }),
       ]);
-      console.log(`PayTR callback: payment failed for order ${merchantOid}, marked as FAILED`);
+      console.error(`PayTR callback: payment failed for order ${merchantOid}, marked as FAILED`);
     }
 
     return new Response("OK");

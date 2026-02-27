@@ -197,7 +197,6 @@ export async function sendOrderEventSms(
     // Check if SMS is enabled in site settings
     const settings = await db.siteSettings.findUnique({ where: { id: "default" } });
     if (!settings?.smsEnabled) {
-      console.log(`[sms] SMS disabled, skipping ${trigger} for order ${order.orderNumber}`);
       return;
     }
 
@@ -205,13 +204,11 @@ export async function sendOrderEventSms(
       where: { type: trigger, isActive: true },
     });
     if (!template) {
-      console.log(`[sms] No active template for ${trigger}, skipping`);
       return;
     }
 
     const phone = order.user?.phone || order.guestPhone || order.address?.phone;
     if (!phone) {
-      console.log(`[sms] No phone for order ${order.orderNumber}, skipping`);
       return;
     }
 
@@ -242,8 +239,6 @@ export async function sendOrderEventSms(
 
     if (!result.success) {
       console.error(`[sms] ${trigger} SMS FAILED for order ${order.orderNumber} after retries: ${result.error}`);
-    } else {
-      console.log(`[sms] ${trigger} SMS sent for order ${order.orderNumber}`);
     }
   } catch (err) {
     console.error(`[sms] sendOrderEventSms failed for ${trigger}:`, err);

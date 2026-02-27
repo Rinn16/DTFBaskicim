@@ -1,12 +1,7 @@
-import type { DesignInput, Placement } from "@/types/canvas";
+import type { DesignInput, Placement, PackResult } from "@/types/canvas";
 import { ROLL_CONFIG } from "@/lib/constants";
 
-export interface PackResult {
-  placements: Placement[];
-  totalHeightCm: number;
-  totalMeters: number;
-  wastePercent: number;
-}
+export type { PackResult };
 
 interface Rect {
   id: string;
@@ -305,7 +300,6 @@ export function autoPackAsync(
         worker.onmessage = (e: MessageEvent<PackResult>) => {
           clearTimeout(timeout);
           worker.terminate();
-          console.log("[packing] Worker completed successfully");
           resolve(e.data);
         };
 
