@@ -60,6 +60,7 @@ const productionRequiredSchema = envSchema.extend({
   PAYTR_MERCHANT_ID: z.string().min(1, "PAYTR_MERCHANT_ID is required in production"),
   PAYTR_MERCHANT_KEY: z.string().min(1, "PAYTR_MERCHANT_KEY is required in production"),
   PAYTR_MERCHANT_SALT: z.string().min(1, "PAYTR_MERCHANT_SALT is required in production"),
+  PAYTR_TEST_MODE: z.literal("0", { message: "PAYTR_TEST_MODE must be '0' in production" }),
   SMTP_HOST: z.string().min(1, "SMTP_HOST is required in production"),
   SMTP_USER: z.string().min(1, "SMTP_USER is required in production"),
   SMTP_PASSWORD: z.string().min(1, "SMTP_PASSWORD is required in production"),
