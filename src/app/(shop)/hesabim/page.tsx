@@ -65,7 +65,7 @@ export default function AccountDashboard() {
           setProfileData(pd.user);
         }
       } catch {
-        // silent
+        toast.error("Hesap bilgileri yüklenemedi");
       } finally {
         setIsLoading(false);
       }

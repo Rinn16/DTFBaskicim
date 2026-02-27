@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import Link from "next/link";
 import {
   Loader2,
@@ -65,7 +66,7 @@ export default function OrdersPage() {
         setPagination(data.pagination);
       }
     } catch {
-      // silent
+      toast.error("Siparişler yüklenemedi");
     } finally {
       setIsLoading(false);
     }

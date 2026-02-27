@@ -120,7 +120,7 @@ export default function OdemePage() {
           setOrdersPausedMessage(data.ordersPausedMessage);
         }
       } catch {
-        // ignore
+        toast.error("Sayfa verileri yüklenemedi");
       }
     }
     checkOrdersPaused();

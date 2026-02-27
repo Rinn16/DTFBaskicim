@@ -155,7 +155,7 @@ export default function SettingsPage() {
           });
         }
       } catch {
-        // silent
+        toast.error("Profil bilgileri yüklenemedi");
       } finally {
         setIsLoadingProfile(false);
       }
@@ -173,7 +173,7 @@ export default function SettingsPage() {
         setAddresses(data.addresses);
       }
     } catch {
-      // silent
+      toast.error("Adresler yüklenemedi");
     } finally {
       setIsLoadingAddresses(false);
     }
@@ -194,7 +194,7 @@ export default function SettingsPage() {
           setCurrentSessionId(data.currentSessionId);
         }
       } catch {
-        // silent
+        toast.error("Aktif oturumlar yüklenemedi");
       } finally {
         setIsLoadingSessions(false);
       }
@@ -212,7 +212,7 @@ export default function SettingsPage() {
           setNotifPrefs({ emailOptIn: data.emailOptIn, smsOptIn: data.smsOptIn });
         }
       } catch {
-        // silent
+        toast.error("Bildirim tercihleri yüklenemedi");
       } finally {
         setIsLoadingNotifs(false);
       }

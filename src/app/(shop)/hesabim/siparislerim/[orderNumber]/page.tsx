@@ -140,7 +140,7 @@ export default function OrderDetailPage() {
           setOrder(data.order);
         }
       } catch {
-        // silent
+        toast.error("Sipariş detayları yüklenemedi");
       } finally {
         setIsLoading(false);
       }
