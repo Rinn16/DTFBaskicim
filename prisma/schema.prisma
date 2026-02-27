@@ -173,6 +173,7 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+  @@index([identifier])
 }
 
 model OtpCode {
@@ -186,6 +187,7 @@ model OtpCode {
   createdAt DateTime @default(now())
 
   @@index([phone, code])
+  @@index([expiresAt])
 }
 
 // ==================== ADDRESS ====================
@@ -255,6 +257,7 @@ model DiscountCode {
   updatedAt DateTime @updatedAt
 
   @@index([code])
+  @@index([isActive])
 }
 
 model ShippingConfig {
