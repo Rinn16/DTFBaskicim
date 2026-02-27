@@ -104,7 +104,7 @@ export default function HomePage() {
               className="w-full h-full object-cover opacity-60"
             >
               <source
-                src="https://videos.pexels.com/video-files/3043685/3043685-uhd_2560_1440_24fps.mp4"
+                src="https://videos.pexels.com/video-files/3936483/3936483-uhd_2560_1440_24fps.mp4"
                 type="video/mp4"
               />
             </video>
