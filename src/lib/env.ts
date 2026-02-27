@@ -35,7 +35,7 @@ const envSchema = z.object({
   PAYTR_TEST_MODE: z.enum(["0", "1"]).default("1"),
 
   // Bank Transfer
-  BANK_ACCOUNT_NAME: z.string().default("DTF Baskicim"),
+  BANK_ACCOUNT_NAME: z.string().default("Rima Reklam Promosyon Danışmanlık Dış Ticaret Ltd Şti"),
   BANK_IBAN: z.string().optional(),
   BANK_NAME: z.string().optional(),
 

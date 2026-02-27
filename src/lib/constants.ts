@@ -40,7 +40,7 @@ export const UPLOAD = {
 
 // Bank Transfer Info
 export const BANK_INFO = {
-  ACCOUNT_NAME: process.env.BANK_ACCOUNT_NAME || "DTF Baskıcım",
+  ACCOUNT_NAME: process.env.BANK_ACCOUNT_NAME || "Rima Reklam Promosyon Danışmanlık Dış Ticaret Ltd Şti",
   IBAN: process.env.BANK_IBAN || "",
   BANK_NAME: process.env.BANK_NAME || "",
 } as const;

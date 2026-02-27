@@ -262,7 +262,7 @@ export class TrendyolEFaturaProvider implements EFaturaProvider {
     const recipientInfo: Record<string, unknown> = {
       taxId: data.buyerTaxNumber || "11111111111",
       countryCode: "TR",
-      city: data.buyerCity && data.buyerCity.length >= 2 ? data.buyerCity : "İstanbul",
+      city: data.buyerCity && data.buyerCity.length >= 2 ? data.buyerCity : "Bursa",
       name: buyerDisplayName,
     };
     // surname only for individuals, must be ≥ 2 chars
