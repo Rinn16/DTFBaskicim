@@ -110,3 +110,48 @@ export async function sendContactNotification(
   await sendEmail({ to, subject: `İletişim: ${data.subject}`, html });
 }
 
+/** Yeni sipariş geldiğinde admin'e bildirim e-postası */
+export async function sendAdminNewOrderNotification(data: {
+  orderNumber: string;
+  customerName: string;
+  totalAmount: number;
+  itemCount: number;
+  paymentMethod: string;
+  orderDate: string;
+}) {
+  // Check if this email type is enabled
+  const settings = await db.siteSettings.findUnique({ where: { id: "default" } });
+  if (!settings?.emailEnabled || !settings?.emailAdminNewOrder) return;
+
+  // Determine admin email: invoiceCompanyEmail || SMTP_FROM
+  const adminEmail = settings.invoiceCompanyEmail || process.env.SMTP_FROM;
+  if (!adminEmail) {
+    console.warn("[email] No admin email configured for new order notification");
+    return;
+  }
+
+  const paymentLabel =
+    data.paymentMethod === "CREDIT_CARD" ? "Kredi Kartı" :
+    data.paymentMethod === "BANK_TRANSFER" ? "Havale/EFT" : data.paymentMethod;
+
+  const html = `
+    <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;">
+      <h2 style="color:#0f172a;margin:0 0 16px;">Yeni Sipariş Alındı</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <tr><td style="padding:8px 0;color:#64748b;width:140px;">Sipariş No</td><td style="padding:8px 0;color:#0f172a;font-weight:600;">${data.orderNumber}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;">Müşteri</td><td style="padding:8px 0;color:#0f172a;">${data.customerName}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;">Toplam</td><td style="padding:8px 0;color:#0f172a;font-weight:600;">${data.totalAmount.toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;">Ürün Sayısı</td><td style="padding:8px 0;color:#0f172a;">${data.itemCount} adet</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;">Ödeme</td><td style="padding:8px 0;color:#0f172a;">${paymentLabel}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;">Tarih</td><td style="padding:8px 0;color:#0f172a;">${data.orderDate}</td></tr>
+      </table>
+    </div>
+  `;
+
+  await sendEmail({
+    to: adminEmail,
+    subject: `Yeni Sipariş: ${data.orderNumber}`,
+    html,
+  });
+}
+

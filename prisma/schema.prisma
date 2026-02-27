@@ -293,6 +293,7 @@ model SiteSettings {
   emailWelcome      Boolean  @default(true)
   emailOrderConfirm Boolean  @default(true)
   emailShipped      Boolean  @default(true)
+  emailAdminNewOrder Boolean  @default(true)
 
   // Fatura firma bilgileri (DTF Baskıcım'dan farklı olabilir)
   invoiceCompanyName      String?

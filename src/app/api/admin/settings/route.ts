@@ -37,6 +37,7 @@ const updateSchema = z.object({
   emailWelcome: z.boolean().optional(),
   emailOrderConfirm: z.boolean().optional(),
   emailShipped: z.boolean().optional(),
+  emailAdminNewOrder: z.boolean().optional(),
 
   // Fatura firma bilgileri
   invoiceCompanyName: z.string().optional(),

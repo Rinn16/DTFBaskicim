@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { getBaseUrl } from "@/lib/utils";
 import { calculatePrice } from "@/services/pricing.service";
-import { sendOrderConfirmation } from "@/services/email.service";
+import { sendOrderConfirmation, sendAdminNewOrderNotification } from "@/services/email.service";
 import { ROLL_CONFIG } from "@/lib/constants";
 import type { PricingTierData, CustomerPricingData, ShippingConfigData } from "@/types/pricing";
 import type { GangSheetLayout, GangSheetItem } from "@/types/canvas";
@@ -287,6 +287,16 @@ export async function createOrder(params: CreateOrderParams) {
         deliveryAddress,
         orderUrl: `${siteUrl}/hesabim/siparisler`,
       }).catch((err) => console.error("[email] Order confirmation failed:", err));
+
+      // Fire-and-forget admin notification
+      sendAdminNewOrderNotification({
+        orderNumber: order.orderNumber,
+        customerName,
+        totalAmount: Number(order.totalAmount),
+        itemCount: allItems.length,
+        paymentMethod: order.paymentMethod,
+        orderDate: new Date().toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" }),
+      }).catch((err) => console.error("[email] Admin new order notification failed:", err));
     }
   } catch (err) {
     console.error("[email] Order confirmation setup failed:", err);
