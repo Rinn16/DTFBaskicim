@@ -54,7 +54,11 @@ export default function IletisimPage() {
             <MapPin className="h-5 w-5 text-primary" />
           </div>
           <h3 className="mb-1 font-semibold">Adres</h3>
-          <p className="text-sm text-muted-foreground">İstanbul, Türkiye</p>
+          <p className="text-sm text-muted-foreground">
+            Güzelyalı Burgaz Mah. Kazım Karabekir Cad. No:13/C
+            <br />
+            Mudanya / Bursa
+          </p>
         </div>
       </div>
 

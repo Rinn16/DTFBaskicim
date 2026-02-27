@@ -131,7 +131,7 @@ export default function KullanimSartlariPage() {
         <h2 className="mb-3 text-xl font-semibold">8. Uyuşmazlık Çözümü</h2>
         <p className="leading-relaxed text-muted-foreground">
           Bu kullanım şartları Türkiye Cumhuriyeti kanunlarına tabidir.
-          Uyuşmazlık durumunda İstanbul Mahkemeleri ve İcra Daireleri
+          Uyuşmazlık durumunda Bursa Mahkemeleri ve İcra Daireleri
           yetkilidir.
         </p>
       </section>

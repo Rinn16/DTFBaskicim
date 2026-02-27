@@ -25,10 +25,16 @@ export default function MesafeliSatisSozlesmesiPage() {
               <p className="font-medium mb-1">SATICI:</p>
               <ul className="list-none space-y-1 ml-1">
                 <li>
-                  <span className="font-medium">Unvan:</span> DTF Baskıcım
+                  <span className="font-medium">Ünvan:</span> Rima Reklam Promosyon Danışmanlık Dış Ticaret Ltd Şti
                 </li>
                 <li>
-                  <span className="font-medium">Adres:</span> İstanbul, Türkiye
+                  <span className="font-medium">Ticari İsim:</span> DTF Baskıcım
+                </li>
+                <li>
+                  <span className="font-medium">Vergi No:</span> 4631210209
+                </li>
+                <li>
+                  <span className="font-medium">Adres:</span> Güzelyalı Burgaz Mah. Kazım Karabekir Cad. No:13/C Mudanya / Bursa
                 </li>
                 <li>
                   <span className="font-medium">E-posta:</span>{" "}
