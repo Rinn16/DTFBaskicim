@@ -110,7 +110,7 @@
   - [ ] Taslak listesi görüntüleme
   - [ ] Kayıtlı taslağı yükleme
   - [ ] Taslağı silme
-  - [ ] Taslak güncelleme (üzerine kaydetme)
+  - [x] Taslak güncelleme (üzerine kaydetme) _(Bug bulundu & düzeltildi: silinen draft güncellenmeye çalışılınca 404 → tüm sepet akışı kırılıyordu — `8bd0dd3`)_
   - [ ] Aktif taslak işareti doğru mu?
 - [ ] **Misafir olarak:**
   - [ ] Taslak localStorage'a kaydediliyor mu?
@@ -137,7 +137,7 @@
 ## 3. Sepet
 
 ### 3.1 Sepete Ekleme
-- [ ] Tasarımdan sepete ekleme
+- [x] Tasarımdan sepete ekleme _(Bug bulundu & düzeltildi: draft 404 hatası sepet akışını engelliyordu — `8bd0dd3`)_
 - [ ] Sepete eklenen öğe doğru layout/items bilgisi taşıyor mu?
 - [ ] Toplam metre hesabı doğru mu?
 - [ ] Birden fazla gang sheet ekleme
@@ -201,7 +201,7 @@
 
 ### 4.6 Kredi Kartı ile Ödeme (PayTR)
 - [ ] PayTR iframe yükleniyor mu?
-- [ ] Başarılı ödeme → `/odeme/basarili` sayfası
+- [x] Başarılı ödeme → `/odeme/basarili` sayfası _(Bug bulundu & düzeltildi: metraj floating point olarak gösteriliyordu, ör: 2.15399999998 — `8bd0dd3`)_
 - [ ] Başarısız ödeme → `/odeme/basarisiz` sayfası
 - [ ] Callback HMAC doğrulaması çalışıyor mu?
 - [ ] Tutar doğrulaması (kuruş cinsinden) çalışıyor mu?
@@ -512,7 +512,7 @@
 ### 11.5 Hesaplama Tutarlılığı
 - [ ] Client tarafı hesaplama = Server tarafı hesaplama
 - [ ] `/api/pricing/calculate` endpoint doğruluğu
-- [ ] Kuruş yuvarlama hataları var mı?
+- [x] Kuruş yuvarlama hataları var mı? _(`/odeme/basarili` sayfasında `.toFixed(2)` eksikti, düzeltildi — `8bd0dd3`)_
 
 ---
 
@@ -701,15 +701,15 @@ _Test sırasında bulduğunuz sorunları buraya yazın:_
 1.
 
 ### Orta Öncelikli Sorunlar
-1.
+1. **[DÜZELTILDI]** "Taslak bulunamadı" hatası — Sepete Ekle'ye basıldığında, ürün sepete ekleniyor (201) ama ardından silinen/eski bir draft güncellenmeye çalışılıyor (404). Aynı try-catch içinde olduğu için toast.success + resetCanvas + router.push çalışmıyordu. **Fix:** Draft save/update kendi try-catch bloğuna sarıldı. (`price-bar.tsx` — `8bd0dd3`)
 
 ### Düşük Öncelikli Sorunlar
-1.
+1. **[DÜZELTILDI]** Floating point gösterim hatası — `/odeme/basarili` sayfasında metraj `2.15399999999998 Metre` olarak gösteriliyordu. **Fix:** `.toFixed(2)` eklendi, birim `m` olarak kısaltıldı. (`page.tsx` — `8bd0dd3`)
 
 ### İyileştirme Önerileri
 1.
 
 ---
 
-> Son güncelleme: 2026-02-26
+> Son güncelleme: 2026-02-27
 > Toplam test maddesi: ~300+

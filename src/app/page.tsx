@@ -91,39 +91,38 @@ export default function HomePage() {
       <main className="relative z-10 pb-20">
         {/* ── Hero Section ── */}
         <section
-          className="relative w-full min-h-[85vh] flex flex-col items-center justify-center px-4 overflow-hidden"
+          className="relative w-full min-h-screen -mt-20 pt-20 flex flex-col items-center justify-center px-4 overflow-hidden"
           id="hero"
         >
-          {/* Video Background */}
+          {/* Video Background — mix-blend-mode: screen makes black transparent */}
           <div className="absolute inset-0 z-0 overflow-hidden">
             <video
               autoPlay
               loop
               muted
               playsInline
-              className="w-full h-full object-cover opacity-60"
+              className="w-full h-full object-cover mix-blend-screen opacity-100 dark:opacity-90"
             >
               <source
-                src="https://videos.pexels.com/video-files/3936483/3936483-uhd_2560_1440_24fps.mp4"
+                src="/hero-bg.mp4"
                 type="video/mp4"
               />
             </video>
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
-            <div className="absolute inset-0 bg-background/30 backdrop-blur-[2px]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent" />
           </div>
 
           <div className="relative z-10 w-full max-w-[1400px] mx-auto text-center flex flex-col items-center">
             <div className="relative mb-6 cursor-default select-none">
               {/* Giant "DTF" ghost text — layer 1 (blur) */}
               <div
-                className="text-[12rem] md:text-[18rem] lg:text-[24rem] font-black leading-none tracking-tighter mix-blend-overlay opacity-30 blur-sm absolute top-0 left-1/2 -translate-x-1/2 select-none pointer-events-none"
+                className="text-[12rem] md:text-[18rem] lg:text-[24rem] font-black leading-none tracking-tighter mix-blend-overlay opacity-30 dark:opacity-30 blur-sm absolute top-0 left-1/2 -translate-x-1/2 select-none pointer-events-none"
                 aria-hidden="true"
               >
                 DTF
               </div>
               {/* Giant "DTF" ghost text — layer 2 (gradient) */}
               <div
-                className="text-[12rem] md:text-[18rem] lg:text-[24rem] font-black leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white/10 to-transparent select-none pointer-events-none"
+                className="text-[12rem] md:text-[18rem] lg:text-[24rem] font-black leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-black/30 to-transparent dark:from-white/10 dark:to-transparent select-none pointer-events-none"
                 aria-hidden="true"
               >
                 DTF
