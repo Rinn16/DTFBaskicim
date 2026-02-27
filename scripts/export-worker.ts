@@ -206,6 +206,11 @@ async function main() {
     removeOnComplete: { count: 5 },
     removeOnFail: { count: 10 },
   });
+  await cronQueue.add("check-efatura-status", {}, {
+    repeat: { pattern: "*/30 * * * *" }, // every 30 minutes
+    removeOnComplete: { count: 5 },
+    removeOnFail: { count: 10 },
+  });
 
   const cronWorker = new Worker(
     "cron-jobs",
@@ -272,6 +277,46 @@ async function main() {
             where: { updatedAt: { lt: draftCutoff } },
           });
           console.log(`[Cron] Deleted ${deleted.count} old design drafts`);
+          break;
+        }
+
+        case "check-efatura-status": {
+          // Check if e-fatura is enabled
+          const efaturaSettings = await db.siteSettings.findUnique({
+            where: { id: "default" },
+            select: { efaturaEnabled: true },
+          });
+          if (!efaturaSettings?.efaturaEnabled) {
+            console.log("[Cron] E-fatura disabled — skipping status check");
+            break;
+          }
+
+          // Find invoices pending GIB response
+          const pendingInvoices = await db.invoice.findMany({
+            where: {
+              status: "SENT_TO_GIB",
+              gibInvoiceId: { not: null },
+            },
+            select: { id: true, invoiceNumber: true },
+            take: 50,
+          });
+
+          if (pendingInvoices.length === 0) {
+            console.log("[Cron] No pending e-fatura invoices to check");
+            break;
+          }
+
+          let updated = 0;
+          for (const inv of pendingInvoices) {
+            try {
+              const { checkGibStatus } = await import("@/services/efatura");
+              const result = await checkGibStatus(inv.id);
+              if (result.status !== "SENT") updated++;
+            } catch (err) {
+              console.error(`[Cron] E-fatura check failed for ${inv.invoiceNumber}:`, err instanceof Error ? err.message : err);
+            }
+          }
+          console.log(`[Cron] Checked ${pendingInvoices.length} e-fatura invoices, ${updated} status updated`);
           break;
         }
       }
