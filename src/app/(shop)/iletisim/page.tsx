@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Mail, Clock, MapPin, Instagram, Twitter, Linkedin } from "lucide-react";
+import { Mail, Clock, MapPin, Instagram } from "lucide-react";
 import { ContactForm } from "@/components/contact-form";
 
 export const metadata: Metadata = {
@@ -85,28 +85,12 @@ export default function IletisimPage() {
         <h2 className="mb-4 text-xl font-semibold">Sosyal Medya</h2>
         <div className="flex gap-4">
           <a
-            href="https://instagram.com/dtfbaskicim"
+            href="https://instagram.com/dtf.baskicim"
             target="_blank"
             rel="noopener noreferrer"
             className="flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-muted/50 transition-colors hover:bg-muted"
           >
             <Instagram className="h-5 w-5 text-muted-foreground" />
-          </a>
-          <a
-            href="https://twitter.com/dtfbaskicim"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-muted/50 transition-colors hover:bg-muted"
-          >
-            <Twitter className="h-5 w-5 text-muted-foreground" />
-          </a>
-          <a
-            href="https://linkedin.com/company/dtfbaskicim"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-muted/50 transition-colors hover:bg-muted"
-          >
-            <Linkedin className="h-5 w-5 text-muted-foreground" />
           </a>
         </div>
       </section>

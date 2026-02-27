@@ -166,7 +166,7 @@ export function TestimonialsSection() {
         {/* Instagram CTA */}
         <div className="mt-10 text-center">
           <a
-            href="https://instagram.com/dtfbaskicim"
+            href="https://instagram.com/dtf.baskicim"
             target="_blank"
             rel="noopener noreferrer"
           >

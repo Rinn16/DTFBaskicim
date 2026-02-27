@@ -31,28 +31,12 @@ export function Footer() {
           </Link>
           <div className="flex gap-8">
             <a
-              href="https://instagram.com/dtfbaskicim"
+              href="https://instagram.com/dtf.baskicim"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary transition-colors text-sm"
             >
               Instagram
-            </a>
-            <a
-              href="https://twitter.com/dtfbaskicim"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-colors text-sm"
-            >
-              Twitter
-            </a>
-            <a
-              href="https://linkedin.com/company/dtfbaskicim"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-colors text-sm"
-            >
-              LinkedIn
             </a>
           </div>
         </div>
