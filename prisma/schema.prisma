@@ -115,6 +115,7 @@ model User {
   accounts       Account[]
   sessions       Session[]
   userSessions   UserSession[]
+  discountUsages DiscountUsage[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -252,12 +253,29 @@ model DiscountCode {
   isActive        Boolean  @default(true)
 
   orders Order[]
+  usages DiscountUsage[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([code])
   @@index([isActive])
+}
+
+model DiscountUsage {
+  id             String       @id @default(cuid())
+  userId         String
+  discountCodeId String
+  orderId        String       @unique
+
+  user         User         @relation(fields: [userId], references: [id])
+  discountCode DiscountCode @relation(fields: [discountCodeId], references: [id])
+  order        Order        @relation(fields: [orderId], references: [id])
+
+  usedAt DateTime @default(now())
+
+  @@unique([userId, discountCodeId])
+  @@index([discountCodeId])
 }
 
 model ShippingConfig {
@@ -375,6 +393,7 @@ model Order {
   gangSheets    OrderGangSheet[]
   invoices      Invoice[]
   transactions  PaymentTransaction[]
+  discountUsage DiscountUsage?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

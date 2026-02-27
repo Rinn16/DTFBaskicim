@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { rateLimit } from "@/lib/rate-limit";
+import { auth } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
@@ -57,6 +58,25 @@ export async function POST(request: Request) {
         { error: "Bu indirim kodu kullanım limitine ulaşmış" },
         { status: 400 }
       );
+    }
+
+    // Per-user usage check (only for authenticated users)
+    const session = await auth();
+    if (session?.user?.id) {
+      const existingUsage = await db.discountUsage.findUnique({
+        where: {
+          userId_discountCodeId: {
+            userId: session.user.id,
+            discountCodeId: discount.id,
+          },
+        },
+      });
+      if (existingUsage) {
+        return NextResponse.json(
+          { error: "Bu indirim kodunu daha önce kullandınız" },
+          { status: 400 }
+        );
+      }
     }
 
     return NextResponse.json({

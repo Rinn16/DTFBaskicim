@@ -224,6 +224,17 @@ export async function createOrder(params: CreateOrderParams) {
       },
     });
 
+    // Kullanıcı bazlı indirim kodu kullanım kaydı
+    if (discountCodeId && userId) {
+      await tx.discountUsage.create({
+        data: {
+          userId,
+          discountCodeId,
+          orderId: newOrder.id,
+        },
+      });
+    }
+
     return newOrder;
   });
 
