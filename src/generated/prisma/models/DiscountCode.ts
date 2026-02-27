@@ -289,6 +289,7 @@ export type DiscountCodeWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"DiscountCode"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DiscountCode"> | Date | string
   orders?: Prisma.OrderListRelationFilter
+  usages?: Prisma.DiscountUsageListRelationFilter
 }
 
 export type DiscountCodeOrderByWithRelationInput = {
@@ -305,6 +306,7 @@ export type DiscountCodeOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   orders?: Prisma.OrderOrderByRelationAggregateInput
+  usages?: Prisma.DiscountUsageOrderByRelationAggregateInput
 }
 
 export type DiscountCodeWhereUniqueInput = Prisma.AtLeast<{
@@ -324,6 +326,7 @@ export type DiscountCodeWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"DiscountCode"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DiscountCode"> | Date | string
   orders?: Prisma.OrderListRelationFilter
+  usages?: Prisma.DiscountUsageListRelationFilter
 }, "id" | "code">
 
 export type DiscountCodeOrderByWithAggregationInput = {
@@ -378,6 +381,7 @@ export type DiscountCodeCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   orders?: Prisma.OrderCreateNestedManyWithoutDiscountCodeInput
+  usages?: Prisma.DiscountUsageCreateNestedManyWithoutDiscountCodeInput
 }
 
 export type DiscountCodeUncheckedCreateInput = {
@@ -394,6 +398,7 @@ export type DiscountCodeUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutDiscountCodeInput
+  usages?: Prisma.DiscountUsageUncheckedCreateNestedManyWithoutDiscountCodeInput
 }
 
 export type DiscountCodeUpdateInput = {
@@ -410,6 +415,7 @@ export type DiscountCodeUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orders?: Prisma.OrderUpdateManyWithoutDiscountCodeNestedInput
+  usages?: Prisma.DiscountUsageUpdateManyWithoutDiscountCodeNestedInput
 }
 
 export type DiscountCodeUncheckedUpdateInput = {
@@ -426,6 +432,7 @@ export type DiscountCodeUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orders?: Prisma.OrderUncheckedUpdateManyWithoutDiscountCodeNestedInput
+  usages?: Prisma.DiscountUsageUncheckedUpdateManyWithoutDiscountCodeNestedInput
 }
 
 export type DiscountCodeCreateManyInput = {
@@ -534,9 +541,28 @@ export type DiscountCodeSumOrderByAggregateInput = {
   usedCount?: Prisma.SortOrder
 }
 
+export type DiscountCodeScalarRelationFilter = {
+  is?: Prisma.DiscountCodeWhereInput
+  isNot?: Prisma.DiscountCodeWhereInput
+}
+
 export type DiscountCodeNullableScalarRelationFilter = {
   is?: Prisma.DiscountCodeWhereInput | null
   isNot?: Prisma.DiscountCodeWhereInput | null
+}
+
+export type DiscountCodeCreateNestedOneWithoutUsagesInput = {
+  create?: Prisma.XOR<Prisma.DiscountCodeCreateWithoutUsagesInput, Prisma.DiscountCodeUncheckedCreateWithoutUsagesInput>
+  connectOrCreate?: Prisma.DiscountCodeCreateOrConnectWithoutUsagesInput
+  connect?: Prisma.DiscountCodeWhereUniqueInput
+}
+
+export type DiscountCodeUpdateOneRequiredWithoutUsagesNestedInput = {
+  create?: Prisma.XOR<Prisma.DiscountCodeCreateWithoutUsagesInput, Prisma.DiscountCodeUncheckedCreateWithoutUsagesInput>
+  connectOrCreate?: Prisma.DiscountCodeCreateOrConnectWithoutUsagesInput
+  upsert?: Prisma.DiscountCodeUpsertWithoutUsagesInput
+  connect?: Prisma.DiscountCodeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DiscountCodeUpdateToOneWithWhereWithoutUsagesInput, Prisma.DiscountCodeUpdateWithoutUsagesInput>, Prisma.DiscountCodeUncheckedUpdateWithoutUsagesInput>
 }
 
 export type DiscountCodeCreateNestedOneWithoutOrdersInput = {
@@ -555,6 +581,86 @@ export type DiscountCodeUpdateOneWithoutOrdersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DiscountCodeUpdateToOneWithWhereWithoutOrdersInput, Prisma.DiscountCodeUpdateWithoutOrdersInput>, Prisma.DiscountCodeUncheckedUpdateWithoutOrdersInput>
 }
 
+export type DiscountCodeCreateWithoutUsagesInput = {
+  id?: string
+  code: string
+  discountPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  minOrderMeters?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUses?: number | null
+  usedCount?: number
+  validFrom: Date | string
+  validUntil: Date | string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  orders?: Prisma.OrderCreateNestedManyWithoutDiscountCodeInput
+}
+
+export type DiscountCodeUncheckedCreateWithoutUsagesInput = {
+  id?: string
+  code: string
+  discountPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  minOrderMeters?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUses?: number | null
+  usedCount?: number
+  validFrom: Date | string
+  validUntil: Date | string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutDiscountCodeInput
+}
+
+export type DiscountCodeCreateOrConnectWithoutUsagesInput = {
+  where: Prisma.DiscountCodeWhereUniqueInput
+  create: Prisma.XOR<Prisma.DiscountCodeCreateWithoutUsagesInput, Prisma.DiscountCodeUncheckedCreateWithoutUsagesInput>
+}
+
+export type DiscountCodeUpsertWithoutUsagesInput = {
+  update: Prisma.XOR<Prisma.DiscountCodeUpdateWithoutUsagesInput, Prisma.DiscountCodeUncheckedUpdateWithoutUsagesInput>
+  create: Prisma.XOR<Prisma.DiscountCodeCreateWithoutUsagesInput, Prisma.DiscountCodeUncheckedCreateWithoutUsagesInput>
+  where?: Prisma.DiscountCodeWhereInput
+}
+
+export type DiscountCodeUpdateToOneWithWhereWithoutUsagesInput = {
+  where?: Prisma.DiscountCodeWhereInput
+  data: Prisma.XOR<Prisma.DiscountCodeUpdateWithoutUsagesInput, Prisma.DiscountCodeUncheckedUpdateWithoutUsagesInput>
+}
+
+export type DiscountCodeUpdateWithoutUsagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  discountPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  discountAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  minOrderMeters?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUses?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  usedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  orders?: Prisma.OrderUpdateManyWithoutDiscountCodeNestedInput
+}
+
+export type DiscountCodeUncheckedUpdateWithoutUsagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  discountPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  discountAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  minOrderMeters?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUses?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  usedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutDiscountCodeNestedInput
+}
+
 export type DiscountCodeCreateWithoutOrdersInput = {
   id?: string
   code: string
@@ -568,6 +674,7 @@ export type DiscountCodeCreateWithoutOrdersInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  usages?: Prisma.DiscountUsageCreateNestedManyWithoutDiscountCodeInput
 }
 
 export type DiscountCodeUncheckedCreateWithoutOrdersInput = {
@@ -583,6 +690,7 @@ export type DiscountCodeUncheckedCreateWithoutOrdersInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  usages?: Prisma.DiscountUsageUncheckedCreateNestedManyWithoutDiscountCodeInput
 }
 
 export type DiscountCodeCreateOrConnectWithoutOrdersInput = {
@@ -614,6 +722,7 @@ export type DiscountCodeUpdateWithoutOrdersInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usages?: Prisma.DiscountUsageUpdateManyWithoutDiscountCodeNestedInput
 }
 
 export type DiscountCodeUncheckedUpdateWithoutOrdersInput = {
@@ -629,6 +738,7 @@ export type DiscountCodeUncheckedUpdateWithoutOrdersInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usages?: Prisma.DiscountUsageUncheckedUpdateManyWithoutDiscountCodeNestedInput
 }
 
 
@@ -638,10 +748,12 @@ export type DiscountCodeUncheckedUpdateWithoutOrdersInput = {
 
 export type DiscountCodeCountOutputType = {
   orders: number
+  usages: number
 }
 
 export type DiscountCodeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   orders?: boolean | DiscountCodeCountOutputTypeCountOrdersArgs
+  usages?: boolean | DiscountCodeCountOutputTypeCountUsagesArgs
 }
 
 /**
@@ -661,6 +773,13 @@ export type DiscountCodeCountOutputTypeCountOrdersArgs<ExtArgs extends runtime.T
   where?: Prisma.OrderWhereInput
 }
 
+/**
+ * DiscountCodeCountOutputType without action
+ */
+export type DiscountCodeCountOutputTypeCountUsagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DiscountUsageWhereInput
+}
+
 
 export type DiscountCodeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -676,6 +795,7 @@ export type DiscountCodeSelect<ExtArgs extends runtime.Types.Extensions.Internal
   createdAt?: boolean
   updatedAt?: boolean
   orders?: boolean | Prisma.DiscountCode$ordersArgs<ExtArgs>
+  usages?: boolean | Prisma.DiscountCode$usagesArgs<ExtArgs>
   _count?: boolean | Prisma.DiscountCodeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["discountCode"]>
 
@@ -727,6 +847,7 @@ export type DiscountCodeSelectScalar = {
 export type DiscountCodeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "discountPercent" | "discountAmount" | "minOrderMeters" | "maxUses" | "usedCount" | "validFrom" | "validUntil" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["discountCode"]>
 export type DiscountCodeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   orders?: boolean | Prisma.DiscountCode$ordersArgs<ExtArgs>
+  usages?: boolean | Prisma.DiscountCode$usagesArgs<ExtArgs>
   _count?: boolean | Prisma.DiscountCodeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DiscountCodeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -736,6 +857,7 @@ export type $DiscountCodePayload<ExtArgs extends runtime.Types.Extensions.Intern
   name: "DiscountCode"
   objects: {
     orders: Prisma.$OrderPayload<ExtArgs>[]
+    usages: Prisma.$DiscountUsagePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1145,6 +1267,7 @@ readonly fields: DiscountCodeFieldRefs;
 export interface Prisma__DiscountCodeClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   orders<T extends Prisma.DiscountCode$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DiscountCode$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  usages<T extends Prisma.DiscountCode$usagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DiscountCode$usagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiscountUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1595,6 +1718,30 @@ export type DiscountCode$ordersArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.OrderScalarFieldEnum | Prisma.OrderScalarFieldEnum[]
+}
+
+/**
+ * DiscountCode.usages
+ */
+export type DiscountCode$usagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DiscountUsage
+   */
+  select?: Prisma.DiscountUsageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DiscountUsage
+   */
+  omit?: Prisma.DiscountUsageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DiscountUsageInclude<ExtArgs> | null
+  where?: Prisma.DiscountUsageWhereInput
+  orderBy?: Prisma.DiscountUsageOrderByWithRelationInput | Prisma.DiscountUsageOrderByWithRelationInput[]
+  cursor?: Prisma.DiscountUsageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DiscountUsageScalarFieldEnum | Prisma.DiscountUsageScalarFieldEnum[]
 }
 
 /**

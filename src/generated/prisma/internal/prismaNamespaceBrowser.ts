@@ -61,6 +61,7 @@ export const ModelName = {
   PricingTier: 'PricingTier',
   CustomerPricing: 'CustomerPricing',
   DiscountCode: 'DiscountCode',
+  DiscountUsage: 'DiscountUsage',
   ShippingConfig: 'ShippingConfig',
   SiteSettings: 'SiteSettings',
   Order: 'Order',
@@ -250,6 +251,17 @@ export const DiscountCodeScalarFieldEnum = {
 } as const
 
 export type DiscountCodeScalarFieldEnum = (typeof DiscountCodeScalarFieldEnum)[keyof typeof DiscountCodeScalarFieldEnum]
+
+
+export const DiscountUsageScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  discountCodeId: 'discountCodeId',
+  orderId: 'orderId',
+  usedAt: 'usedAt'
+} as const
+
+export type DiscountUsageScalarFieldEnum = (typeof DiscountUsageScalarFieldEnum)[keyof typeof DiscountUsageScalarFieldEnum]
 
 
 export const ShippingConfigScalarFieldEnum = {

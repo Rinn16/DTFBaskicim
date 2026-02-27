@@ -68,6 +68,11 @@ export type CustomerPricing = Prisma.CustomerPricingModel
  */
 export type DiscountCode = Prisma.DiscountCodeModel
 /**
+ * Model DiscountUsage
+ * 
+ */
+export type DiscountUsage = Prisma.DiscountUsageModel
+/**
  * Model ShippingConfig
  * 
  */

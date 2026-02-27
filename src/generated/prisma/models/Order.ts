@@ -556,6 +556,7 @@ export type OrderWhereInput = {
   gangSheets?: Prisma.OrderGangSheetListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
   transactions?: Prisma.PaymentTransactionListRelationFilter
+  discountUsage?: Prisma.XOR<Prisma.DiscountUsageNullableScalarRelationFilter, Prisma.DiscountUsageWhereInput> | null
 }
 
 export type OrderOrderByWithRelationInput = {
@@ -610,6 +611,7 @@ export type OrderOrderByWithRelationInput = {
   gangSheets?: Prisma.OrderGangSheetOrderByRelationAggregateInput
   invoices?: Prisma.InvoiceOrderByRelationAggregateInput
   transactions?: Prisma.PaymentTransactionOrderByRelationAggregateInput
+  discountUsage?: Prisma.DiscountUsageOrderByWithRelationInput
 }
 
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -667,6 +669,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   gangSheets?: Prisma.OrderGangSheetListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
   transactions?: Prisma.PaymentTransactionListRelationFilter
+  discountUsage?: Prisma.XOR<Prisma.DiscountUsageNullableScalarRelationFilter, Prisma.DiscountUsageWhereInput> | null
 }, "id" | "orderNumber">
 
 export type OrderOrderByWithAggregationInput = {
@@ -818,6 +821,7 @@ export type OrderCreateInput = {
   gangSheets?: Prisma.OrderGangSheetCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUncheckedCreateInput = {
@@ -869,6 +873,7 @@ export type OrderUncheckedCreateInput = {
   gangSheets?: Prisma.OrderGangSheetUncheckedCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageUncheckedCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUpdateInput = {
@@ -920,6 +925,7 @@ export type OrderUpdateInput = {
   gangSheets?: Prisma.OrderGangSheetUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateInput = {
@@ -971,6 +977,7 @@ export type OrderUncheckedUpdateInput = {
   gangSheets?: Prisma.OrderGangSheetUncheckedUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUncheckedUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderCreateManyInput = {
@@ -1116,6 +1123,11 @@ export type OrderListRelationFilter = {
 
 export type OrderOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type OrderScalarRelationFilter = {
+  is?: Prisma.OrderWhereInput
+  isNot?: Prisma.OrderWhereInput
 }
 
 export type OrderCountOrderByAggregateInput = {
@@ -1278,11 +1290,6 @@ export type OrderSumOrderByAggregateInput = {
   gangSheetHeight?: Prisma.SortOrder
 }
 
-export type OrderScalarRelationFilter = {
-  is?: Prisma.OrderWhereInput
-  isNot?: Prisma.OrderWhereInput
-}
-
 export type OrderCreateNestedManyWithoutUserInput = {
   create?: Prisma.XOR<Prisma.OrderCreateWithoutUserInput, Prisma.OrderUncheckedCreateWithoutUserInput> | Prisma.OrderCreateWithoutUserInput[] | Prisma.OrderUncheckedCreateWithoutUserInput[]
   connectOrCreate?: Prisma.OrderCreateOrConnectWithoutUserInput | Prisma.OrderCreateOrConnectWithoutUserInput[]
@@ -1407,6 +1414,20 @@ export type OrderUncheckedUpdateManyWithoutDiscountCodeNestedInput = {
   update?: Prisma.OrderUpdateWithWhereUniqueWithoutDiscountCodeInput | Prisma.OrderUpdateWithWhereUniqueWithoutDiscountCodeInput[]
   updateMany?: Prisma.OrderUpdateManyWithWhereWithoutDiscountCodeInput | Prisma.OrderUpdateManyWithWhereWithoutDiscountCodeInput[]
   deleteMany?: Prisma.OrderScalarWhereInput | Prisma.OrderScalarWhereInput[]
+}
+
+export type OrderCreateNestedOneWithoutDiscountUsageInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutDiscountUsageInput, Prisma.OrderUncheckedCreateWithoutDiscountUsageInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutDiscountUsageInput
+  connect?: Prisma.OrderWhereUniqueInput
+}
+
+export type OrderUpdateOneRequiredWithoutDiscountUsageNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutDiscountUsageInput, Prisma.OrderUncheckedCreateWithoutDiscountUsageInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutDiscountUsageInput
+  upsert?: Prisma.OrderUpsertWithoutDiscountUsageInput
+  connect?: Prisma.OrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutDiscountUsageInput, Prisma.OrderUpdateWithoutDiscountUsageInput>, Prisma.OrderUncheckedUpdateWithoutDiscountUsageInput>
 }
 
 export type EnumOrderStatusFieldUpdateOperationsInput = {
@@ -1539,6 +1560,7 @@ export type OrderCreateWithoutUserInput = {
   gangSheets?: Prisma.OrderGangSheetCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutUserInput = {
@@ -1589,6 +1611,7 @@ export type OrderUncheckedCreateWithoutUserInput = {
   gangSheets?: Prisma.OrderGangSheetUncheckedCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageUncheckedCreateNestedOneWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutUserInput = {
@@ -1714,6 +1737,7 @@ export type OrderCreateWithoutAddressInput = {
   gangSheets?: Prisma.OrderGangSheetCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutAddressInput = {
@@ -1764,6 +1788,7 @@ export type OrderUncheckedCreateWithoutAddressInput = {
   gangSheets?: Prisma.OrderGangSheetUncheckedCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageUncheckedCreateNestedOneWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutAddressInput = {
@@ -1840,6 +1865,7 @@ export type OrderCreateWithoutDiscountCodeInput = {
   gangSheets?: Prisma.OrderGangSheetCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutDiscountCodeInput = {
@@ -1890,6 +1916,7 @@ export type OrderUncheckedCreateWithoutDiscountCodeInput = {
   gangSheets?: Prisma.OrderGangSheetUncheckedCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageUncheckedCreateNestedOneWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutDiscountCodeInput = {
@@ -1916,6 +1943,226 @@ export type OrderUpdateWithWhereUniqueWithoutDiscountCodeInput = {
 export type OrderUpdateManyWithWhereWithoutDiscountCodeInput = {
   where: Prisma.OrderScalarWhereInput
   data: Prisma.XOR<Prisma.OrderUpdateManyMutationInput, Prisma.OrderUncheckedUpdateManyWithoutDiscountCodeInput>
+}
+
+export type OrderCreateWithoutDiscountUsageInput = {
+  id?: string
+  orderNumber: string
+  guestEmail?: string | null
+  guestName?: string | null
+  guestPhone?: string | null
+  totalMeters: runtime.Decimal | runtime.DecimalJsLike | number | string
+  pricePerMeter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  shippingCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.OrderStatus
+  paymentMethod: $Enums.PaymentMethod
+  paymentStatus?: $Enums.PaymentStatus
+  paymentId?: string | null
+  gangSheetLayout: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  gangSheetWidth: number
+  gangSheetHeight: number
+  exportPng?: string | null
+  exportTiff?: string | null
+  exportPdf?: string | null
+  trackingCode?: string | null
+  customerNote?: string | null
+  adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
+  billingType?: $Enums.BillingType
+  billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
+  billingFullName?: string | null
+  billingCompanyName?: string | null
+  billingTaxOffice?: string | null
+  billingTaxNumber?: string | null
+  billingAddress?: string | null
+  billingCity?: string | null
+  billingDistrict?: string | null
+  billingZipCode?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user?: Prisma.UserCreateNestedOneWithoutOrdersInput
+  address?: Prisma.AddressCreateNestedOneWithoutOrdersInput
+  discountCode?: Prisma.DiscountCodeCreateNestedOneWithoutOrdersInput
+  items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
+  statusHistory?: Prisma.OrderStatusHistoryCreateNestedManyWithoutOrderInput
+  gangSheets?: Prisma.OrderGangSheetCreateNestedManyWithoutOrderInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
+  transactions?: Prisma.PaymentTransactionCreateNestedManyWithoutOrderInput
+}
+
+export type OrderUncheckedCreateWithoutDiscountUsageInput = {
+  id?: string
+  orderNumber: string
+  userId?: string | null
+  addressId?: string | null
+  guestEmail?: string | null
+  guestName?: string | null
+  guestPhone?: string | null
+  totalMeters: runtime.Decimal | runtime.DecimalJsLike | number | string
+  pricePerMeter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  shippingCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountCodeId?: string | null
+  status?: $Enums.OrderStatus
+  paymentMethod: $Enums.PaymentMethod
+  paymentStatus?: $Enums.PaymentStatus
+  paymentId?: string | null
+  gangSheetLayout: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  gangSheetWidth: number
+  gangSheetHeight: number
+  exportPng?: string | null
+  exportTiff?: string | null
+  exportPdf?: string | null
+  trackingCode?: string | null
+  customerNote?: string | null
+  adminNote?: string | null
+  termsAcceptedAt?: Date | string | null
+  billingType?: $Enums.BillingType
+  billingSameAddress?: boolean
+  billingFirstName?: string | null
+  billingLastName?: string | null
+  billingFullName?: string | null
+  billingCompanyName?: string | null
+  billingTaxOffice?: string | null
+  billingTaxNumber?: string | null
+  billingAddress?: string | null
+  billingCity?: string | null
+  billingDistrict?: string | null
+  billingZipCode?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
+  statusHistory?: Prisma.OrderStatusHistoryUncheckedCreateNestedManyWithoutOrderInput
+  gangSheets?: Prisma.OrderGangSheetUncheckedCreateNestedManyWithoutOrderInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
+  transactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutOrderInput
+}
+
+export type OrderCreateOrConnectWithoutDiscountUsageInput = {
+  where: Prisma.OrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderCreateWithoutDiscountUsageInput, Prisma.OrderUncheckedCreateWithoutDiscountUsageInput>
+}
+
+export type OrderUpsertWithoutDiscountUsageInput = {
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutDiscountUsageInput, Prisma.OrderUncheckedUpdateWithoutDiscountUsageInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutDiscountUsageInput, Prisma.OrderUncheckedCreateWithoutDiscountUsageInput>
+  where?: Prisma.OrderWhereInput
+}
+
+export type OrderUpdateToOneWithWhereWithoutDiscountUsageInput = {
+  where?: Prisma.OrderWhereInput
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutDiscountUsageInput, Prisma.OrderUncheckedUpdateWithoutDiscountUsageInput>
+}
+
+export type OrderUpdateWithoutDiscountUsageInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  guestEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalMeters?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  pricePerMeter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  paymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gangSheetLayout?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  gangSheetWidth?: Prisma.IntFieldUpdateOperationsInput | number
+  gangSheetHeight?: Prisma.IntFieldUpdateOperationsInput | number
+  exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingTaxNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneWithoutOrdersNestedInput
+  address?: Prisma.AddressUpdateOneWithoutOrdersNestedInput
+  discountCode?: Prisma.DiscountCodeUpdateOneWithoutOrdersNestedInput
+  items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
+  statusHistory?: Prisma.OrderStatusHistoryUpdateManyWithoutOrderNestedInput
+  gangSheets?: Prisma.OrderGangSheetUpdateManyWithoutOrderNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
+  transactions?: Prisma.PaymentTransactionUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderUncheckedUpdateWithoutDiscountUsageInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalMeters?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  pricePerMeter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  paymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gangSheetLayout?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  gangSheetWidth?: Prisma.IntFieldUpdateOperationsInput | number
+  gangSheetHeight?: Prisma.IntFieldUpdateOperationsInput | number
+  exportPng?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  exportTiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  exportPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billingType?: Prisma.EnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType
+  billingSameAddress?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingCompanyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingTaxOffice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingTaxNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingZipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+  statusHistory?: Prisma.OrderStatusHistoryUncheckedUpdateManyWithoutOrderNestedInput
+  gangSheets?: Prisma.OrderGangSheetUncheckedUpdateManyWithoutOrderNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
+  transactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutItemsInput = {
@@ -1966,6 +2213,7 @@ export type OrderCreateWithoutItemsInput = {
   gangSheets?: Prisma.OrderGangSheetCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutItemsInput = {
@@ -2016,6 +2264,7 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   gangSheets?: Prisma.OrderGangSheetUncheckedCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageUncheckedCreateNestedOneWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutItemsInput = {
@@ -2082,6 +2331,7 @@ export type OrderUpdateWithoutItemsInput = {
   gangSheets?: Prisma.OrderGangSheetUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutItemsInput = {
@@ -2132,6 +2382,7 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   gangSheets?: Prisma.OrderGangSheetUncheckedUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUncheckedUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutStatusHistoryInput = {
@@ -2182,6 +2433,7 @@ export type OrderCreateWithoutStatusHistoryInput = {
   gangSheets?: Prisma.OrderGangSheetCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutStatusHistoryInput = {
@@ -2232,6 +2484,7 @@ export type OrderUncheckedCreateWithoutStatusHistoryInput = {
   gangSheets?: Prisma.OrderGangSheetUncheckedCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageUncheckedCreateNestedOneWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutStatusHistoryInput = {
@@ -2298,6 +2551,7 @@ export type OrderUpdateWithoutStatusHistoryInput = {
   gangSheets?: Prisma.OrderGangSheetUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutStatusHistoryInput = {
@@ -2348,6 +2602,7 @@ export type OrderUncheckedUpdateWithoutStatusHistoryInput = {
   gangSheets?: Prisma.OrderGangSheetUncheckedUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUncheckedUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutGangSheetsInput = {
@@ -2398,6 +2653,7 @@ export type OrderCreateWithoutGangSheetsInput = {
   statusHistory?: Prisma.OrderStatusHistoryCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutGangSheetsInput = {
@@ -2448,6 +2704,7 @@ export type OrderUncheckedCreateWithoutGangSheetsInput = {
   statusHistory?: Prisma.OrderStatusHistoryUncheckedCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageUncheckedCreateNestedOneWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutGangSheetsInput = {
@@ -2514,6 +2771,7 @@ export type OrderUpdateWithoutGangSheetsInput = {
   statusHistory?: Prisma.OrderStatusHistoryUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutGangSheetsInput = {
@@ -2564,6 +2822,7 @@ export type OrderUncheckedUpdateWithoutGangSheetsInput = {
   statusHistory?: Prisma.OrderStatusHistoryUncheckedUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUncheckedUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutInvoicesInput = {
@@ -2614,6 +2873,7 @@ export type OrderCreateWithoutInvoicesInput = {
   statusHistory?: Prisma.OrderStatusHistoryCreateNestedManyWithoutOrderInput
   gangSheets?: Prisma.OrderGangSheetCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutInvoicesInput = {
@@ -2664,6 +2924,7 @@ export type OrderUncheckedCreateWithoutInvoicesInput = {
   statusHistory?: Prisma.OrderStatusHistoryUncheckedCreateNestedManyWithoutOrderInput
   gangSheets?: Prisma.OrderGangSheetUncheckedCreateNestedManyWithoutOrderInput
   transactions?: Prisma.PaymentTransactionUncheckedCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageUncheckedCreateNestedOneWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutInvoicesInput = {
@@ -2730,6 +2991,7 @@ export type OrderUpdateWithoutInvoicesInput = {
   statusHistory?: Prisma.OrderStatusHistoryUpdateManyWithoutOrderNestedInput
   gangSheets?: Prisma.OrderGangSheetUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutInvoicesInput = {
@@ -2780,6 +3042,7 @@ export type OrderUncheckedUpdateWithoutInvoicesInput = {
   statusHistory?: Prisma.OrderStatusHistoryUncheckedUpdateManyWithoutOrderNestedInput
   gangSheets?: Prisma.OrderGangSheetUncheckedUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUncheckedUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutTransactionsInput = {
@@ -2830,6 +3093,7 @@ export type OrderCreateWithoutTransactionsInput = {
   statusHistory?: Prisma.OrderStatusHistoryCreateNestedManyWithoutOrderInput
   gangSheets?: Prisma.OrderGangSheetCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageCreateNestedOneWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutTransactionsInput = {
@@ -2880,6 +3144,7 @@ export type OrderUncheckedCreateWithoutTransactionsInput = {
   statusHistory?: Prisma.OrderStatusHistoryUncheckedCreateNestedManyWithoutOrderInput
   gangSheets?: Prisma.OrderGangSheetUncheckedCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
+  discountUsage?: Prisma.DiscountUsageUncheckedCreateNestedOneWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutTransactionsInput = {
@@ -2946,6 +3211,7 @@ export type OrderUpdateWithoutTransactionsInput = {
   statusHistory?: Prisma.OrderStatusHistoryUpdateManyWithoutOrderNestedInput
   gangSheets?: Prisma.OrderGangSheetUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutTransactionsInput = {
@@ -2996,6 +3262,7 @@ export type OrderUncheckedUpdateWithoutTransactionsInput = {
   statusHistory?: Prisma.OrderStatusHistoryUncheckedUpdateManyWithoutOrderNestedInput
   gangSheets?: Prisma.OrderGangSheetUncheckedUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUncheckedUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderCreateManyUserInput = {
@@ -3091,6 +3358,7 @@ export type OrderUpdateWithoutUserInput = {
   gangSheets?: Prisma.OrderGangSheetUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutUserInput = {
@@ -3141,6 +3409,7 @@ export type OrderUncheckedUpdateWithoutUserInput = {
   gangSheets?: Prisma.OrderGangSheetUncheckedUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUncheckedUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutUserInput = {
@@ -3281,6 +3550,7 @@ export type OrderUpdateWithoutAddressInput = {
   gangSheets?: Prisma.OrderGangSheetUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutAddressInput = {
@@ -3331,6 +3601,7 @@ export type OrderUncheckedUpdateWithoutAddressInput = {
   gangSheets?: Prisma.OrderGangSheetUncheckedUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUncheckedUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutAddressInput = {
@@ -3471,6 +3742,7 @@ export type OrderUpdateWithoutDiscountCodeInput = {
   gangSheets?: Prisma.OrderGangSheetUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutDiscountCodeInput = {
@@ -3521,6 +3793,7 @@ export type OrderUncheckedUpdateWithoutDiscountCodeInput = {
   gangSheets?: Prisma.OrderGangSheetUncheckedUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.PaymentTransactionUncheckedUpdateManyWithoutOrderNestedInput
+  discountUsage?: Prisma.DiscountUsageUncheckedUpdateOneWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutDiscountCodeInput = {
@@ -3687,6 +3960,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   gangSheets?: boolean | Prisma.Order$gangSheetsArgs<ExtArgs>
   invoices?: boolean | Prisma.Order$invoicesArgs<ExtArgs>
   transactions?: boolean | Prisma.Order$transactionsArgs<ExtArgs>
+  discountUsage?: boolean | Prisma.Order$discountUsageArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
@@ -3844,6 +4118,7 @@ export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   gangSheets?: boolean | Prisma.Order$gangSheetsArgs<ExtArgs>
   invoices?: boolean | Prisma.Order$invoicesArgs<ExtArgs>
   transactions?: boolean | Prisma.Order$transactionsArgs<ExtArgs>
+  discountUsage?: boolean | Prisma.Order$discountUsageArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3868,6 +4143,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     gangSheets: Prisma.$OrderGangSheetPayload<ExtArgs>[]
     invoices: Prisma.$InvoicePayload<ExtArgs>[]
     transactions: Prisma.$PaymentTransactionPayload<ExtArgs>[]
+    discountUsage: Prisma.$DiscountUsagePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4315,6 +4591,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
   gangSheets<T extends Prisma.Order$gangSheetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$gangSheetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderGangSheetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoices<T extends Prisma.Order$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transactions<T extends Prisma.Order$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  discountUsage<T extends Prisma.Order$discountUsageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$discountUsageArgs<ExtArgs>>): Prisma.Prisma__DiscountUsageClient<runtime.Types.Result.GetResult<Prisma.$DiscountUsagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4957,6 +5234,25 @@ export type Order$transactionsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.PaymentTransactionScalarFieldEnum | Prisma.PaymentTransactionScalarFieldEnum[]
+}
+
+/**
+ * Order.discountUsage
+ */
+export type Order$discountUsageArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DiscountUsage
+   */
+  select?: Prisma.DiscountUsageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DiscountUsage
+   */
+  omit?: Prisma.DiscountUsageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DiscountUsageInclude<ExtArgs> | null
+  where?: Prisma.DiscountUsageWhereInput
 }
 
 /**

@@ -394,6 +394,7 @@ export const ModelName = {
   PricingTier: 'PricingTier',
   CustomerPricing: 'CustomerPricing',
   DiscountCode: 'DiscountCode',
+  DiscountUsage: 'DiscountUsage',
   ShippingConfig: 'ShippingConfig',
   SiteSettings: 'SiteSettings',
   Order: 'Order',
@@ -422,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "userSession" | "verificationToken" | "otpCode" | "address" | "pricingTier" | "customerPricing" | "discountCode" | "shippingConfig" | "siteSettings" | "order" | "orderItem" | "orderStatusHistory" | "orderGangSheet" | "designDraft" | "cartItem" | "emailTemplate" | "smsTemplate" | "smsLog" | "invoice" | "paymentTransaction"
+    modelProps: "user" | "account" | "session" | "userSession" | "verificationToken" | "otpCode" | "address" | "pricingTier" | "customerPricing" | "discountCode" | "discountUsage" | "shippingConfig" | "siteSettings" | "order" | "orderItem" | "orderStatusHistory" | "orderGangSheet" | "designDraft" | "cartItem" | "emailTemplate" | "smsTemplate" | "smsLog" | "invoice" | "paymentTransaction"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1163,6 +1164,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DiscountCodeCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DiscountCodeCountAggregateOutputType> | number
+        }
+      }
+    }
+    DiscountUsage: {
+      payload: Prisma.$DiscountUsagePayload<ExtArgs>
+      fields: Prisma.DiscountUsageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DiscountUsageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscountUsagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DiscountUsageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscountUsagePayload>
+        }
+        findFirst: {
+          args: Prisma.DiscountUsageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscountUsagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DiscountUsageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscountUsagePayload>
+        }
+        findMany: {
+          args: Prisma.DiscountUsageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscountUsagePayload>[]
+        }
+        create: {
+          args: Prisma.DiscountUsageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscountUsagePayload>
+        }
+        createMany: {
+          args: Prisma.DiscountUsageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DiscountUsageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscountUsagePayload>[]
+        }
+        delete: {
+          args: Prisma.DiscountUsageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscountUsagePayload>
+        }
+        update: {
+          args: Prisma.DiscountUsageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscountUsagePayload>
+        }
+        deleteMany: {
+          args: Prisma.DiscountUsageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DiscountUsageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DiscountUsageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscountUsagePayload>[]
+        }
+        upsert: {
+          args: Prisma.DiscountUsageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscountUsagePayload>
+        }
+        aggregate: {
+          args: Prisma.DiscountUsageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDiscountUsage>
+        }
+        groupBy: {
+          args: Prisma.DiscountUsageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiscountUsageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DiscountUsageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiscountUsageCountAggregateOutputType> | number
         }
       }
     }
@@ -2327,6 +2402,17 @@ export const DiscountCodeScalarFieldEnum = {
 export type DiscountCodeScalarFieldEnum = (typeof DiscountCodeScalarFieldEnum)[keyof typeof DiscountCodeScalarFieldEnum]
 
 
+export const DiscountUsageScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  discountCodeId: 'discountCodeId',
+  orderId: 'orderId',
+  usedAt: 'usedAt'
+} as const
+
+export type DiscountUsageScalarFieldEnum = (typeof DiscountUsageScalarFieldEnum)[keyof typeof DiscountUsageScalarFieldEnum]
+
+
 export const ShippingConfigScalarFieldEnum = {
   id: 'id',
   shippingCost: 'shippingCost',
@@ -3011,6 +3097,7 @@ export type GlobalOmitConfig = {
   pricingTier?: Prisma.PricingTierOmit
   customerPricing?: Prisma.CustomerPricingOmit
   discountCode?: Prisma.DiscountCodeOmit
+  discountUsage?: Prisma.DiscountUsageOmit
   shippingConfig?: Prisma.ShippingConfigOmit
   siteSettings?: Prisma.SiteSettingsOmit
   order?: Prisma.OrderOmit
