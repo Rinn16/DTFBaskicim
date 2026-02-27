@@ -360,7 +360,7 @@ function OdemeBasariliContent() {
       {/* Custom footer */}
       <footer className="relative z-10 border-t border-white/10 bg-black/80 backdrop-blur-md py-8 px-6 mt-auto">
         <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600">
-          <p>&copy; 2025 DTF Baskıcım. Tüm hakları saklıdır.</p>
+          <p>&copy; {new Date().getFullYear()} DTF Baskıcım. Tüm hakları saklıdır.</p>
           <div className="flex gap-6">
             <Link
               href="/yardim"

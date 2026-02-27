@@ -131,7 +131,7 @@ Production Started
 <span style="color:#334155;margin:0 8px;">&bull;</span>
 <span style="font-family:'Courier New',monospace;">SYS_MSG_ID: {siparisNo}_CONF</span>
 </p>
-<p style="margin:8px 0;font-size:11px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">&copy; 2025 DTF Baskıcım. Tüm hakları saklıdır.</p>
+<p style="margin:8px 0;font-size:11px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">&copy; ${new Date().getFullYear()} DTF Baskıcım. Tüm hakları saklıdır.</p>
 <p style="margin:0;font-size:11px;color:#475569;max-width:480px;display:inline-block;font-family:'Manrope',Arial,sans-serif;">Bu e-posta otomasyon sistemimiz tarafından oluşturulmuştur. Lütfen bu e-postayı yanıtlamayınız.</p>
 </td></tr>
 
@@ -248,7 +248,7 @@ In Transit
 <span style="color:#334155;margin:0 8px;">&bull;</span>
 <span style="font-family:'Courier New',monospace;">SYS_MSG_ID: {siparisNo}_SHIP</span>
 </p>
-<p style="margin:8px 0;font-size:11px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">&copy; 2025 DTF Bask&#305;c&#305;m. T&#252;m haklar&#305; sakl&#305;d&#305;r.</p>
+<p style="margin:8px 0;font-size:11px;color:#64748b;font-family:'Manrope',Arial,sans-serif;">&copy; ${new Date().getFullYear()} DTF Bask&#305;c&#305;m. T&#252;m haklar&#305; sakl&#305;d&#305;r.</p>
 <p style="margin:0;font-size:11px;color:#475569;max-width:480px;display:inline-block;font-family:'Manrope',Arial,sans-serif;">Bu e-posta otomasyon sistemimiz taraf&#305;ndan olu&#351;turulmu&#351;tur. L&#252;tfen bu e-postay&#305; yan&#305;tlamay&#305;n&#305;z.</p>
 </td></tr>
 
