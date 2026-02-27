@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { CreditCard, RotateCcw, Loader2 } from "lucide-react";
 import { TRANSACTION_TYPES, TRANSACTION_STATUSES } from "@/lib/constants";
+import { toast } from "sonner";
 
 interface Transaction {
   id: string;
@@ -36,7 +37,7 @@ export function OrderTransactions({ orderId, refreshKey }: OrderTransactionsProp
           setTransactions(data.transactions);
         }
       } catch {
-        // silent
+        toast.error("İşlem geçmişi yüklenemedi");
       } finally {
         setLoading(false);
       }

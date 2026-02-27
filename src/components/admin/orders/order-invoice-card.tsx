@@ -58,7 +58,7 @@ export function OrderInvoiceCard({ orderId, refreshKey }: OrderInvoiceCardProps)
         setInvoices(data.invoices);
       }
     } catch {
-      // silent
+      toast.error("Fatura bilgileri yüklenemedi");
     } finally {
       setLoading(false);
     }
