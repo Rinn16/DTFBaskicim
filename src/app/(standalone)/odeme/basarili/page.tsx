@@ -245,7 +245,7 @@ function OdemeBasariliContent() {
                   </div>
                   <div className="text-2xl font-bold text-[#00f0ff]">
                     {order
-                      ? `${order.totalMeters} Metre`
+                      ? `${order.totalMeters.toFixed(2)} m`
                       : "—"}
                   </div>
                 </div>

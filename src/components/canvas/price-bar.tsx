@@ -207,24 +207,29 @@ export function PriceBar() {
         }
 
         // Save current canvas state as draft before resetting
-        const snapshot = snapshotCurrentState();
-        if (snapshot) {
-          const name = activeDraftName || "Adsız Tasarım";
-          if (isAuthenticated) {
-            if (activeDraftId) {
-              await updateMemberDraftStore(activeDraftId, name, snapshot);
+        // Wrapped in its own try-catch so draft failures don't block the cart flow
+        try {
+          const snapshot = snapshotCurrentState();
+          if (snapshot) {
+            const name = activeDraftName || "Adsız Tasarım";
+            if (isAuthenticated) {
+              if (activeDraftId) {
+                await updateMemberDraftStore(activeDraftId, name, snapshot);
+              } else {
+                await saveMemberDraft(name, snapshot);
+              }
             } else {
-              await saveMemberDraft(name, snapshot);
-            }
-          } else {
-            if (activeDraftId) {
-              updateGuestDraft(activeDraftId, { name, data: snapshot });
-            } else {
-              const newId = crypto.randomUUID();
-              const now = new Date().toISOString();
-              saveGuestDraft({ id: newId, name, data: snapshot, createdAt: now, updatedAt: now });
+              if (activeDraftId) {
+                updateGuestDraft(activeDraftId, { name, data: snapshot });
+              } else {
+                const newId = crypto.randomUUID();
+                const now = new Date().toISOString();
+                saveGuestDraft({ id: newId, name, data: snapshot, createdAt: now, updatedAt: now });
+              }
             }
           }
+        } catch (draftError) {
+          console.warn("[cart] Draft save failed:", draftError);
         }
 
         toast.success("Tasarım sepete eklendi!");
