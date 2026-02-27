@@ -76,7 +76,7 @@ export default function CustomerDetailPage() {
         setCustomer(data.customer);
       }
     } catch {
-      // silent
+      toast.error("Müşteri bilgileri yüklenemedi");
     } finally {
       setIsLoading(false);
     }

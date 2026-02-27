@@ -122,7 +122,7 @@ export default function SmsManagementPage() {
         setTemplates(data.templates);
       }
     } catch {
-      // silent
+      toast.error("SMS şablonları yüklenemedi");
     } finally {
       setTemplatesLoading(false);
     }
@@ -136,7 +136,7 @@ export default function SmsManagementPage() {
         setAllUsers(data.users);
       }
     } catch {
-      // silent
+      toast.error("Kullanıcı listesi yüklenemedi");
     } finally {
       setUsersLoading(false);
     }
@@ -150,7 +150,7 @@ export default function SmsManagementPage() {
         setLogs(data.logs);
       }
     } catch {
-      // silent
+      toast.error("SMS kayıtları yüklenemedi");
     } finally {
       setLogsLoading(false);
     }

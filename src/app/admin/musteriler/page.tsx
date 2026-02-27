@@ -22,6 +22,7 @@ import {
   Download,
   Users,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface CustomerRow {
   id: string;
@@ -64,7 +65,7 @@ function CustomersContent() {
         setTotalPages(data.totalPages);
       }
     } catch {
-      // silent
+      toast.error("Müşteri listesi yüklenemedi");
     } finally {
       setIsLoading(false);
     }

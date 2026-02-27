@@ -125,7 +125,7 @@ export default function PricingPage() {
         setTiers(data.tiers);
       }
     } catch {
-      // silent
+      toast.error("Fiyat kademeleri yüklenemedi");
     } finally {
       setTiersLoading(false);
     }
@@ -249,7 +249,7 @@ export default function PricingPage() {
         setDiscounts(data.discounts);
       }
     } catch {
-      // silent
+      toast.error("İndirim kodları yüklenemedi");
     } finally {
       setDiscountsLoading(false);
     }
@@ -388,7 +388,7 @@ export default function PricingPage() {
         setShippingActive(data.config.isActive);
       }
     } catch {
-      // silent
+      toast.error("Kargo ayarları yüklenemedi");
     } finally {
       setShippingLoading(false);
     }

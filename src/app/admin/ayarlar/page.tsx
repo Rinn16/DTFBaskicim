@@ -121,7 +121,7 @@ export default function SettingsPage() {
         });
       }
     } catch {
-      // silent
+      toast.error("Ayarlar yüklenemedi");
     } finally {
       setLoading(false);
     }

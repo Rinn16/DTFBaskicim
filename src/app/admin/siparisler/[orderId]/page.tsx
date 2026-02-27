@@ -197,7 +197,7 @@ export default function AdminOrderDetailPage() {
         setAdminNote(data.order.adminNote || "");
       }
     } catch {
-      // silent
+      toast.error("Sipariş detayları yüklenemedi");
     } finally {
       setIsLoading(false);
     }

@@ -86,7 +86,7 @@ function OrdersContent() {
         setTotalPages(data.totalPages);
       }
     } catch {
-      // silent
+      toast.error("Siparişler yüklenemedi");
     } finally {
       setIsLoading(false);
       setSelectedIds(new Set());

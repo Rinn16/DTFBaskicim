@@ -107,7 +107,7 @@ export default function EmailTemplatesPage() {
         setTemplates(data.templates);
       }
     } catch {
-      // silent
+      toast.error("Email şablonları yüklenemedi");
     } finally {
       setLoading(false);
     }
@@ -139,7 +139,7 @@ export default function EmailTemplatesPage() {
           setPreviewSubject(data.subject);
         }
       } catch {
-        // silent
+        toast.error("Önizleme yüklenemedi");
       } finally {
         setPreviewLoading(false);
       }

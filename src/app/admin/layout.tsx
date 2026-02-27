@@ -103,7 +103,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           setEmailEnabled(data.settings.emailEnabled);
         }
       })
-      .catch(() => {});
+      .catch(() => { console.error("Admin ayarları yüklenemedi"); });
   }, [pathname]);
 
   return (

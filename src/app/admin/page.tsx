@@ -21,6 +21,7 @@ import {
   Clock,
 } from "lucide-react";
 import { STATUS_COLORS, statusLabel } from "@/lib/order-utils";
+import { toast } from "sonner";
 
 const RevenueChart = dynamic(
   () => import("@/components/admin/revenue-chart").then((m) => m.RevenueChart),
@@ -88,7 +89,7 @@ export default function AdminDashboard() {
           setData(await res.json());
         }
       } catch {
-        // silent
+        toast.error("Dashboard verileri yüklenemedi");
       } finally {
         setIsLoading(false);
       }
